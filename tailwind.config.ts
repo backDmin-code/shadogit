@@ -17,12 +17,16 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui"],
-        mono: ["var(--font-geist-mono)", "ui-monospace", "SFMono-Regular"],
-        display: ["var(--font-geist-sans)", "ui-sans-serif", "system-ui"],
+        sans: ["var(--font-inter)", "ui-sans-serif", "system-ui"],
+        display: ["var(--font-unbounded)", "ui-sans-serif", "system-ui"],
+        mono: ["var(--font-fira-code)", "ui-monospace", "SFMono-Regular"],
+      },
+      fontSize: {
+        "2xs": ["0.6875rem", { lineHeight: "1rem" }],
       },
       colors: {
         border: "hsl(var(--border))",
+        "border-subtle": "hsl(var(--border-subtle))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
@@ -59,40 +63,51 @@ const config: Config = {
           DEFAULT: "hsl(var(--surface))",
           foreground: "hsl(var(--surface-foreground))",
         },
+        "surface-2": "hsl(var(--surface-2))",
+        "surface-3": "hsl(var(--surface-3))",
+        "text-dim": "hsl(var(--text-dim))",
+        "text-dimmer": "hsl(var(--text-dimmer))",
         brand: {
-          violet: "#7C5CFF",
-          cyan: "#22D3EE",
-          pink: "#F472B6",
-          emerald: "#34D399",
+          lime: "#c8f135",
+          pink: "#f76aaa",
+          mint: "#6af7c8",
+          amber: "#febc2e",
         },
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 4px)",
-        sm: "calc(var(--radius) - 8px)",
-        "2xl": "1rem",
-        "3xl": "1.5rem",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 2px)",
+        "2xl": "calc(var(--radius) + 4px)",
+        "3xl": "calc(var(--radius) + 8px)",
       },
       backgroundImage: {
         "grid-pattern":
           "linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px)",
-        "radial-fade":
-          "radial-gradient(ellipse 80% 60% at 50% -20%, hsl(var(--primary) / 0.18), transparent)",
         "brand-gradient":
-          "linear-gradient(135deg, #7C5CFF 0%, #22D3EE 100%)",
+          "linear-gradient(135deg, #c8f135 0%, #f76aaa 100%)",
         "brand-gradient-soft":
-          "linear-gradient(135deg, rgba(124,92,255,0.15) 0%, rgba(34,211,238,0.15) 100%)",
+          "linear-gradient(135deg, rgba(200,241,53,0.16) 0%, rgba(247,106,170,0.10) 100%)",
+        noise:
+          "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
       },
       boxShadow: {
-        glow: "0 0 0 1px hsl(var(--border)), 0 8px 30px -10px hsl(var(--primary) / 0.4)",
+        glow: "0 0 18px rgba(var(--accent-rgb), 0.18)",
+        "glow-sm": "0 0 12px rgba(var(--accent-rgb), 0.16)",
         "glow-lg":
-          "0 0 0 1px hsl(var(--border)), 0 24px 80px -20px hsl(var(--primary) / 0.45)",
-        tile: "0 1px 0 0 hsl(var(--border)) inset, 0 0 0 1px hsl(var(--border))",
+          "0 8px 40px rgba(0,0,0,0.6), 0 0 24px rgba(var(--accent-rgb), 0.20)",
+        soft: "0 1px 6px rgba(0,0,0,0.4), 0 0 8px rgba(var(--accent-rgb), 0.14)",
+        tile: "0 8px 32px rgba(0,0,0,0.4), 0 0 20px rgba(var(--accent-rgb), 0.18)",
       },
       keyframes: {
-        "fade-in": {
-          from: { opacity: "0", transform: "translateY(4px)" },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(16px)" },
           to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
         },
         shimmer: {
           "0%": { backgroundPosition: "200% 0" },
@@ -112,6 +127,7 @@ const config: Config = {
         },
       },
       animation: {
+        "fade-up": "fade-up 0.5s ease both",
         "fade-in": "fade-in 0.4s ease-out",
         shimmer: "shimmer 2.5s linear infinite",
         "pulse-glow": "pulse-glow 2s ease-in-out infinite",

@@ -8,10 +8,11 @@ export function AdminSignOutButton() {
     <button
       type="button"
       onClick={() => signOut({ callbackUrl: "/" })}
-      className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground"
+      className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-text-dim hover:border-destructive/40 hover:text-destructive transition-colors"
+      aria-label="Выйти"
     >
-      <LogOut className="h-4 w-4" />
-      Выйти
+      <LogOut className="h-3.5 w-3.5" />
+      <span className="hidden sm:inline">Выйти</span>
     </button>
   );
 }

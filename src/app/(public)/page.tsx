@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles, BookOpen, Rocket, Layers } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { PageTile } from "@/components/docs/page-tile";
 import { getRecentPages, getSidebarTree, getSiteSettings } from "@/lib/data";
 
@@ -15,75 +13,81 @@ export default async function HomePage() {
   ]);
 
   const totalPages = spaces.reduce(
-    (sum, s) => sum + s.pages.length + s.pages.reduce((c, p) => c + p.children.length, 0),
+    (sum, s) =>
+      sum +
+      s.pages.length +
+      s.pages.reduce((c, p) => c + p.children.length, 0),
     0
   );
 
   return (
-    <div className="relative">
+    <main className="app-main app-main--no-toc !ml-0 !mr-0 relative z-10">
       {/* Hero */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 grid-bg opacity-50" aria-hidden />
-        <div className="container relative max-w-6xl py-20 md:py-28">
-          <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-            <Badge variant="gradient" className="gap-1.5 px-3 py-1 text-xs">
-              <Sparkles className="h-3 w-3" /> Documentation reimagined
-            </Badge>
-            <h1 className="mt-6 text-4xl font-bold tracking-tight md:text-6xl">
-              <span className="block">Документация для проекта,</span>
-              <span className="gradient-text mt-1 block">
-                которой захочется пользоваться.
-              </span>
-            </h1>
-            <p className="mt-6 max-w-xl text-balance text-base text-muted-foreground md:text-lg">
-              {settings.siteDescription ??
-                "Тёмная тема, плиточный интерфейс, мгновенный поиск, мобильная нижняя панель и встроенный WYSIWYG-редактор."}
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" variant="gradient">
-                <Link href="/docs">
-                  Открыть документацию
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/admin">Войти в админку</Link>
-              </Button>
-            </div>
-            <div className="mt-10 flex items-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <span className="h-2 w-2 animate-pulse-glow rounded-full bg-emerald-400" />
-                Все системы в норме
-              </div>
-              <div className="hidden items-center gap-2 sm:flex">
-                <BookOpen className="h-4 w-4" />
-                {totalPages} страниц
-              </div>
-              <div className="hidden items-center gap-2 sm:flex">
-                <Layers className="h-4 w-4" />
-                {spaces.length} разделов
-              </div>
-            </div>
+      <section className="page-hero">
+        <div className="hero-orb1" />
+        <div className="hero-orb2" />
+        <div className="relative z-10">
+          <div className="hero-eyebrow">
+            <Sparkles className="h-3 w-3" /> Documentation reimagined
+          </div>
+          <h1 className="page-title">
+            Документация для проекта,
+            <br />
+            которой захочется пользоваться.
+          </h1>
+          <p className="page-subtitle">
+            {settings.siteDescription ??
+              "Тёмная тема, плиточный интерфейс, мгновенный поиск, мобильная нижняя панель и встроенный WYSIWYG-редактор."}
+          </p>
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <Link
+              href="/docs"
+              className="btn-cta"
+            >
+              Открыть документацию
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-2 px-4 py-1.5 text-xs font-semibold text-text-dim hover:border-primary/40 hover:text-primary transition-colors"
+            >
+              Войти в админку
+            </Link>
+          </div>
+          <div className="mt-8 flex flex-wrap items-center gap-2">
+            <span className="meta-chip">
+              <span className="h-1.5 w-1.5 rounded-full bg-[hsl(var(--accent-mint))] animate-pulse-glow" />
+              Все системы в норме
+            </span>
+            <span className="meta-chip">
+              <BookOpen className="h-3 w-3" />
+              <span>{totalPages} страниц</span>
+            </span>
+            <span className="meta-chip">
+              <Layers className="h-3 w-3" />
+              <span>{spaces.length} разделов</span>
+            </span>
           </div>
         </div>
       </section>
 
       {/* Spaces */}
-      <section className="container max-w-6xl pb-12">
-        <div className="mb-6 flex items-end justify-between">
+      <section className="px-6 py-14 md:px-14 md:py-20 max-w-6xl">
+        <div className="mb-7 flex items-end justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-semibold tracking-tight">Разделы</h2>
-            <p className="text-sm text-muted-foreground">
-              Логические пространства документации.
-            </p>
+            <div className="eyebrow mb-3">Разделы</div>
+            <h2 className="font-display text-2xl font-semibold tracking-tight">
+              Логические пространства документации
+            </h2>
           </div>
-          <Button asChild variant="ghost" size="sm">
-            <Link href="/docs">
-              Все доки <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+          <Link
+            href="/docs"
+            className="inline-flex items-center gap-1 font-mono text-xs uppercase tracking-wider text-primary hover:gap-2 transition-all"
+          >
+            Все доки <ArrowRight className="h-3 w-3" />
+          </Link>
         </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {spaces.length === 0 ? (
             <EmptyState />
           ) : (
@@ -93,7 +97,9 @@ export default async function HomePage() {
                 href={`/docs/${space.slug}`}
                 title={space.title}
                 description={`${space.pages.length} страниц в этом разделе`}
-                emoji={space.icon ?? ["📘", "🚀", "🧰", "🌐", "🛡️", "🔌"][i % 6]}
+                emoji={
+                  space.icon ?? ["📘", "🚀", "🧰", "🌐", "🛡️", "🔌"][i % 6]
+                }
                 variant={i === 0 ? "gradient" : "default"}
                 badge={i === 0 ? "Старт" : undefined}
               />
@@ -103,15 +109,18 @@ export default async function HomePage() {
       </section>
 
       {/* Highlights */}
-      <section className="container max-w-6xl pb-12">
-        <h2 className="mb-6 text-2xl font-semibold tracking-tight">
-          Что внутри
-        </h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="px-6 py-14 md:px-14 md:py-20 max-w-6xl">
+        <div className="mb-7">
+          <div className="eyebrow mb-3">Что внутри</div>
+          <h2 className="font-display text-2xl font-semibold tracking-tight">
+            Шесть фич, ради которых это и собирали
+          </h2>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           <FeatureTile
             emoji="✨"
             title="Дизайн как у топов"
-            description="Тёмная тема, неоновые акценты, плитки со скруглениями, плавные анимации и адаптив под мобильные."
+            description="Лайм-акцент, мятные подсветки, плитки со скруглениями, плавные fade-up анимации."
           />
           <FeatureTile
             emoji="✍️"
@@ -126,7 +135,7 @@ export default async function HomePage() {
           <FeatureTile
             emoji="🔐"
             title="Защищённая админка"
-            description="NextAuth + bcrypt, страницы редактируют только админы. Истории ревизий."
+            description="NextAuth + bcrypt, страницы редактируют только админы. История ревизий."
           />
           <FeatureTile
             emoji="📱"
@@ -143,11 +152,14 @@ export default async function HomePage() {
 
       {/* Recent */}
       {recent.length > 0 && (
-        <section className="container max-w-6xl pb-20">
-          <h2 className="mb-6 text-2xl font-semibold tracking-tight">
-            Недавно обновлено
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <section className="px-6 py-14 md:px-14 md:py-20 pb-24 max-w-6xl">
+          <div className="mb-7">
+            <div className="eyebrow mb-3">Недавно</div>
+            <h2 className="font-display text-2xl font-semibold tracking-tight">
+              Свежие обновления документации
+            </h2>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {recent.map((p) => (
               <PageTile
                 key={p.id}
@@ -161,7 +173,7 @@ export default async function HomePage() {
           </div>
         </section>
       )}
-    </div>
+    </main>
   );
 }
 
@@ -175,12 +187,10 @@ function FeatureTile({
   description: string;
 }) {
   return (
-    <div className="tile flex h-full flex-col gap-3 p-5 sm:p-6">
-      <div className="grid h-10 w-10 place-items-center rounded-xl bg-secondary/80 text-xl">
-        {emoji}
-      </div>
-      <h3 className="font-semibold tracking-tight">{title}</h3>
-      <p className="text-sm text-muted-foreground">{description}</p>
+    <div className="tile flex h-full flex-col gap-2.5">
+      <div className="tile-icon">{emoji}</div>
+      <h3 className="tile-title">{title}</h3>
+      <p className="text-[13px] text-text-dim leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -189,21 +199,21 @@ function EmptyState() {
   return (
     <div className="col-span-full">
       <div className="tile flex flex-col items-center gap-4 p-10 text-center">
-        <Rocket className="h-10 w-10 text-primary" />
+        <div className="tile-icon !w-12 !h-12">
+          <Rocket className="h-5 w-5 text-primary" />
+        </div>
         <div className="space-y-1">
-          <h3 className="text-lg font-semibold">Здесь пока пусто</h3>
-          <p className="text-sm text-muted-foreground">
+          <h3 className="font-display text-base font-semibold">
+            Здесь пока пусто
+          </h3>
+          <p className="text-[13px] text-text-dim">
             Залогинься в админку и создай свой первый раздел.
           </p>
         </div>
-        <Button asChild variant="gradient">
-          <Link href="/login">
-            Войти <ArrowRight className="h-4 w-4" />
-          </Link>
-        </Button>
+        <Link href="/login" className="btn-cta">
+          Войти <ArrowRight className="h-3.5 w-3.5" />
+        </Link>
       </div>
     </div>
   );
 }
-
-

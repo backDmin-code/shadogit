@@ -8,10 +8,13 @@ export default async function AdminSpacesPage() {
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
   });
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold tracking-tight">Разделы</h1>
-        <p className="text-sm text-muted-foreground">
+    <div className="space-y-8">
+      <header className="space-y-2">
+        <div className="hero-eyebrow !mb-0">Структура</div>
+        <h1 className="font-display text-3xl font-semibold tracking-tight">
+          Разделы
+        </h1>
+        <p className="text-[13px] text-text-dim">
           Группируй документацию по логическим пространствам.
         </p>
       </header>

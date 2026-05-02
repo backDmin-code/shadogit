@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { PageTile } from "@/components/docs/page-tile";
 import { getSidebarTree } from "@/lib/data";
 
@@ -14,47 +13,46 @@ export const dynamic = "force-dynamic";
 export default async function DocsIndexPage() {
   const spaces = await getSidebarTree();
   return (
-    <div className="space-y-10">
-      <header className="space-y-3">
-        <Badge variant="default">Документация</Badge>
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-          Все разделы
-        </h1>
-        <p className="max-w-2xl text-muted-foreground">
-          Выбери раздел или начни с быстрого старта. Используй ⌘K, чтобы найти
-          нужную страницу за пару секунд.
-        </p>
-      </header>
+    <main className="app-main app-main--no-toc">
+      <section className="page-hero">
+        <div className="hero-orb1" />
+        <div className="relative z-10">
+          <div className="hero-eyebrow">Документация</div>
+          <h1 className="page-title">Все разделы</h1>
+          <p className="page-subtitle">
+            Выбери раздел или начни с быстрого старта. Используй <kbd>⌘ K</kbd>,
+            чтобы найти нужную страницу за пару секунд.
+          </p>
+        </div>
+      </section>
 
-      <div className="space-y-12">
+      <div className="space-y-14 px-6 md:px-14 py-12 max-w-5xl">
         {spaces.length === 0 ? (
           <div className="tile p-10 text-center">
-            <p className="text-muted-foreground">
+            <p className="text-text-dim text-[14px]">
               Документация пока пустая. Зайди в админку и создай разделы.
             </p>
-            <Button asChild className="mt-4" variant="gradient">
-              <Link href="/login">
-                Войти <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+            <Link href="/login" className="btn-cta mt-5">
+              Войти <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
           </div>
         ) : (
           spaces.map((space) => (
             <section key={space.id} className="space-y-4">
-              <div className="flex items-end justify-between">
+              <div className="flex items-end justify-between gap-4">
                 <div className="flex items-center gap-3">
                   {space.icon ? (
-                    <span className="text-2xl">{space.icon}</span>
+                    <span className="text-xl">{space.icon}</span>
                   ) : null}
-                  <h2 className="text-xl font-semibold tracking-tight">
+                  <h2 className="font-display text-xl font-semibold tracking-tight">
                     {space.title}
                   </h2>
                 </div>
-                <Badge variant="secondary">
+                <Badge variant="default">
                   {space.pages.length} страниц
                 </Badge>
               </div>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {space.pages.map((page) => (
                   <PageTile
                     key={page.id}
@@ -68,6 +66,6 @@ export default async function DocsIndexPage() {
           ))
         )}
       </div>
-    </div>
+    </main>
   );
 }

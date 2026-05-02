@@ -6,7 +6,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Loader2, LogIn, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -48,24 +47,28 @@ function LoginInner() {
   }
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center px-4 py-12">
-      <div className="absolute inset-0 grid-bg opacity-50" aria-hidden />
-      <div className="relative w-full max-w-md">
-        <div className="tile-glow rounded-3xl p-8 backdrop-blur-xl">
-          <div className="mb-8 flex flex-col items-center text-center">
-            <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[linear-gradient(135deg,#7c5cff_0%,#22d3ee_100%)] shadow-glow">
-              <ShieldCheck className="h-6 w-6 text-white" />
+    <div className="relative flex min-h-screen items-center justify-center px-4 py-12 z-10">
+      <div className="hero-orb1" />
+      <div className="hero-orb2" />
+      <div className="relative w-full max-w-[420px]">
+        <div className="rounded-xl border border-border bg-surface p-8 shadow-glow-lg backdrop-blur-xl">
+          <div className="mb-7 flex flex-col items-center text-center">
+            <div className="logo-mark !h-12 !w-12 !rounded-xl">
+              <ShieldCheck className="h-5 w-5" />
             </div>
-            <h1 className="mt-4 text-2xl font-bold tracking-tight">
+            <div className="hero-eyebrow mt-5 !mb-0 mx-auto">Auth</div>
+            <h1 className="mt-3 font-display text-2xl font-semibold tracking-tight">
               Войти в админку
             </h1>
-            <p className="mt-1 text-sm text-muted-foreground">
+            <p className="mt-1.5 text-[13px] text-text-dim">
               Создавай и редактируй документацию.
             </p>
           </div>
           <form className="space-y-4" onSubmit={onSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="email" className="font-mono text-2xs uppercase tracking-wider text-text-dimmer">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -76,8 +79,10 @@ function LoginInner() {
                 placeholder="admin@example.com"
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Пароль</Label>
+            <div className="space-y-1.5">
+              <Label htmlFor="password" className="font-mono text-2xs uppercase tracking-wider text-text-dimmer">
+                Пароль
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -88,30 +93,27 @@ function LoginInner() {
                 placeholder="••••••••"
               />
             </div>
-            <Button
+            <button
               type="submit"
-              variant="gradient"
-              className="w-full"
-              size="lg"
               disabled={loading}
+              className="btn-cta w-full justify-center !py-2.5 !text-[13px]"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <LogIn className="h-4 w-4" />
+                <LogIn className="h-3.5 w-3.5" />
               )}
               Войти
-            </Button>
+            </button>
           </form>
-          <p className="mt-6 text-center text-xs text-muted-foreground">
-            Нет аккаунта? Поменяй <code className="rounded bg-muted px-1 py-0.5">ADMIN_EMAIL</code> и{" "}
-            <code className="rounded bg-muted px-1 py-0.5">ADMIN_PASSWORD</code> в{" "}
-            <code className="rounded bg-muted px-1 py-0.5">.env</code>, потом запусти{" "}
-            <code className="rounded bg-muted px-1 py-0.5">npm run db:seed</code>.
+          <p className="mt-6 text-center text-2xs font-mono uppercase tracking-wider text-text-dimmer leading-relaxed">
+            Нет аккаунта? Поменяй <code className="inline-code !text-[10px]">ADMIN_EMAIL</code> и{" "}
+            <code className="inline-code !text-[10px]">ADMIN_PASSWORD</code> в{" "}
+            <code className="inline-code !text-[10px]">.env</code>
           </p>
         </div>
-        <div className="mt-6 text-center text-sm text-muted-foreground">
-          <Link href="/" className="hover:text-foreground transition-colors">
+        <div className="mt-6 text-center font-mono text-2xs uppercase tracking-wider text-text-dimmer">
+          <Link href="/" className="hover:text-primary transition-colors">
             ← На главную
           </Link>
         </div>

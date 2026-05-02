@@ -3,9 +3,8 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, BookOpen, LogIn, Settings } from "lucide-react";
+import { Menu, LogIn, Settings } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { CommandPaletteTrigger } from "@/components/search/command-palette";
 import { cn } from "@/lib/utils";
@@ -14,23 +13,17 @@ interface SiteHeaderProps {
   siteName: string;
   logoEmoji: string;
   onMenuClick?: () => void;
+  withSidebarBlock?: boolean;
 }
 
 export function SiteHeader({
   siteName,
   logoEmoji,
   onMenuClick,
+  withSidebarBlock = false,
 }: SiteHeaderProps) {
   const pathname = usePathname();
   const { data: session } = useSession();
-  const [scrolled, setScrolled] = React.useState(false);
-
-  React.useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   const navItems = [
     { href: "/", label: "Главная" },
@@ -39,38 +32,37 @@ export function SiteHeader({
   ];
 
   return (
-    <header
-      className={cn(
-        "sticky top-0 z-40 w-full transition-all duration-300",
-        scrolled
-          ? "border-b bg-background/70 backdrop-blur-xl backdrop-saturate-150"
-          : "border-b border-transparent bg-transparent"
-      )}
-    >
-      <div className="container flex h-16 max-w-7xl items-center gap-4">
-        <Button
-          variant="ghost"
-          size="icon-sm"
-          className="md:hidden"
-          onClick={onMenuClick}
-          aria-label="Open menu"
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <span
-            className="grid h-9 w-9 place-items-center rounded-xl bg-[linear-gradient(135deg,#7c5cff_0%,#22d3ee_100%)] text-lg shadow-glow transition-transform group-hover:scale-105"
-            aria-hidden
+    <header className="app-header">
+      <div
+        className={cn(
+          "app-header-logo",
+          !withSidebarBlock &&
+            "!w-auto !border-r-0 !bg-transparent !pl-4 md:!pl-6"
+        )}
+      >
+        {onMenuClick && (
+          <button
+            className="md:hidden mr-2 grid h-9 w-9 place-items-center rounded-md border border-border bg-surface-2 text-text-dim hover:border-primary/40 hover:text-primary transition-colors"
+            onClick={onMenuClick}
+            aria-label="Open menu"
           >
-            {logoEmoji}
+            <Menu className="h-4 w-4" />
+          </button>
+        )}
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="logo-mark" aria-hidden>
+            {logoEmoji.length === 1 ? logoEmoji : "S"}
           </span>
-          <span className="hidden font-semibold tracking-tight sm:inline-block">
-            {siteName}
-          </span>
+          <span className="logo-text">{siteName}</span>
         </Link>
+      </div>
 
-        <nav className="ml-4 hidden items-center gap-1 md:flex">
+      <div className="flex flex-1 items-center justify-between gap-3 px-4 md:px-6">
+        <div className="hidden flex-1 max-w-[280px] md:block">
+          <CommandPaletteTrigger />
+        </div>
+
+        <nav className="app-header-nav hidden items-center gap-0.5 lg:flex">
           {navItems.map((item) => {
             const active =
               pathname === item.href ||
@@ -80,10 +72,7 @@ export function SiteHeader({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "rounded-lg px-3 py-1.5 text-sm transition-colors",
-                  active
-                    ? "bg-secondary text-foreground"
-                    : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+                  active && "!text-primary !bg-primary/8"
                 )}
               >
                 {item.label}
@@ -92,30 +81,29 @@ export function SiteHeader({
           })}
         </nav>
 
-        <div className="flex flex-1 items-center justify-end gap-2">
-          <CommandPaletteTrigger />
+        <div className="flex items-center gap-2.5">
           <ThemeToggle />
           {session?.user ? (
-            <Button asChild variant="outline" size="sm" className="gap-1.5">
-              <Link href="/admin">
-                <Settings className="h-4 w-4" />
-                <span className="hidden sm:inline">Админка</span>
-              </Link>
-            </Button>
+            <Link
+              href="/admin"
+              className="btn-cta"
+              aria-label="Перейти в админку"
+            >
+              <Settings className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Админка</span>
+            </Link>
           ) : (
-            <Button asChild variant="gradient" size="sm" className="gap-1.5">
-              <Link href="/login">
-                <LogIn className="h-4 w-4" />
-                <span className="hidden sm:inline">Войти</span>
-              </Link>
-            </Button>
+            <Link
+              href="/login"
+              className="btn-cta"
+              aria-label="Войти"
+            >
+              <LogIn className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Войти →</span>
+            </Link>
           )}
         </div>
       </div>
     </header>
   );
-}
-
-export function HeaderBookOpenIcon() {
-  return <BookOpen className="h-4 w-4" />;
 }

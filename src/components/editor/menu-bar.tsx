@@ -44,7 +44,11 @@ function MenuButton({ active, onClick, children, title, disabled }: MenuButtonPr
       title={title}
       aria-label={title}
       disabled={disabled}
-      className={cn(active && "bg-secondary text-foreground")}
+      className={cn(
+        "!h-8 !w-8 !rounded-md text-text-dim hover:text-foreground hover:bg-surface-2",
+        active &&
+          "!bg-primary/10 !text-primary !border !border-primary/30"
+      )}
     >
       {children}
     </Button>
@@ -72,7 +76,7 @@ export function MenuBar({ editor }: { editor: Editor | null }) {
   };
 
   return (
-    <div className="sticky top-16 z-10 flex flex-wrap items-center gap-1 rounded-2xl border bg-surface/80 p-1.5 backdrop-blur-xl">
+    <div className="sticky top-[58px] z-10 flex flex-wrap items-center gap-1 rounded-md border border-border bg-surface/95 p-1.5 backdrop-blur-xl shadow-soft">
       <MenuButton
         active={editor.isActive("heading", { level: 1 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}

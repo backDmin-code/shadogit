@@ -4,7 +4,6 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -16,6 +15,9 @@ interface SettingsFormProps {
     logoEmoji: string;
   };
 }
+
+const labelClass =
+  "font-mono text-2xs uppercase tracking-wider text-text-dimmer";
 
 export function SettingsForm({ initial }: SettingsFormProps) {
   const router = useRouter();
@@ -48,17 +50,17 @@ export function SettingsForm({ initial }: SettingsFormProps) {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-4 rounded-2xl border bg-surface/40 p-6 backdrop-blur-sm md:grid-cols-2">
-        <div className="space-y-2">
-          <Label>Название сайта</Label>
+      <div className="grid gap-4 rounded-xl border border-border bg-surface p-6 md:grid-cols-2">
+        <div className="space-y-1.5">
+          <Label className={labelClass}>Название сайта</Label>
           <Input
             value={siteName}
             onChange={(e) => setSiteName(e.target.value)}
             placeholder="Shadogit Docs"
           />
         </div>
-        <div className="space-y-2">
-          <Label>Лого (эмодзи)</Label>
+        <div className="space-y-1.5">
+          <Label className={labelClass}>Лого (эмодзи)</Label>
           <Input
             value={logoEmoji}
             onChange={(e) => setLogoEmoji(e.target.value)}
@@ -66,8 +68,8 @@ export function SettingsForm({ initial }: SettingsFormProps) {
             maxLength={4}
           />
         </div>
-        <div className="space-y-2 md:col-span-2">
-          <Label>Описание</Label>
+        <div className="space-y-1.5 md:col-span-2">
+          <Label className={labelClass}>Описание</Label>
           <Textarea
             value={siteDescription}
             onChange={(e) => setSiteDescription(e.target.value)}
@@ -76,14 +78,19 @@ export function SettingsForm({ initial }: SettingsFormProps) {
           />
         </div>
       </div>
-      <Button onClick={onSave} variant="gradient" disabled={saving}>
+      <button
+        type="button"
+        onClick={onSave}
+        disabled={saving}
+        className="btn-cta"
+      >
         {saving ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
         ) : (
-          <Save className="h-4 w-4" />
+          <Save className="h-3.5 w-3.5" />
         )}
         Сохранить
-      </Button>
+      </button>
     </div>
   );
 }

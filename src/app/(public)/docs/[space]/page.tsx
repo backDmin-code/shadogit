@@ -31,47 +31,56 @@ export default async function SpacePage({ params }: Params) {
   });
   if (!space) notFound();
   return (
-    <div className="space-y-8">
-      <Breadcrumbs
-        items={[
-          { label: "Документация", href: "/docs" },
-          { label: space.title },
-        ]}
-      />
-      <header className="space-y-3">
-        <div className="flex items-center gap-3">
-          {space.icon ? <span className="text-3xl">{space.icon}</span> : null}
-          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
-            {space.title}
-          </h1>
-        </div>
-        {space.description && (
-          <p className="max-w-2xl text-muted-foreground">{space.description}</p>
-        )}
-        <Badge variant="secondary">{space.pages.length} страниц</Badge>
-      </header>
-      <div className="grid gap-4 sm:grid-cols-2">
-        {space.pages.length === 0 ? (
-          <div className="tile col-span-full p-10 text-center text-muted-foreground">
-            В этом разделе пока нет страниц.
-          </div>
-        ) : (
-          space.pages.map((p) => (
-            <PageTile
-              key={p.id}
-              href={`/docs/${space.slug}/${p.slug}`}
-              title={p.title}
-              description={p.description ?? undefined}
-              emoji={p.emoji ?? "📄"}
+    <main className="app-main app-main--no-toc">
+      <section className="page-hero">
+        <div className="hero-orb1" />
+        <div className="relative z-10">
+          <div className="mb-5">
+            <Breadcrumbs
+              items={[
+                { label: "Документация", href: "/docs" },
+                { label: space.title },
+              ]}
             />
-          ))
-        )}
+          </div>
+          <div className="hero-eyebrow flex items-center gap-2">
+            {space.icon ? <span>{space.icon}</span> : null}
+            <span>{space.title}</span>
+          </div>
+          <h1 className="page-title">{space.title}</h1>
+          {space.description && (
+            <p className="page-subtitle">{space.description}</p>
+          )}
+          <div className="mt-6">
+            <Badge variant="default">{space.pages.length} страниц</Badge>
+          </div>
+        </div>
+      </section>
+
+      <div className="px-6 md:px-14 py-10 max-w-5xl">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {space.pages.length === 0 ? (
+            <div className="tile col-span-full p-10 text-center text-text-dim">
+              В этом разделе пока нет страниц.
+            </div>
+          ) : (
+            space.pages.map((p) => (
+              <PageTile
+                key={p.id}
+                href={`/docs/${space.slug}/${p.slug}`}
+                title={p.title}
+                description={p.description ?? undefined}
+                emoji={p.emoji ?? "📄"}
+              />
+            ))
+          )}
+        </div>
+        <div className="mt-8 font-mono text-2xs uppercase tracking-wider text-text-dimmer">
+          <Link className="hover:text-primary transition-colors" href="/docs">
+            ← Все разделы
+          </Link>
+        </div>
       </div>
-      <div className="text-sm text-muted-foreground">
-        <Link className="hover:text-foreground" href="/docs">
-          ← Все разделы
-        </Link>
-      </div>
-    </div>
+    </main>
   );
 }

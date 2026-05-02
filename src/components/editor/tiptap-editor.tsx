@@ -51,7 +51,7 @@ export function TipTapEditor({ initialContent, onChange }: TipTapEditorProps) {
     editorProps: {
       attributes: {
         class:
-          "tiptap-content min-h-[60vh] max-w-none rounded-2xl border bg-surface/40 p-6 backdrop-blur-sm focus:outline-none",
+          "tiptap-content min-h-[60vh] max-w-none rounded-xl border border-border bg-surface p-6 focus:outline-none",
       },
     },
   });

@@ -14,14 +14,15 @@ export default async function PublicLayout({
   const settings = await getSiteSettings();
   return (
     <CommandPaletteProvider>
-      <div className="relative flex min-h-screen flex-col pb-24 md:pb-0">
+      <div className="app-shell relative">
         <SiteHeader
           siteName={settings.siteName ?? "Shadogit Docs"}
-          logoEmoji={settings.logoEmoji ?? "📘"}
+          logoEmoji={settings.logoEmoji ?? "S"}
+          withSidebarBlock
         />
-        <main className="flex-1">{children}</main>
-        <SiteFooter siteName={settings.siteName ?? "Shadogit Docs"} />
+        {children}
         <MobileBottomNav />
+        <SiteFooter siteName={settings.siteName ?? "Shadogit Docs"} />
       </div>
     </CommandPaletteProvider>
   );

@@ -1,11 +1,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Calendar, Edit3 } from "lucide-react";
+import { Calendar, Edit3 } from "lucide-react";
 import { Breadcrumbs } from "@/components/docs/breadcrumbs";
 import { ContentRenderer } from "@/components/docs/content-renderer";
 import { TableOfContents } from "@/components/docs/toc";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { getPageBySlug } from "@/lib/data";
 import { extractToc, formatDate } from "@/lib/utils";
 import { prisma } from "@/lib/prisma";
@@ -40,7 +38,6 @@ export default async function DocsPage({ params }: Params) {
   })();
   const toc = extractToc(json);
 
-  // Prev/next inside the same space (flat order)
   const siblings = await prisma.page.findMany({
     where: { spaceId: page.spaceId, published: true },
     orderBy: [{ order: "asc" }, { createdAt: "asc" }],
@@ -54,87 +51,85 @@ export default async function DocsPage({ params }: Params) {
   const canEdit = isAdmin(session?.user?.role);
 
   return (
-    <div className="grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_220px]">
-      <article className="min-w-0 space-y-6">
-        <Breadcrumbs
-          items={[
-            { label: "Документация", href: "/docs" },
-            { label: page.space.title, href: `/docs/${page.space.slug}` },
-            { label: page.title },
-          ]}
-        />
-        <header className="space-y-4">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Badge variant="default">{page.space.title}</Badge>
-            <span className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5" />
-              {formatDate(page.updatedAt)}
-            </span>
+    <>
+      <article className="app-main min-w-0">
+        <section className="page-hero">
+          <div className="hero-orb1" />
+          <div className="hero-orb2" />
+          <div className="relative z-10">
+            <div className="mb-5">
+              <Breadcrumbs
+                items={[
+                  { label: "Документация", href: "/docs" },
+                  {
+                    label: page.space.title,
+                    href: `/docs/${page.space.slug}`,
+                  },
+                  { label: page.title },
+                ]}
+              />
+            </div>
+            <div className="hero-eyebrow">{page.space.title}</div>
+            <h1 className="page-title">
+              {page.emoji ? (
+                <span className="mr-3 align-middle">{page.emoji}</span>
+              ) : null}
+              {page.title}
+            </h1>
+            {page.description && (
+              <p className="page-subtitle">{page.description}</p>
+            )}
+            <div className="mt-7 flex flex-wrap items-center gap-2">
+              <span className="meta-chip">
+                <Calendar className="h-3 w-3" />
+                <span>{formatDate(page.updatedAt)}</span>
+              </span>
+              {canEdit && (
+                <Link
+                  href={`/admin/pages/${page.id}`}
+                  className="meta-chip hover:!border-primary/50 hover:!text-primary"
+                >
+                  <Edit3 className="h-3 w-3" /> Редактировать
+                </Link>
+              )}
+            </div>
           </div>
-          <h1 className="text-4xl font-bold tracking-tight md:text-5xl">
-            {page.emoji ? (
-              <span className="mr-3 align-middle">{page.emoji}</span>
-            ) : null}
-            {page.title}
-          </h1>
-          {page.description && (
-            <p className="max-w-2xl text-lg text-muted-foreground">
-              {page.description}
-            </p>
-          )}
-          {canEdit && (
-            <Button asChild variant="outline" size="sm" className="gap-2">
-              <Link href={`/admin/pages/${page.id}`}>
-                <Edit3 className="h-4 w-4" /> Редактировать
-              </Link>
-            </Button>
-          )}
-        </header>
+        </section>
 
-        <ContentRenderer json={json} />
+        <div className="content-wrapper px-6 md:px-14 py-10 max-w-[820px]">
+          <ContentRenderer json={json} />
 
-        <nav className="grid grid-cols-1 gap-4 pt-8 sm:grid-cols-2">
-          {prev ? (
-            <Link
-              href={`/docs/${page.space.slug}/${prev.slug}`}
-              className="tile flex items-center justify-between gap-3 p-4 text-left"
-            >
-              <div className="flex items-center gap-3">
-                <ArrowLeft className="h-4 w-4 text-muted-foreground" />
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Предыдущая
-                  </div>
-                  <div className="font-medium">{prev.title}</div>
-                </div>
-              </div>
-            </Link>
-          ) : (
-            <div />
+          {(prev || next) && (
+            <nav className="doc-footer">
+              {prev ? (
+                <Link
+                  href={`/docs/${page.space.slug}/${prev.slug}`}
+                  className="footer-nav-link"
+                >
+                  <span className="direction">← Предыдущая</span>
+                  <span className="page-name">{prev.title}</span>
+                </Link>
+              ) : (
+                <div />
+              )}
+              {next ? (
+                <Link
+                  href={`/docs/${page.space.slug}/${next.slug}`}
+                  className="footer-nav-link next"
+                >
+                  <span className="direction">Следующая →</span>
+                  <span className="page-name">{next.title}</span>
+                </Link>
+              ) : (
+                <div />
+              )}
+            </nav>
           )}
-          {next ? (
-            <Link
-              href={`/docs/${page.space.slug}/${next.slug}`}
-              className="tile flex items-center justify-between gap-3 p-4 text-right"
-            >
-              <div className="flex flex-1 items-center justify-end gap-3">
-                <div>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Следующая
-                  </div>
-                  <div className="font-medium">{next.title}</div>
-                </div>
-                <ArrowRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-            </Link>
-          ) : null}
-        </nav>
-      </article>
-      <aside className="hidden lg:block">
-        <div className="sticky top-20">
-          <TableOfContents items={toc} />
         </div>
+      </article>
+      <aside className="app-toc">
+        <TableOfContents items={toc} />
       </aside>
-    </div>
+    </>
   );
 }

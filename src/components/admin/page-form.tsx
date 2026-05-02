@@ -4,7 +4,6 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
@@ -31,10 +30,15 @@ interface PageFormProps {
   onSaved?: () => void;
 }
 
+const labelClass =
+  "font-mono text-2xs uppercase tracking-wider text-text-dimmer";
+
 export function PageForm({ spaces, initial }: PageFormProps) {
   const router = useRouter();
   const [title, setTitle] = React.useState(initial?.title ?? "");
-  const [description, setDescription] = React.useState(initial?.description ?? "");
+  const [description, setDescription] = React.useState(
+    initial?.description ?? ""
+  );
   const [emoji, setEmoji] = React.useState(initial?.emoji ?? "");
   const [slug, setSlug] = React.useState(initial?.slug ?? "");
   const [spaceId, setSpaceId] = React.useState(
@@ -111,56 +115,62 @@ export function PageForm({ spaces, initial }: PageFormProps) {
   return (
     <div className="space-y-8">
       <header className="flex flex-wrap items-end justify-between gap-3">
-        <div className="space-y-1">
-          <p className="text-sm text-muted-foreground">
-            <Link href="/admin/pages" className="hover:text-foreground">
-              ← Все страницы
-            </Link>
-          </p>
-          <h1 className="text-2xl font-bold tracking-tight">
+        <div className="space-y-2">
+          <Link
+            href="/admin/pages"
+            className="font-mono text-2xs uppercase tracking-wider text-text-dimmer hover:text-primary transition-colors"
+          >
+            ← Все страницы
+          </Link>
+          <h1 className="font-display text-3xl font-semibold tracking-tight">
             {initial ? "Редактирование" : "Новая страница"}
           </h1>
         </div>
         <div className="flex gap-2">
           {initial && (
-            <Button
-              variant="ghost"
+            <button
+              type="button"
               onClick={onDelete}
               disabled={deleting}
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+              className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-2 px-3 py-1.5 text-xs font-medium text-text-dim hover:border-destructive/50 hover:text-destructive transition-colors"
             >
               {deleting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
               ) : (
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="h-3.5 w-3.5" />
               )}
               Удалить
-            </Button>
+            </button>
           )}
-          <Button variant="gradient" onClick={onSave} disabled={saving}>
+          <button
+            type="button"
+            onClick={onSave}
+            disabled={saving}
+            className="btn-cta"
+          >
             {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
             ) : (
-              <Save className="h-4 w-4" />
+              <Save className="h-3.5 w-3.5" />
             )}
             Сохранить
-          </Button>
+          </button>
         </div>
       </header>
 
       <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_280px]">
         <div className="space-y-4">
-          <div className="space-y-2">
-            <Label>Заголовок</Label>
+          <div className="space-y-1.5">
+            <Label className={labelClass}>Заголовок</Label>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Как пользоваться API"
-              className="h-12 text-lg"
+              className="h-11 font-display text-lg"
             />
           </div>
-          <div className="space-y-2">
-            <Label>Краткое описание</Label>
+          <div className="space-y-1.5">
+            <Label className={labelClass}>Краткое описание</Label>
             <Textarea
               value={description ?? ""}
               onChange={(e) => setDescription(e.target.value)}
@@ -168,8 +178,8 @@ export function PageForm({ spaces, initial }: PageFormProps) {
               rows={2}
             />
           </div>
-          <div className="space-y-2">
-            <Label>Контент</Label>
+          <div className="space-y-1.5">
+            <Label className={labelClass}>Контент</Label>
             <TipTapEditor
               initialContent={content}
               onChange={(json) => setContent(json)}
@@ -177,16 +187,16 @@ export function PageForm({ spaces, initial }: PageFormProps) {
           </div>
         </div>
         <aside className="space-y-4">
-          <div className="space-y-2 rounded-2xl border bg-surface/40 p-4 backdrop-blur-sm">
-            <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <div className="space-y-3 rounded-xl border border-border bg-surface p-4">
+            <div className="font-mono text-2xs uppercase tracking-wider text-text-dimmer">
               Параметры
             </div>
-            <div className="space-y-2">
-              <Label>Раздел</Label>
+            <div className="space-y-1.5">
+              <Label className={labelClass}>Раздел</Label>
               <select
                 value={spaceId}
                 onChange={(e) => setSpaceId(e.target.value)}
-                className="flex h-10 w-full rounded-xl border bg-surface/60 px-3 text-sm ring-offset-background backdrop-blur-sm transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex h-9 w-full rounded-md border border-border bg-surface-2 px-3 text-[13px] text-foreground transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:border-primary/60 focus-visible:shadow-glow-sm"
               >
                 {spaces.map((s) => (
                   <option key={s.id} value={s.id}>
@@ -195,16 +205,16 @@ export function PageForm({ spaces, initial }: PageFormProps) {
                 ))}
               </select>
             </div>
-            <div className="space-y-2">
-              <Label>Slug</Label>
+            <div className="space-y-1.5">
+              <Label className={labelClass}>Slug</Label>
               <Input
                 value={slug}
                 onChange={(e) => setSlug(e.target.value)}
                 placeholder="оставь пусто — сгенерируем"
               />
             </div>
-            <div className="space-y-2">
-              <Label>Эмодзи</Label>
+            <div className="space-y-1.5">
+              <Label className={labelClass}>Эмодзи</Label>
               <Input
                 value={emoji ?? ""}
                 onChange={(e) => setEmoji(e.target.value)}
@@ -212,8 +222,8 @@ export function PageForm({ spaces, initial }: PageFormProps) {
                 maxLength={4}
               />
             </div>
-            <label className="flex cursor-pointer items-center justify-between rounded-xl border p-3">
-              <span className="text-sm">Опубликовано</span>
+            <label className="flex cursor-pointer items-center justify-between rounded-md border border-border bg-surface-2 px-3 py-2 text-[13px]">
+              <span>Опубликовано</span>
               <input
                 type="checkbox"
                 checked={published}

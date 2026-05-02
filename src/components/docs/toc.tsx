@@ -28,11 +28,9 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <nav aria-label="На этой странице" className="space-y-2">
-      <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        На этой странице
-      </p>
-      <ul className="space-y-0.5 border-l">
+    <nav aria-label="На этой странице">
+      <p className="toc-title">На этой странице</p>
+      <ul>
         {items.map((item) => {
           const isActive = activeId === item.id;
           return (
@@ -40,12 +38,9 @@ export function TableOfContents({ items }: { items: TocItem[] }) {
               <a
                 href={`#${item.id}`}
                 className={cn(
-                  "-ml-px block border-l py-1 pl-3 text-sm transition-colors",
-                  item.level === 3 && "pl-6 text-[13px]",
-                  item.level >= 4 && "pl-9 text-[13px]",
-                  isActive
-                    ? "border-primary text-foreground"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
+                  "toc-item",
+                  item.level >= 3 && "toc-item--h3",
+                  isActive && "active"
                 )}
               >
                 {item.text}

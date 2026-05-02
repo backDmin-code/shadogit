@@ -4,29 +4,30 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-xs font-semibold ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 active:scale-[0.98]",
   {
     variants: {
       variant: {
         default:
-          "bg-primary text-primary-foreground hover:bg-primary/90 shadow-glow",
+          "bg-primary text-primary-foreground hover:opacity-85 hover:-translate-y-px shadow-glow",
         gradient:
-          "text-primary-foreground bg-[linear-gradient(135deg,#7c5cff_0%,#22d3ee_100%)] hover:shadow-glow-lg",
+          "text-primary-foreground bg-[linear-gradient(135deg,#c8f135_0%,#f76aaa_100%)] hover:shadow-glow-lg",
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 border",
+          "bg-surface-2 text-foreground border border-border hover:border-primary/40 hover:text-primary",
         outline:
-          "border bg-surface/40 backdrop-blur-sm hover:bg-surface/80 hover:border-primary/40",
-        ghost: "hover:bg-secondary/60 hover:text-foreground",
+          "border border-border bg-surface-2 hover:border-primary/40 hover:text-primary",
+        ghost:
+          "text-text-dim hover:bg-surface-2 hover:text-foreground",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        link: "text-primary underline-offset-4 hover:underline",
+          "bg-destructive text-destructive-foreground hover:opacity-90",
+        link: "text-primary underline-offset-4 hover:underline border-b border-primary/40 rounded-none px-0",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-lg px-3 text-xs",
-        lg: "h-12 rounded-2xl px-8 text-base",
-        icon: "h-10 w-10",
-        "icon-sm": "h-8 w-8 rounded-lg",
+        default: "h-8 px-4 py-1.5",
+        sm: "h-7 rounded-md px-3 text-[11px]",
+        lg: "h-10 rounded-lg px-6 text-sm",
+        icon: "h-9 w-9",
+        "icon-sm": "h-7 w-7 rounded-md",
       },
     },
     defaultVariants: {
