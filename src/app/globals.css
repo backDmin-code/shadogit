@@ -1,0 +1,300 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light theme — clean, soft, with the same brand accents. */
+    --background: 240 25% 98%;
+    --foreground: 240 18% 8%;
+
+    --surface: 240 30% 100%;
+    --surface-foreground: 240 18% 10%;
+
+    --card: 240 30% 100%;
+    --card-foreground: 240 18% 10%;
+
+    --popover: 240 30% 100%;
+    --popover-foreground: 240 18% 10%;
+
+    --primary: 252 100% 68%; /* brand violet */
+    --primary-foreground: 240 30% 100%;
+
+    --secondary: 240 20% 95%;
+    --secondary-foreground: 240 18% 12%;
+
+    --muted: 240 18% 94%;
+    --muted-foreground: 240 8% 42%;
+
+    --accent: 188 86% 53%; /* cyan */
+    --accent-foreground: 240 18% 10%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 16% 90%;
+    --input: 240 16% 90%;
+    --ring: 252 100% 68%;
+
+    --radius: 0.875rem;
+  }
+
+  .dark {
+    /* Dark theme — deep purple-black, neon accents. cloud.ru-ish. */
+    --background: 240 25% 5%;
+    --foreground: 240 30% 96%;
+
+    --surface: 240 22% 9%;
+    --surface-foreground: 240 30% 96%;
+
+    --card: 240 22% 9%;
+    --card-foreground: 240 30% 96%;
+
+    --popover: 240 25% 7%;
+    --popover-foreground: 240 30% 96%;
+
+    --primary: 252 100% 72%;
+    --primary-foreground: 240 25% 5%;
+
+    --secondary: 240 18% 14%;
+    --secondary-foreground: 240 30% 96%;
+
+    --muted: 240 14% 14%;
+    --muted-foreground: 240 10% 65%;
+
+    --accent: 188 86% 60%;
+    --accent-foreground: 240 25% 5%;
+
+    --destructive: 0 75% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 240 14% 18%;
+    --input: 240 14% 18%;
+    --ring: 252 100% 72%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground;
+    background-image: radial-gradient(
+        ellipse 60% 40% at 50% 0%,
+        hsl(var(--primary) / 0.08),
+        transparent 60%
+      ),
+      radial-gradient(
+        ellipse 40% 30% at 100% 100%,
+        hsl(var(--accent) / 0.06),
+        transparent 60%
+      );
+    background-attachment: fixed;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+  }
+  ::selection {
+    background: hsl(var(--primary) / 0.3);
+  }
+
+  /* Custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--border));
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.4);
+    background-clip: padding-box;
+    border: 2px solid transparent;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-surface/70 backdrop-blur-xl backdrop-saturate-150;
+  }
+
+  .tile {
+    @apply relative rounded-2xl border bg-surface/60 backdrop-blur-sm transition-all duration-300;
+    @apply hover:border-primary/40 hover:bg-surface/80;
+  }
+  .tile-glow {
+    @apply tile;
+  }
+  .tile-glow::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .tile-glow:hover::before {
+    opacity: 1;
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #7c5cff 0%, #22d3ee 100%);
+  }
+
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(
+      ellipse 70% 60% at 50% 30%,
+      black,
+      transparent 75%
+    );
+  }
+}
+
+/* TipTap content (public + editor) */
+.tiptap-content {
+  @apply text-foreground;
+}
+.tiptap-content > * + * {
+  @apply mt-4;
+}
+.tiptap-content h1 {
+  @apply mt-10 scroll-m-20 text-3xl font-bold tracking-tight md:text-4xl;
+}
+.tiptap-content h2 {
+  @apply mt-10 scroll-m-20 text-2xl font-semibold tracking-tight md:text-3xl;
+}
+.tiptap-content h3 {
+  @apply mt-8 scroll-m-20 text-xl font-semibold tracking-tight md:text-2xl;
+}
+.tiptap-content h4 {
+  @apply mt-6 scroll-m-20 text-lg font-semibold tracking-tight;
+}
+.tiptap-content p {
+  @apply leading-7 text-foreground/90;
+}
+.tiptap-content a {
+  @apply text-primary underline-offset-4 hover:underline;
+}
+.tiptap-content ul {
+  @apply ml-6 list-disc [&>li]:mt-2;
+}
+.tiptap-content ol {
+  @apply ml-6 list-decimal [&>li]:mt-2;
+}
+.tiptap-content blockquote {
+  @apply mt-4 border-l-2 border-primary pl-6 italic text-muted-foreground;
+}
+.tiptap-content code {
+  @apply rounded bg-muted px-[0.4em] py-[0.2em] font-mono text-[0.9em];
+}
+.tiptap-content pre {
+  @apply mt-4 overflow-x-auto rounded-2xl border bg-surface/80 p-4 font-mono text-sm;
+}
+.tiptap-content pre code {
+  @apply bg-transparent p-0 text-[0.95em];
+}
+.tiptap-content hr {
+  @apply my-8 border-border;
+}
+.tiptap-content img {
+  @apply rounded-2xl border;
+}
+.tiptap-content table {
+  @apply my-4 w-full border-collapse text-sm;
+}
+.tiptap-content th,
+.tiptap-content td {
+  @apply border px-3 py-2 text-left;
+}
+.tiptap-content th {
+  @apply bg-muted font-semibold;
+}
+.tiptap-content mark {
+  @apply rounded bg-yellow-300/40 px-1 dark:bg-yellow-300/20;
+}
+.tiptap-content ul[data-type="taskList"] {
+  @apply list-none pl-0;
+}
+.tiptap-content ul[data-type="taskList"] li {
+  @apply flex items-start gap-2;
+}
+.tiptap-content ul[data-type="taskList"] li > label {
+  @apply mt-1 select-none;
+}
+
+/* Highlight.js theme inside code blocks (lowlight) */
+.tiptap-content pre .hljs-keyword,
+.tiptap-content pre .hljs-selector-tag,
+.tiptap-content pre .hljs-subst {
+  color: #c084fc;
+}
+.tiptap-content pre .hljs-string,
+.tiptap-content pre .hljs-doctag {
+  color: #34d399;
+}
+.tiptap-content pre .hljs-title,
+.tiptap-content pre .hljs-section,
+.tiptap-content pre .hljs-selector-id {
+  color: #22d3ee;
+}
+.tiptap-content pre .hljs-comment {
+  color: hsl(var(--muted-foreground));
+  font-style: italic;
+}
+.tiptap-content pre .hljs-number,
+.tiptap-content pre .hljs-literal {
+  color: #f472b6;
+}
+.tiptap-content pre .hljs-attr,
+.tiptap-content pre .hljs-name {
+  color: #fbbf24;
+}
+.tiptap-content pre .hljs-built_in,
+.tiptap-content pre .hljs-builtin-name {
+  color: #f59e0b;
+}
+
+/* TipTap editor placeholder */
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: hsl(var(--muted-foreground));
+  pointer-events: none;
+  height: 0;
+}
+.ProseMirror:focus {
+  outline: none;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

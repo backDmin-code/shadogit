@@ -1,0 +1,84 @@
+// Prisma schema for Shadogit — a documentation platform.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String
+  role          String    @default("admin") // admin | editor | viewer
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  pages         Page[]    @relation("PageAuthor")
+  revisions     Revision[]
+}
+
+model Space {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  title       String
+  description String?
+  icon        String?  // lucide icon name
+  color       String?  // accent color (hex or token)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  pages       Page[]
+}
+
+model Page {
+  id          String   @id @default(cuid())
+  slug        String   // unique within a space
+  title       String
+  description String?
+  icon        String?
+  emoji       String?
+  contentJson String   // TipTap JSON
+  contentText String   // plain text for search
+  published   Boolean  @default(true)
+  order       Int      @default(0)
+  spaceId     String
+  space       Space    @relation(fields: [spaceId], references: [id], onDelete: Cascade)
+  parentId    String?
+  parent      Page?    @relation("PageTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children    Page[]   @relation("PageTree")
+  authorId    String?
+  author      User?    @relation("PageAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  revisions   Revision[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([spaceId, slug])
+  @@index([parentId])
+}
+
+model Revision {
+  id          String   @id @default(cuid())
+  pageId      String
+  page        Page     @relation(fields: [pageId], references: [id], onDelete: Cascade)
+  authorId    String?
+  author      User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  title       String
+  contentJson String
+  createdAt   DateTime @default(now())
+
+  @@index([pageId])
+}
+
+model SiteSettings {
+  id              String   @id @default("singleton")
+  siteName        String   @default("Shadogit Docs")
+  siteDescription String?  @default("Documentation built with care.")
+  logoEmoji       String?  @default("📘")
+  primaryColor    String?  @default("#7c5cff")
+  accentColor     String?  @default("#22d3ee")
+  updatedAt       DateTime @updatedAt
+}
