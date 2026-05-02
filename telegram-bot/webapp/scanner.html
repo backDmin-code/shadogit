@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FLove — Терминал кассира</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FAF8F4;
+    --espresso: #2C1A0E;
+    --coffee: #5C3D2E;
+    --caramel: #C4955A;
+    --sage: #627c41;
+    --sage-l: #8aaa5a;
+    --bronze: #CD7F32;
+    --text-muted: rgba(245,240,232,0.4);
+    --border-dark: rgba(255,255,255,0.07);
+    --surface-dark: rgba(255,255,255,0.05);
+  }
+
+  *, *:focus, *:focus-visible { margin:0; padding:0; box-sizing:border-box; outline:none; -webkit-tap-highlight-color:transparent; }
+  button, input { -webkit-tap-highlight-color:transparent; user-select:none; }
+  ::-webkit-scrollbar { width:3px; } ::-webkit-scrollbar-track { background:transparent; } ::-webkit-scrollbar-thumb { background:rgba(245,240,232,0.1); border-radius:10px; }
+
+  body {
+    background: #0A0704;
+    color: var(--cream);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: rgba(20,10,4,0.95);
+    backdrop-filter: blur(16px);
+    padding: 14px 20px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border-dark);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:600; letter-spacing:0.08em; color:var(--cream); }
+  .logo span { color:var(--sage-l); font-style:italic; }
+  .logo-sub { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.22em; text-transform:uppercase; color:rgba(245,240,232,0.28); margin-top:2px; }
+  .header-right { display:flex; align-items:center; gap:8px; }
+  .header-badge {
+    background: rgba(98,124,65,0.15); border:1px solid rgba(98,124,65,0.25);
+    border-radius: 20px; padding: 5px 12px;
+    font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.16em;
+    text-transform:uppercase; color:var(--sage-l);
+  }
+
+  /* ── SCANNER AREA ── */
+  .scanner-section {
+    padding: 14px 14px 0;
+  }
+  .scanner-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 20px;
+    overflow: hidden;
+    background: #050302;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+  #cameraVideo { width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* scanner frame overlay */
+  .scanner-ui {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  /* dark vignette around edges */
+  .scanner-ui::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 70% 70% at 50% 50%, transparent 40%, rgba(5,3,2,0.55) 100%);
+  }
+  .scan-frame {
+    position: relative;
+    width: calc(100% - 60px);
+    max-width: 320px;
+    aspect-ratio: 1/1;
+  }
+  /* corner brackets */
+  .sc { position:absolute; width:32px; height:32px; }
+  .sc.tl { top:0; left:0; border-top:2.5px solid var(--sage-l); border-left:2.5px solid var(--sage-l); border-radius:6px 0 0 0; }
+  .sc.tr { top:0; right:0; border-top:2.5px solid var(--sage-l); border-right:2.5px solid var(--sage-l); border-radius:0 6px 0 0; }
+  .sc.bl { bottom:0; left:0; border-bottom:2.5px solid var(--sage-l); border-left:2.5px solid var(--sage-l); border-radius:0 0 0 6px; }
+  .sc.br { bottom:0; right:0; border-bottom:2.5px solid var(--sage-l); border-right:2.5px solid var(--sage-l); border-radius:0 0 6px 0; }
+  /* subtle inner cross-hair */
+  .scan-cross {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  }
+  .scan-cross::before { content:''; position:absolute; left:50%; top:30%; bottom:30%; width:1px; background:rgba(138,170,90,0.12); }
+  .scan-cross::after { content:''; position:absolute; top:50%; left:30%; right:30%; height:1px; background:rgba(138,170,90,0.12); }
+
+  /* scan hint at bottom of frame area */
+  .scan-hint {
+    position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.16em;
+    text-transform: uppercase; color:rgba(245,240,232,0.45);
+    white-space: nowrap;
+    background: rgba(5,3,2,0.6); backdrop-filter:blur(8px);
+    padding: 6px 16px; border-radius: 30px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  /* ── CLIENT OVERLAY (replaces scanner view) ── */
+  .client-overlay {
+    position: absolute; inset: 0; z-index: 10;
+    background: linear-gradient(160deg, rgba(30,14,5,0.97) 0%, rgba(10,5,2,0.99) 100%);
+    display: flex; flex-direction: column; align-items: stretch; justify-content: space-between;
+    padding: 20px;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  .client-overlay.visible { opacity:1; pointer-events:all; }
+
+  /* top: identity */
+  .co-identity { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
+  .co-avatar {
+    width:56px; height:56px; border-radius:18px; flex-shrink:0;
+    background: linear-gradient(135deg, var(--sage), #4a6030);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cormorant Garamond',serif; font-size:26px; color:var(--cream);
+    border: 1px solid rgba(138,170,90,0.3);
+  }
+  .co-name-block {}
+  .co-name { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:400; color:var(--cream); letter-spacing:0.02em; line-height:1.1; }
+  .co-phone { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.12em; color:var(--text-muted); margin-top:4px; }
+
+  /* stats grid */
+  .co-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+  .co-stat {
+    background: rgba(255,255,255,0.05); border:1px solid var(--border-dark);
+    border-radius:14px; padding:12px 8px; text-align:center;
+  }
+  .co-stat-val { font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--caramel); line-height:1; }
+  .co-stat-lbl { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-top:4px; }
+
+  /* extra details row */
+  .co-details { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:12px; }
+  .co-detail {
+    background: rgba(255,255,255,0.03); border:1px solid var(--border-dark);
+    border-radius:12px; padding:10px 12px;
+  }
+  .co-detail-lbl { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.16em; text-transform:uppercase; color:rgba(245,240,232,0.25); margin-bottom:3px; }
+  .co-detail-val { font-size:12px; font-weight:400; color:rgba(245,240,232,0.75); }
+  .co-detail-val.green { color:var(--sage-l); font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.06em; }
+
+  /* level + close */
+  .co-footer { display:flex; align-items:center; justify-content:space-between; }
+  .co-level-badge {
+    background:linear-gradient(135deg,var(--bronze),#E8A84C);
+    border-radius:20px; padding:5px 14px;
+    font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.15em;
+    color:var(--espresso); text-transform:uppercase;
+  }
+  .co-close {
+    background:transparent; border:1px solid rgba(255,255,255,0.1);
+    border-radius:20px; padding:7px 20px;
+    font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em;
+    text-transform:uppercase; color:rgba(245,240,232,0.4);
+    cursor:pointer; transition:border-color 0.2s,color 0.2s;
+  }
+  .co-close:hover { border-color:rgba(255,255,255,0.2); color:rgba(245,240,232,0.65); }
+
+  /* ── CONTROLS ── */
+  .controls { padding: 16px 14px 36px; display:flex; flex-direction:column; gap:12px; }
+
+  /* camera button */
+  .cam-btn {
+    background: var(--surface-dark); border:1px solid var(--border-dark);
+    border-radius:16px; padding:14px 18px;
+    font-family:'Jost',sans-serif; font-size:13px; font-weight:400; letter-spacing:0.03em;
+    color:rgba(245,240,232,0.65); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    transition:background 0.2s,border-color 0.2s;
+  }
+  .cam-btn:hover { background:rgba(98,124,65,0.08); border-color:rgba(98,124,65,0.25); }
+  .cam-btn.active { background:rgba(98,124,65,0.12); border-color:rgba(98,124,65,0.35); color:var(--sage-l); }
+
+  /* phone search */
+  .search-row { display:flex; gap:10px; }
+  .phone-input {
+    flex:1; background:var(--surface-dark); border:1px solid var(--border-dark);
+    border-radius:14px; padding:14px 16px;
+    font-family:'DM Mono',monospace; font-size:13px; letter-spacing:0.1em;
+    color:var(--cream); transition:border-color 0.2s,background 0.2s;
+  }
+  .phone-input::placeholder { color:rgba(245,240,232,0.2); letter-spacing:0.06em; }
+  .phone-input:focus { border-color:rgba(98,124,65,0.4); background:rgba(98,124,65,0.06); }
+  .find-btn {
+    background:var(--sage); border:none; border-radius:14px; padding:14px 22px;
+    font-family:'Jost',sans-serif; font-size:12px; font-weight:500; letter-spacing:0.06em;
+    color:var(--warm-white); cursor:pointer; white-space:nowrap;
+    transition:opacity 0.2s,transform 0.1s; box-shadow:0 4px 16px rgba(98,124,65,0.3);
+  }
+  .find-btn:active { transform:scale(0.97); opacity:0.9; }
+
+  /* divider */
+  .divider { display:flex; align-items:center; gap:10px; }
+  .divider span { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.25); white-space:nowrap; }
+  .divider::before,.divider::after { content:''; flex:1; height:1px; background:rgba(255,255,255,0.06); }
+
+  /* ── TRANSACTION CARD ── */
+  .txn-panel {
+    background: linear-gradient(160deg, rgba(44,26,14,0.6) 0%, rgba(20,10,4,0.8) 100%);
+    border: 1px solid rgba(98,124,65,0.18);
+    border-radius: 22px; padding:20px;
+    display:none; flex-direction:column; gap:16px;
+  }
+  .txn-panel.visible { display:flex; animation:fadeUp 0.4s ease; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+  /* client mini banner inside txn */
+  .txn-client-banner {
+    display:flex; align-items:center; gap:12px;
+    background:rgba(255,255,255,0.04); border:1px solid var(--border-dark);
+    border-radius:14px; padding:12px 14px;
+  }
+  .txn-avatar {
+    width:40px; height:40px; border-radius:12px; flex-shrink:0;
+    background:linear-gradient(135deg,var(--sage),#4a6030);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--cream);
+  }
+  .txn-client-info { flex:1; }
+  .txn-client-name { font-family:'Cormorant Garamond',serif; font-size:17px; color:var(--cream); }
+  .txn-client-meta { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text-muted); margin-top:2px; }
+  .txn-client-bonus { text-align:right; }
+  .txn-client-bonus-val { font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--caramel); }
+  .txn-client-bonus-lbl { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-muted); margin-top:1px; }
+
+  /* amount input */
+  .txn-field-lbl { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.3); margin-bottom:8px; }
+  .amount-input {
+    width:100%; background:rgba(255,255,255,0.05); border:1px solid var(--border-dark);
+    border-radius:16px; padding:16px; font-family:'Cormorant Garamond',serif; font-size:32px;
+    color:var(--cream); text-align:center; letter-spacing:0.04em;
+    transition:border-color 0.2s,background 0.2s;
+  }
+  .amount-input::placeholder { color:rgba(245,240,232,0.15); font-size:18px; font-family:'DM Mono',monospace; letter-spacing:0.1em; }
+  .amount-input:focus { border-color:rgba(98,124,65,0.4); background:rgba(98,124,65,0.06); }
+
+  /* cashback preview */
+  .cashback-preview {
+    display:none;
+    background:rgba(98,124,65,0.08); border:1px solid rgba(98,124,65,0.2);
+    border-radius:14px; padding:14px 16px;
+    align-items:center; justify-content:space-between;
+    animation:fadeUp 0.25s ease;
+  }
+  .cashback-preview.show { display:flex; }
+  .cp-left {}
+  .cp-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.35); }
+  .cp-formula { font-family:'DM Mono',monospace; font-size:9px; color:rgba(245,240,232,0.28); margin-top:3px; letter-spacing:0.06em; }
+  .cp-val { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--sage-l); line-height:1; }
+
+  /* action buttons */
+  .action-btns { display:grid; grid-template-columns:2fr 1fr; gap:10px; }
+  .btn-accrue {
+    background:linear-gradient(135deg,var(--sage),var(--sage-l)); border:none; border-radius:16px;
+    padding:16px; font-family:'Jost',sans-serif; font-size:13px; font-weight:500;
+    letter-spacing:0.05em; color:var(--warm-white); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:opacity 0.15s,transform 0.12s;
+    box-shadow:0 4px 20px rgba(98,124,65,0.35);
+  }
+  .btn-accrue:active { transform:scale(0.97); }
+  .btn-redeem {
+    background:rgba(196,149,90,0.08); border:1px solid rgba(196,149,90,0.2); border-radius:16px;
+    padding:16px; font-family:'Jost',sans-serif; font-size:13px; font-weight:400;
+    letter-spacing:0.05em; color:rgba(196,149,90,0.8); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    transition:background 0.15s,transform 0.12s;
+  }
+  .btn-redeem:active { transform:scale(0.97); }
+
+  /* ── REDEEM PANEL ── */
+  .redeem-panel {
+    background:rgba(196,149,90,0.06); border:1px solid rgba(196,149,90,0.14);
+    border-radius:16px; padding:16px;
+    display:none; flex-direction:column; gap:12px;
+  }
+  .redeem-panel.visible { display:flex; animation:fadeUp 0.3s ease; }
+  .redeem-title { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.3); }
+  .redeem-opts { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .redeem-opt {
+    background:rgba(255,255,255,0.04); border:1px solid rgba(196,149,90,0.12); border-radius:14px;
+    padding:12px 8px; text-align:center; cursor:pointer;
+    transition:background 0.15s,border-color 0.15s;
+  }
+  .redeem-opt:hover { background:rgba(196,149,90,0.1); border-color:rgba(196,149,90,0.3); }
+  .redeem-opt.selected { background:rgba(196,149,90,0.14); border-color:rgba(196,149,90,0.4); }
+  .redeem-opt-val { font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--caramel); }
+  .redeem-opt-lbl { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-muted); margin-top:3px; }
+  .redeem-custom { display:flex; gap:8px; }
+  .redeem-input {
+    flex:1; background:rgba(255,255,255,0.05); border:1px solid rgba(196,149,90,0.14);
+    border-radius:12px; padding:12px 14px; font-family:'Cormorant Garamond',serif; font-size:20px;
+    color:var(--cream); text-align:center;
+  }
+  .redeem-input:focus { border-color:rgba(196,149,90,0.4); background:rgba(196,149,90,0.06); }
+  .redeem-input::placeholder { font-size:12px; font-family:'DM Mono',monospace; color:rgba(245,240,232,0.2); }
+  .btn-redeem-confirm {
+    background:linear-gradient(135deg,var(--caramel),#E8A84C); border:none; border-radius:12px;
+    padding:12px 18px; font-family:'Jost',sans-serif; font-size:12px; font-weight:500;
+    color:var(--espresso); cursor:pointer; white-space:nowrap; transition:opacity 0.15s;
+  }
+  .btn-redeem-confirm:active { opacity:0.85; }
+
+  /* ── TOAST ── */
+  .toast {
+    position:fixed; bottom:28px; left:50%; transform:translateX(-50%) translateY(16px);
+    background:linear-gradient(135deg,rgba(44,26,14,0.97),rgba(30,14,5,0.97));
+    border:1px solid rgba(98,124,65,0.35); border-radius:20px;
+    padding:13px 22px; font-family:'Jost',sans-serif; font-size:13px; letter-spacing:0.03em;
+    color:var(--cream); z-index:999; opacity:0; pointer-events:none;
+    transition:opacity 0.3s,transform 0.3s; white-space:nowrap;
+    box-shadow:0 8px 32px rgba(0,0,0,0.6);
+  }
+  .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ── CONFETTI ── */
+  .confetti-container { position:fixed; inset:0; pointer-events:none; z-index:600; overflow:hidden; }
+  .conf { position:absolute; top:-20px; animation:confettiFall linear forwards; }
+  @keyframes confettiFall {
+    0%{transform:translateY(0) rotate(0deg);opacity:1}
+    80%{opacity:1}
+    100%{transform:translateY(110vh) rotate(720deg);opacity:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="confetti-container" id="confettiContainer"></div>
+<div class="toast" id="toast"></div>
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="logo">FL<span>ove</span></div>
+    <div class="logo-sub">Терминал кассира</div>
+  </div>
+  <div class="header-right">
+    <div class="header-badge">Кассир</div>
+  </div>
+</div>
+
+<!-- SCANNER SECTION -->
+<div class="scanner-section">
+  <div class="scanner-wrap" id="scannerWrap">
+    <video id="cameraVideo" autoplay playsinline muted></video>
+
+    <!-- scan frame ui -->
+    <div class="scanner-ui">
+      <div class="scan-frame">
+        <div class="sc tl"></div>
+        <div class="sc tr"></div>
+        <div class="sc bl"></div>
+        <div class="sc br"></div>
+        <div class="scan-cross"></div>
+      </div>
+    </div>
+
+    <!-- client overlay (fills entire scanner) -->
+    <div class="client-overlay" id="clientOverlay">
+      <div>
+        <div class="co-identity">
+          <div class="co-avatar" id="ccAvatar">А</div>
+          <div class="co-name-block">
+            <div class="co-name" id="ccName">Александра М.</div>
+            <div class="co-phone" id="ccPhone">+375 29 ••• •• 42</div>
+          </div>
+        </div>
+
+        <div class="co-stats">
+          <div class="co-stat">
+            <div class="co-stat-val" id="ccBonus">3 р.</div>
+            <div class="co-stat-lbl">Бонусы</div>
+          </div>
+          <div class="co-stat">
+            <div class="co-stat-val" id="ccCashback">2%</div>
+            <div class="co-stat-lbl">Кэшбэк</div>
+          </div>
+          <div class="co-stat">
+            <div class="co-stat-val" id="ccPurchases">0 р.</div>
+            <div class="co-stat-lbl">Покупок</div>
+          </div>
+        </div>
+
+        <div class="co-details">
+          <div class="co-detail">
+            <div class="co-detail-lbl">ID клиента</div>
+            <div class="co-detail-val green" id="ccId">FL-00841</div>
+          </div>
+          <div class="co-detail">
+            <div class="co-detail-lbl">Дата рождения</div>
+            <div class="co-detail-val" id="ccBirthday">14.03.1994</div>
+          </div>
+          <div class="co-detail">
+            <div class="co-detail-lbl">Регистрация</div>
+            <div class="co-detail-val" id="ccRegDate">02.05.2026</div>
+          </div>
+          <div class="co-detail">
+            <div class="co-detail-lbl">Статус</div>
+            <div class="co-detail-val green">Активный</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="co-footer">
+        <div class="co-level-badge" id="ccLevel">◆ Бронза</div>
+        <button class="co-close" onclick="closeClientOverlay()">Закрыть ↓</button>
+      </div>
+    </div>
+
+    <div class="scan-hint" id="scanHint">Наведите камеру на QR-код</div>
+  </div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+
+  <div class="divider"><span>Поиск клиента</span></div>
+
+  <button class="cam-btn" id="camToggleBtn" onclick="toggleCamera()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+      <path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+    Включить камеру
+  </button>
+
+  <div class="search-row">
+    <input class="phone-input" id="phoneInput" placeholder="+375 29 000 00 00" type="tel"/>
+    <button class="find-btn" onclick="findByPhone()">Найти</button>
+  </div>
+
+  <!-- Transaction panel -->
+  <div class="txn-panel" id="txnPanel">
+
+    <div class="txn-client-banner">
+      <div class="txn-avatar" id="txnAvatar">А</div>
+      <div class="txn-client-info">
+        <div class="txn-client-name" id="txnName">Александра М.</div>
+        <div class="txn-client-meta" id="txnMeta">◆ Бронза · 2% кэшбэк</div>
+      </div>
+      <div class="txn-client-bonus">
+        <div class="txn-client-bonus-val" id="txnBonus">3 р.</div>
+        <div class="txn-client-bonus-lbl">Бонусов</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="txn-field-lbl">Сумма покупки, р.</div>
+      <input class="amount-input" id="purchaseAmount" placeholder="0.00" type="number" min="0" step="0.01" oninput="calcCashback()"/>
+    </div>
+
+    <div class="cashback-preview" id="cashbackPreview">
+      <div class="cp-left">
+        <div class="cp-label">Будет начислено</div>
+        <div class="cp-formula" id="cpFormula"></div>
+      </div>
+      <div class="cp-val" id="cpVal">0 р.</div>
+    </div>
+
+    <div class="action-btns">
+      <button class="btn-accrue" onclick="accrueBonuses()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+        Начислить кэшбэк
+      </button>
+      <button class="btn-redeem" onclick="toggleRedeemPanel()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 19V5M5 12l7 7 7-7"/></svg>
+        Списать
+      </button>
+    </div>
+
+    <div class="redeem-panel" id="redeemPanel">
+      <div class="redeem-title">Выберите сумму списания</div>
+      <div class="redeem-opts">
+        <div class="redeem-opt" onclick="selectRedeemOpt('quarter', this)">
+          <div class="redeem-opt-val" id="redeemQ">—</div>
+          <div class="redeem-opt-lbl">25%</div>
+        </div>
+        <div class="redeem-opt" onclick="selectRedeemOpt('half', this)">
+          <div class="redeem-opt-val" id="redeemH">—</div>
+          <div class="redeem-opt-lbl">50%</div>
+        </div>
+        <div class="redeem-opt" onclick="selectRedeemOpt('all', this)">
+          <div class="redeem-opt-val" id="redeemA">—</div>
+          <div class="redeem-opt-lbl">Всё</div>
+        </div>
+      </div>
+      <div class="redeem-custom">
+        <input class="redeem-input" id="redeemCustom" placeholder="Своя сумма" type="number" min="0" step="0.01" oninput="selectRedeemOpt('custom', null)"/>
+        <button class="btn-redeem-confirm" onclick="redeemBonuses()">Списать</button>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+const CLIENT_DB = {
+  '+375292299001': { name:'Администратор', phone:'+375 29 229 90 01', bonuses:150, cashback:5, purchases:3200, level:'Серебро', id:'FL-00001', birthday:'01.01.1985', regdate:'01.04.2026' },
+  '+375291234567': { name:'Александра М.', phone:'+375 29 ••• •• 42', bonuses:3,   cashback:2, purchases:80,   level:'Бронза',  id:'FL-00841', birthday:'14.03.1994', regdate:'02.05.2026' },
+  '+375447654321': { name:'Дмитрий К.',    phone:'+375 44 ••• •• 17', bonuses:84,  cashback:5, purchases:1800, level:'Серебро', id:'FL-00312', birthday:'22.07.1990', regdate:'12.01.2026' },
+  '+375331234567': { name:'Виктория Н.',   phone:'+375 33 ••• •• 08', bonuses:312, cashback:10,purchases:6200, level:'Золото',  id:'FL-00054', birthday:'05.11.1988', regdate:'14.11.2025' },
+};
+
+let currentClient = null;
+let redeemAmount = 0;
+let cameraActive = false;
+let cameraStream = null;
+
+function levelIcon(l) {
+  if (l==='Золото') return '✦';
+  if (l==='Серебро') return '◈';
+  return '◆';
+}
+
+async function toggleCamera() {
+  const btn = document.getElementById('camToggleBtn');
+  if (!cameraActive) {
+    try {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video:{facingMode:'environment'}, audio:false });
+      document.getElementById('cameraVideo').srcObject = cameraStream;
+      cameraActive = true;
+      btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Отключить камеру`;
+      btn.classList.add('active');
+      showToast('Камера включена — наведите на QR-код');
+      setTimeout(demoScan, 3000);
+    } catch(e) {
+      showToast('Нет доступа к камере — используйте поиск');
+    }
+  } else {
+    if (cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+    document.getElementById('cameraVideo').srcObject = null;
+    cameraActive = false;
+    btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg> Включить камеру`;
+    btn.classList.remove('active');
+    closeClientOverlay();
+  }
+}
+
+function demoScan() {
+  if (!cameraActive) return;
+  loadClient('+375291234567');
+  showClientOverlay();
+}
+
+function findByPhone() {
+  const raw = document.getElementById('phoneInput').value.replace(/\s/g,'').replace(/-/g,'');
+  const key = raw.startsWith('+') ? raw : '+' + raw;
+  if (CLIENT_DB[key]) {
+    loadClient(key);
+    showClientOverlay();
+  } else {
+    showToast('Клиент не найден — проверьте номер');
+  }
+}
+
+function loadClient(key) {
+  const c = CLIENT_DB[key];
+  currentClient = { ...c, key };
+
+  // overlay
+  document.getElementById('ccAvatar').textContent = c.name[0];
+  document.getElementById('ccName').textContent = c.name;
+  document.getElementById('ccPhone').textContent = c.phone;
+  document.getElementById('ccBonus').textContent = c.bonuses + ' р.';
+  document.getElementById('ccCashback').textContent = c.cashback + '%';
+  document.getElementById('ccPurchases').textContent = c.purchases + ' р.';
+  document.getElementById('ccLevel').textContent = levelIcon(c.level) + ' ' + c.level;
+  document.getElementById('ccId').textContent = c.id;
+  document.getElementById('ccBirthday').textContent = c.birthday;
+  document.getElementById('ccRegDate').textContent = c.regdate;
+
+  // txn banner
+  document.getElementById('txnAvatar').textContent = c.name[0];
+  document.getElementById('txnName').textContent = c.name;
+  document.getElementById('txnMeta').textContent = levelIcon(c.level) + ' ' + c.level + ' · ' + c.cashback + '% кэшбэк';
+  document.getElementById('txnBonus').textContent = c.bonuses + ' р.';
+
+  updateRedeemOpts();
+  document.getElementById('txnPanel').classList.add('visible');
+  document.getElementById('redeemPanel').classList.remove('visible');
+  document.getElementById('purchaseAmount').value = '';
+  document.getElementById('cashbackPreview').classList.remove('show');
+}
+
+function showClientOverlay() {
+  document.getElementById('clientOverlay').classList.add('visible');
+  document.getElementById('scanHint').style.display = 'none';
+}
+function closeClientOverlay() {
+  document.getElementById('clientOverlay').classList.remove('visible');
+  document.getElementById('scanHint').style.display = 'block';
+}
+
+function calcCashback() {
+  if (!currentClient) return;
+  const amt = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+  const earned = (amt * currentClient.cashback / 100).toFixed(2);
+  const prev = document.getElementById('cashbackPreview');
+  if (amt > 0) {
+    prev.classList.add('show');
+    document.getElementById('cpVal').textContent = earned + ' р.';
+    document.getElementById('cpFormula').textContent = amt + ' р. × ' + currentClient.cashback + '% = ' + earned + ' р.';
+  } else {
+    prev.classList.remove('show');
+  }
+}
+
+function accrueBonuses() {
+  if (!currentClient) { showToast('Сначала найдите клиента'); return; }
+  const amt = parseFloat(document.getElementById('purchaseAmount').value) || 0;
+  if (amt <= 0) { showToast('Введите сумму покупки'); return; }
+  const earned = parseFloat((amt * currentClient.cashback / 100).toFixed(2));
+  currentClient.bonuses = parseFloat((currentClient.bonuses + earned).toFixed(2));
+  currentClient.purchases += amt;
+  CLIENT_DB[currentClient.key].bonuses = currentClient.bonuses;
+  CLIENT_DB[currentClient.key].purchases = currentClient.purchases;
+  checkLevel();
+  // refresh displays
+  document.getElementById('ccBonus').textContent = currentClient.bonuses + ' р.';
+  document.getElementById('ccPurchases').textContent = currentClient.purchases + ' р.';
+  document.getElementById('ccLevel').textContent = levelIcon(currentClient.level) + ' ' + currentClient.level;
+  document.getElementById('txnBonus').textContent = currentClient.bonuses + ' р.';
+  document.getElementById('txnMeta').textContent = levelIcon(currentClient.level) + ' ' + currentClient.level + ' · ' + currentClient.cashback + '% кэшбэк';
+  document.getElementById('purchaseAmount').value = '';
+  document.getElementById('cashbackPreview').classList.remove('show');
+  updateRedeemOpts();
+  showToast('✓ Начислено ' + earned + ' р. — ' + currentClient.name);
+  launchConfetti();
+  showClientOverlay();
+}
+
+function checkLevel() {
+  const p = currentClient.purchases;
+  let level = 'Бронза', cashback = 2;
+  if (p >= 6000) { level = 'Золото'; cashback = 10; }
+  else if (p >= 400) { level = 'Серебро'; cashback = 5; }
+  currentClient.level = level;
+  currentClient.cashback = cashback;
+  CLIENT_DB[currentClient.key].level = level;
+  CLIENT_DB[currentClient.key].cashback = cashback;
+}
+
+function toggleRedeemPanel() {
+  document.getElementById('redeemPanel').classList.toggle('visible');
+}
+function updateRedeemOpts() {
+  if (!currentClient) return;
+  const b = currentClient.bonuses;
+  document.getElementById('redeemQ').textContent = (b*0.25).toFixed(2) + ' р.';
+  document.getElementById('redeemH').textContent = (b*0.5).toFixed(2) + ' р.';
+  document.getElementById('redeemA').textContent = b + ' р.';
+}
+function selectRedeemOpt(type, el) {
+  document.querySelectorAll('.redeem-opt').forEach(o=>o.classList.remove('selected'));
+  if (el) el.classList.add('selected');
+  if (!currentClient) return;
+  const b = currentClient.bonuses;
+  if (type==='quarter') { redeemAmount = parseFloat((b*0.25).toFixed(2)); document.getElementById('redeemCustom').value = redeemAmount; }
+  else if (type==='half') { redeemAmount = parseFloat((b*0.5).toFixed(2)); document.getElementById('redeemCustom').value = redeemAmount; }
+  else if (type==='all') { redeemAmount = b; document.getElementById('redeemCustom').value = redeemAmount; }
+  else { redeemAmount = parseFloat(document.getElementById('redeemCustom').value) || 0; }
+}
+function redeemBonuses() {
+  if (!currentClient) { showToast('Сначала найдите клиента'); return; }
+  const amount = parseFloat(document.getElementById('redeemCustom').value) || redeemAmount;
+  if (amount <= 0) { showToast('Введите сумму списания'); return; }
+  if (amount > currentClient.bonuses) { showToast('Недостаточно бонусов: ' + currentClient.bonuses + ' р.'); return; }
+  currentClient.bonuses = parseFloat((currentClient.bonuses - amount).toFixed(2));
+  CLIENT_DB[currentClient.key].bonuses = currentClient.bonuses;
+  document.getElementById('ccBonus').textContent = currentClient.bonuses + ' р.';
+  document.getElementById('txnBonus').textContent = currentClient.bonuses + ' р.';
+  updateRedeemOpts();
+  document.getElementById('redeemCustom').value = '';
+  document.querySelectorAll('.redeem-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById('redeemPanel').classList.remove('visible');
+  showToast('✓ Списано ' + amount + ' р. — ' + currentClient.name);
+  showClientOverlay();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+function launchConfetti() {
+  const container = document.getElementById('confettiContainer');
+  const colors = ['#627c41','#C4955A','#8aaa5a','#CD7F32','#FAF8F4','#E8A84C'];
+  for (let i=0;i<70;i++){
+    const el = document.createElement('div');
+    el.className = 'conf';
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      width:${6+Math.random()*8}px; height:${6+Math.random()*8}px;
+      border-radius:${Math.random()>.5?'50%':'3px'};
+      animation-duration:${1.5+Math.random()*2}s;
+      animation-delay:${Math.random()*.4}s;
+    `;
+    container.appendChild(el);
+    setTimeout(()=>el.remove(), 3600);
+  }
+}
+
+document.getElementById('phoneInput').addEventListener('keydown', e=>{ if(e.key==='Enter') findByPhone(); });
+</script>
+</body>
+</html>
