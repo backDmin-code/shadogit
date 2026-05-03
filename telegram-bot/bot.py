@@ -1,8 +1,8 @@
 """
 FLove — Telegram-бот для карты лояльности цветочного кафе.
 
-MVP: регистрация (телефон → имя → фамилия → дата рождения),
-затем выдача кнопок с Web App (карта клиента, админ-панель, сканер QR).
+MVP: регистрация (телефон -> имя -> фамилия -> дата рождения),
+сохранение в БД, затем выдача кнопок с Web App.
 """
 
 import os
@@ -26,6 +26,8 @@ from telegram.ext import (
     filters,
 )
 
+import database
+
 load_dotenv()
 
 logging.basicConfig(
@@ -40,10 +42,46 @@ WEBAPP_URL = os.getenv("WEBAPP_URL", "").rstrip("/")
 PHONE, FIRST_NAME, LAST_NAME, BIRTHDAY = range(4)
 
 
+def _make_menu_keyboard(telegram_id: int) -> InlineKeyboardMarkup:
+    return InlineKeyboardMarkup(
+        [
+            [
+                InlineKeyboardButton(
+                    "🌸 Открыть карту лояльности",
+                    web_app=WebAppInfo(
+                        url=f"{WEBAPP_URL}/client.html?user_id={telegram_id}"
+                    ),
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⚙️ Панель управления",
+                    web_app=WebAppInfo(url=f"{WEBAPP_URL}/admin.html"),
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "📷 Сканировать QR",
+                    web_app=WebAppInfo(url=f"{WEBAPP_URL}/scanner.html"),
+                )
+            ],
+        ]
+    )
+
+
 # ─── handlers ───────────────────────────────────────────────
 
 
 async def start(update: Update, context) -> int:
+    telegram_id = update.effective_user.id
+    existing = database.get_user(telegram_id)
+    if existing:
+        await update.message.reply_text(
+            f"С возвращением, {existing['first_name']}! 🌸",
+            reply_markup=_make_menu_keyboard(telegram_id),
+        )
+        return ConversationHandler.END
+
     keyboard = [
         [KeyboardButton("📱 Поделиться номером", request_contact=True)]
     ]
@@ -97,43 +135,35 @@ async def last_name_received(update: Update, context) -> int:
 
 async def birthday_received(update: Update, context) -> int:
     context.user_data["birthday"] = update.message.text.strip()
+    telegram_id = update.effective_user.id
 
     name = context.user_data.get("first_name", "")
     surname = context.user_data.get("last_name", "")
+    phone = context.user_data.get("phone", "")
+    birthday = context.user_data.get("birthday", "")
 
-    logger.info(
-        "Регистрация завершена: %s %s, тел: %s, ДР: %s",
-        name,
-        surname,
-        context.user_data.get("phone"),
-        context.user_data.get("birthday"),
+    database.create_user(
+        telegram_id=telegram_id,
+        phone=phone,
+        first_name=name,
+        last_name=surname,
+        birthday=birthday,
+        welcome_bonus=3.0,
     )
 
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🌸 Открыть карту лояльности",
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/client.html"),
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "⚙️ Панель управления",
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/admin.html"),
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📷 Сканировать QR",
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/scanner.html"),
-            )
-        ],
-    ]
+    logger.info(
+        "Регистрация завершена: %s %s (id=%s), тел: %s, ДР: %s",
+        name,
+        surname,
+        telegram_id,
+        phone,
+        birthday,
+    )
 
     await update.message.reply_text(
         f"✨ {name}, ваша карта лояльности готова!\n\n"
         "Для открытия перейдите по кнопке ниже 👇",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=_make_menu_keyboard(telegram_id),
     )
     return ConversationHandler.END
 
@@ -147,30 +177,10 @@ async def cancel(update: Update, context) -> int:
 
 
 async def menu(update: Update, context) -> None:
-    """Повторно показать кнопки без повторной регистрации."""
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "🌸 Открыть карту лояльности",
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/client.html"),
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "⚙️ Панель управления",
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/admin.html"),
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "📷 Сканировать QR",
-                web_app=WebAppInfo(url=f"{WEBAPP_URL}/scanner.html"),
-            )
-        ],
-    ]
+    telegram_id = update.effective_user.id
     await update.message.reply_text(
         "Выберите действие 👇",
-        reply_markup=InlineKeyboardMarkup(keyboard),
+        reply_markup=_make_menu_keyboard(telegram_id),
     )
 
 
@@ -182,6 +192,8 @@ def main() -> None:
         raise SystemExit("BOT_TOKEN не задан. Укажите его в .env")
     if not WEBAPP_URL:
         raise SystemExit("WEBAPP_URL не задан. Укажите его в .env")
+
+    database.init_db()
 
     app = Application.builder().token(BOT_TOKEN).build()
 

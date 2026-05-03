@@ -1,82 +1,85 @@
-# FLove — Telegram-бот карты лояльности
+# FLove — Telegram-бот лояльности для цветочного кафе
 
-MVP Telegram-бот для цветочного кафе **FLove**.
+MVP-система лояльности: Telegram-бот + FastAPI-сервер + Web App.
 
-## Что делает бот
+## Возможности
 
-1. `/start` — приветствие + запрос номера телефона (кнопка «Поделиться номером»)
-2. Ввод **имени** (шаг 1)
-3. Ввод **фамилии** (шаг 2)
-4. Ввод **даты рождения** (шаг 3)
-5. Выдача карты лояльности с тремя кнопками:
-   - 🌸 **Карта лояльности** — открывает `client.html` как Telegram Web App
-   - ⚙️ **Панель управления** — открывает `admin.html`
-   - 📷 **Сканировать QR** — открывает `scanner.html`
+- **Бот**: регистрация через Telegram (телефон → имя → фамилия → дата рождения)
+- **Карта клиента**: персональная карта с реальным QR-кодом, бонусным балансом и историей
+- **Сканер QR**: камера для сканирования QR-кодов клиентов, начисление кэшбэка, списание бонусов
+- **База данных**: SQLite — пользователи, транзакции, уровни (Бронза / Серебро / Золото)
+- **Админ-панель**: демо-страница (статические данные)
 
-Команда `/menu` — повторно показывает кнопки без регистрации.
-
-## Быстрый старт
-
-```bash
-cd telegram-bot
-
-# 1) Создай виртуальное окружение
-python3 -m venv venv
-source venv/bin/activate
-
-# 2) Установи зависимости
-pip install -r requirements.txt
-
-# 3) Настрой переменные окружения
-cp .env.example .env
-# Заполни BOT_TOKEN и WEBAPP_URL в .env
-
-# 4) Запусти бота
-python bot.py
-```
-
-## Хостинг Web App файлов
-
-HTML-файлы из `webapp/` нужно разместить по **HTTPS**-адресу.
-
-### Вариант 1 — GitHub Pages
-
-1. Включи GitHub Pages в настройках репозитория
-2. Укажи `WEBAPP_URL=https://username.github.io/repo/telegram-bot/webapp`
-
-### Вариант 2 — Nginx на сервере
-
-```nginx
-server {
-    listen 443 ssl;
-    server_name your-domain.com;
-
-    ssl_certificate     /path/to/cert.pem;
-    ssl_certificate_key /path/to/key.pem;
-
-    location / {
-        root /path/to/telegram-bot/webapp;
-        index client.html;
-    }
-}
-```
-
-Укажи `WEBAPP_URL=https://your-domain.com`
-
-### Вариант 3 — Vercel / Netlify
-
-Задеплой папку `webapp/` как статический сайт.
-
-## Структура
+## Архитектура
 
 ```
 telegram-bot/
-├── bot.py              # Основной код бота
-├── requirements.txt    # Python-зависимости
-├── .env.example        # Шаблон переменных окружения
-├── README.md
-└── webapp/
-    ├── client.html     # Карта лояльности клиента
-    ├── admin.html      # Админ-панель
-    └── scanner.html    # Сканер QR-кодов
+├── bot.py          # Telegram-бот (регистрация, кнопки Web App)
+├── server.py       # FastAPI-сервер (API + раздача webapp/)
+├── database.py     # SQLite: users + transactions
+├── webapp/
+│   ├── client.html   # Карта лояльности (QR-код, бонусы, история)
+│   ├── scanner.html  # Терминал кассира (сканер QR, начисление, списание)
+│   └── admin.html    # Панель управления (демо)
+├── requirements.txt
+└── .env.example
 ```
+
+## Быстрый старт
+
+### 1. Установка
+
+```bash
+cd telegram-bot
+pip install -r requirements.txt
+```
+
+### 2. Настройка
+
+```bash
+cp .env.example .env
+```
+
+Заполните `.env`:
+- `BOT_TOKEN` — токен от @BotFather
+- `WEBAPP_URL` — HTTPS-адрес, по которому будет доступен сервер (например `https://your-domain.com`)
+
+### 3. Запуск сервера
+
+```bash
+python server.py
+```
+
+Сервер запустится на порту 8000 (можно изменить через `PORT` в `.env`).
+
+### 4. Запуск бота
+
+В отдельном терминале:
+
+```bash
+python bot.py
+```
+
+### 5. HTTPS
+
+Для работы с Telegram Web App нужен HTTPS. Варианты:
+- **Nginx + certbot** (продакшн)
+- **ngrok** для быстрого теста: `ngrok http 8000` → скопируйте HTTPS-URL в `WEBAPP_URL`
+
+## API
+
+| Метод | Эндпоинт | Описание |
+|-------|----------|----------|
+| GET | `/api/user/{telegram_id}` | Данные пользователя |
+| GET | `/api/user/by-phone/{phone}` | Поиск по телефону |
+| POST | `/api/purchase` | Добавить покупку + начислить кэшбэк |
+| POST | `/api/redeem` | Списать бонусы |
+| GET | `/api/user/{telegram_id}/history` | История транзакций |
+
+## Уровни лояльности
+
+| Уровень | Покупок от | Кэшбэк |
+|---------|-----------|--------|
+| Бронза | 0 р. | 2% |
+| Серебро | 400 р. | 5% |
+| Золото | 6 000 р. | 10% |

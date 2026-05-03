@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>FLove — Карта лояльности</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
   :root {
     --cream: #F5F0E8;
@@ -86,8 +87,8 @@
 
   .qr-tap { cursor:pointer; transition:transform 0.2s,opacity 0.2s; flex-shrink:0; }
   .qr-tap:active { transform:scale(0.94); opacity:0.8; }
-  .qr-container { background:var(--warm-white); border-radius:14px; padding:10px; width:100px; height:100px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); }
-  .qr-container svg { width:80px; height:80px; }
+  .qr-container { background:var(--warm-white); border-radius:14px; padding:10px; width:100px; height:100px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); overflow:hidden; }
+  .qr-container img, .qr-container canvas { width:80px!important; height:80px!important; }
   .qr-hint { text-align:center; margin-top:6px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; color:rgba(245,240,232,0.3); text-transform:uppercase; }
 
   .card-progress { margin-top:22px; border-top:1px solid rgba(255,255,255,0.07); padding-top:16px; }
@@ -95,8 +96,7 @@
   .progress-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.18em; color:rgba(245,240,232,0.4); text-transform:uppercase; }
   .progress-next { font-size:13px; color:var(--caramel); font-family:'Cormorant Garamond',serif; font-style:italic; }
   .progress-bar { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
-  .progress-fill { height:100%; width:18%; border-radius:2px; background:linear-gradient(90deg,var(--sage),#8aaa5a); animation:fillBar 1.2s ease-out 0.5s both; }
-  @keyframes fillBar { from{width:0} to{width:18%} }
+  .progress-fill { height:100%; width:0%; border-radius:2px; background:linear-gradient(90deg,var(--sage),#8aaa5a); transition:width 1s ease-out; }
   .cashback-row { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
   .cashback-val { font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--cream); font-style:italic; }
   .cashback-pct { font-family:'DM Mono',monospace; font-size:12px; color:var(--sage); letter-spacing:0.1em; }
@@ -227,7 +227,6 @@
   }
   .qr-modal.open { opacity:1; pointer-events:all; }
 
-  /* soft ambient glow orbs */
   .qr-modal-bg { position:absolute; inset:0; pointer-events:none; }
   .qr-orb {
     position:absolute; border-radius:50%;
@@ -238,7 +237,6 @@
   .qr-orb-1 { width:260px; height:260px; background:radial-gradient(circle,rgba(98,124,65,0.18),transparent 70%); top:-60px; right:-60px; }
   .qr-orb-2 { width:200px; height:200px; background:radial-gradient(circle,rgba(196,149,90,0.12),transparent 70%); bottom:-40px; left:-40px; }
 
-  /* card */
   .qr-modal-card {
     width:100%; max-width:340px; z-index:1; position:relative;
     transform:translateY(28px) scale(0.96); opacity:0;
@@ -246,7 +244,6 @@
   }
   .qr-modal.open .qr-modal-card { transform:translateY(0) scale(1); opacity:1; }
 
-  /* top identity strip */
   .qr-identity {
     background:linear-gradient(135deg,#2C1A0E,#1a0d05);
     border-radius:24px 24px 0 0;
@@ -255,12 +252,10 @@
     border-bottom:none;
     display:flex; align-items:center; justify-content:space-between;
   }
-  .qr-id-left {}
   .qr-id-name { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; color:#F5F0E8; letter-spacing:0.02em; }
   .qr-id-sub { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.28); margin-top:3px; }
   .qr-id-badge { background:linear-gradient(135deg,#CD7F32,#E8A84C); border-radius:14px; padding:5px 12px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; color:#1a0d05; text-transform:uppercase; flex-shrink:0; }
 
-  /* qr white area */
   .qr-code-wrap {
     background:var(--warm-white);
     padding:22px 22px 18px;
@@ -274,8 +269,7 @@
     padding:12px; background:#fff; border-radius:16px;
     box-shadow:0 8px 32px rgba(44,26,14,0.12);
   }
-  .qr-code-inner svg { width:220px; height:220px; display:block; }
-  /* elegant corner brackets */
+  .qr-code-inner img, .qr-code-inner canvas { width:220px!important; height:220px!important; display:block; }
   .qr-corner { position:absolute; width:22px; height:22px; }
   .qr-corner.tl { top:-2px; left:-2px; border-top:2px solid #8aaa5a; border-left:2px solid #8aaa5a; border-radius:5px 0 0 0; }
   .qr-corner.tr { top:-2px; right:-2px; border-top:2px solid #8aaa5a; border-right:2px solid #8aaa5a; border-radius:0 5px 0 0; }
@@ -283,7 +277,6 @@
   .qr-corner.br { bottom:-2px; right:-2px; border-bottom:2px solid #8aaa5a; border-right:2px solid #8aaa5a; border-radius:0 0 5px 0; }
   .qr-code-hint { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(44,26,14,0.28); margin-top:12px; }
 
-  /* info strip */
   .qr-info-strip {
     background:linear-gradient(135deg,#1a0d05,#0e0806);
     border:1px solid rgba(98,124,65,0.18);
@@ -293,12 +286,10 @@
     display:grid; grid-template-columns:1fr 1fr;
     gap:12px 8px;
   }
-  .qr-info-field {}
   .qr-info-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.25); margin-bottom:3px; }
   .qr-info-val { font-family:'Jost',sans-serif; font-size:12px; font-weight:400; color:rgba(245,240,232,0.75); letter-spacing:0.01em; }
   .qr-info-val.accent { color:#8aaa5a; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; }
 
-  /* close button */
   .qr-close {
     margin-top:20px; z-index:1; position:relative;
     background:transparent; border:1px solid rgba(245,240,232,0.1);
@@ -317,9 +308,31 @@
     80% { opacity:1; }
     100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
   }
+
+  .loading-overlay {
+    position:fixed; inset:0; z-index:999;
+    background:var(--cream);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:12px;
+    transition:opacity 0.4s;
+  }
+  .loading-overlay.hide { opacity:0; pointer-events:none; }
+  .loading-spinner {
+    width:32px; height:32px; border:2px solid var(--border);
+    border-top-color:var(--sage); border-radius:50%;
+    animation:spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .loading-text { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); }
 </style>
 </head>
 <body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Загрузка карты...</div>
+</div>
 
 <!-- CONFETTI CONTAINER -->
 <div class="confetti-container" id="confettiContainer"></div>
@@ -331,79 +344,38 @@
     <div class="qr-orb qr-orb-2"></div>
   </div>
   <div class="qr-modal-card">
-    <!-- identity top -->
     <div class="qr-identity">
       <div class="qr-id-left">
-        <div class="qr-id-name">Анна Смирнова</div>
+        <div class="qr-id-name" id="qrName">...</div>
         <div class="qr-id-sub">FLove · Карта лояльности</div>
       </div>
-      <div class="qr-id-badge">◆ Бронза</div>
+      <div class="qr-id-badge" id="qrLevel">...</div>
     </div>
-    <!-- qr code -->
     <div class="qr-code-wrap">
-      <div class="qr-code-inner">
+      <div class="qr-code-inner" id="qrCodeBig">
         <div class="qr-corner tl"></div>
         <div class="qr-corner tr"></div>
         <div class="qr-corner bl"></div>
         <div class="qr-corner br"></div>
-        <svg viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-          <rect width="21" height="21" fill="white"/>
-          <rect x="0" y="0" width="7" height="7" fill="#2C1A0E"/>
-          <rect x="1" y="1" width="5" height="5" fill="white"/>
-          <rect x="2" y="2" width="3" height="3" fill="#2C1A0E"/>
-          <rect x="14" y="0" width="7" height="7" fill="#2C1A0E"/>
-          <rect x="15" y="1" width="5" height="5" fill="white"/>
-          <rect x="16" y="2" width="3" height="3" fill="#2C1A0E"/>
-          <rect x="0" y="14" width="7" height="7" fill="#2C1A0E"/>
-          <rect x="1" y="15" width="5" height="5" fill="white"/>
-          <rect x="2" y="16" width="3" height="3" fill="#2C1A0E"/>
-          <rect x="8" y="0" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="0" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="0" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="9" y="1" width="1" height="1" fill="#2C1A0E"/><rect x="11" y="1" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="2" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="2" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="2" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="8" y="3" width="2" height="1" fill="#2C1A0E"/><rect x="11" y="3" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="4" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="4" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="8" y="5" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="5" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="6" width="2" height="1" fill="#2C1A0E"/><rect x="10" y="6" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="8" width="2" height="1" fill="#2C1A0E"/><rect x="12" y="8" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="0" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="2" y="8" width="3" height="1" fill="#2C1A0E"/>
-          <rect x="0" y="9" width="1" height="1" fill="#2C1A0E"/><rect x="3" y="9" width="1" height="1" fill="#2C1A0E"/><rect x="5" y="9" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="9" width="3" height="1" fill="#2C1A0E"/><rect x="11" y="9" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="14" y="8" width="2" height="1" fill="#2C1A0E"/><rect x="17" y="8" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="14" y="9" width="1" height="1" fill="#2C1A0E"/><rect x="16" y="9" width="1" height="1" fill="#2C1A0E"/><rect x="18" y="9" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="0" y="10" width="3" height="1" fill="#2C1A0E"/><rect x="4" y="10" width="1" height="1" fill="#2C1A0E"/><rect x="8" y="10" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="10" y="10" width="3" height="1" fill="#2C1A0E"/><rect x="14" y="10" width="3" height="1" fill="#2C1A0E"/><rect x="19" y="10" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="0" y="11" width="1" height="1" fill="#2C1A0E"/><rect x="2" y="11" width="2" height="1" fill="#2C1A0E"/><rect x="5" y="11" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="9" y="11" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="11" width="1" height="1" fill="#2C1A0E"/><rect x="15" y="11" width="1" height="1" fill="#2C1A0E"/><rect x="18" y="11" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="1" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="4" y="12" width="2" height="1" fill="#2C1A0E"/><rect x="7" y="12" width="3" height="1" fill="#2C1A0E"/>
-          <rect x="11" y="12" width="2" height="1" fill="#2C1A0E"/><rect x="14" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="16" y="12" width="3" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="14" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="14" width="2" height="1" fill="#2C1A0E"/><rect x="12" y="14" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="8" y="15" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="15" width="3" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="16" width="2" height="1" fill="#2C1A0E"/><rect x="11" y="16" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="9" y="17" width="3" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="18" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="18" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="18" width="1" height="1" fill="#2C1A0E"/>
-          <rect x="8" y="19" width="2" height="1" fill="#2C1A0E"/><rect x="11" y="19" width="2" height="1" fill="#2C1A0E"/>
-          <rect x="7" y="20" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="20" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="20" width="1" height="1" fill="#2C1A0E"/>
-        </svg>
       </div>
       <div class="qr-code-hint">Покажите кассиру</div>
     </div>
-    <!-- client info -->
     <div class="qr-info-strip">
       <div class="qr-info-field">
         <div class="qr-info-label">Телефон</div>
-        <div class="qr-info-val">+375 29 ••• •• 14</div>
+        <div class="qr-info-val" id="qrPhone">...</div>
       </div>
       <div class="qr-info-field">
         <div class="qr-info-label">ID клиента</div>
-        <div class="qr-info-val accent">FL-00841</div>
+        <div class="qr-info-val accent" id="qrId">...</div>
       </div>
       <div class="qr-info-field">
         <div class="qr-info-label">Дата рождения</div>
-        <div class="qr-info-val">14.03.1994</div>
+        <div class="qr-info-val" id="qrBirthday">...</div>
       </div>
       <div class="qr-info-field">
         <div class="qr-info-label">Бонусов</div>
-        <div class="qr-info-val accent">3 р. · 2%</div>
+        <div class="qr-info-val accent" id="qrBonuses">...</div>
       </div>
     </div>
   </div>
@@ -416,44 +388,13 @@
     <div class="notif-panel-head">
       <div style="display:flex;align-items:center;gap:10px;">
         <div class="notif-panel-title">Уведомления</div>
-        <div class="notif-badge-count">3</div>
+        <div class="notif-badge-count" id="notifCount">0</div>
       </div>
       <button class="notif-close-btn" onclick="closeNotifBtn()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
       </button>
     </div>
-    <div class="notif-list">
-      <div class="notif-item unread" style="animation-delay:0.05s">
-        <div class="notif-icon bonus">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
-        </div>
-        <div class="notif-content">
-          <div class="notif-title">Начислены бонусы</div>
-          <div class="notif-text">За вашу покупку начислено +3 р. на бонусный счёт</div>
-          <div class="notif-time">Сегодня · 14:30</div>
-        </div>
-      </div>
-      <div class="notif-item unread" style="animation-delay:0.1s">
-        <div class="notif-icon promo">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-        </div>
-        <div class="notif-content">
-          <div class="notif-title">Акция выходного дня</div>
-          <div class="notif-text">Двойной кэшбэк на все букеты в эти выходные!</div>
-          <div class="notif-time">Вчера · 18:00</div>
-        </div>
-      </div>
-      <div class="notif-item unread" style="animation-delay:0.15s">
-        <div class="notif-icon level">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bronze)" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div class="notif-content">
-          <div class="notif-title">Добро пожаловать в FLove!</div>
-          <div class="notif-text">Вы зарегистрировались в программе лояльности. Начальный уровень — Бронза</div>
-          <div class="notif-time">02.05.2026 · 14:28</div>
-        </div>
-      </div>
-    </div>
+    <div class="notif-list" id="notifList"></div>
   </div>
 </div>
 
@@ -466,7 +407,7 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(245,240,232,0.5)" stroke-width="1.5" stroke-linecap="round">
       <path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
     </svg>
-    <span id="notifDot" style="position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--bronze);border:1.5px solid var(--espresso);display:block;"></span>
+    <span id="notifDot" style="position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--bronze);border:1.5px solid var(--espresso);display:none;"></span>
   </div>
 </div>
 
@@ -480,149 +421,44 @@
         <div>
           <div class="card-brand">FLove<small>loyalty card · Минск</small></div>
         </div>
-        <div class="level-badge">◆ Бронза</div>
+        <div class="level-badge" id="cardLevel">...</div>
       </div>
       <div class="card-qr-area">
         <div class="card-bonuses">
           <div class="bonus-label">Бонусный счёт</div>
-          <div class="bonus-amount">3<sup>р.</sup></div>
-          <div class="bonus-expire">Активны до 16.05.2026</div>
+          <div class="bonus-amount" id="cardBonuses">0<sup>р.</sup></div>
+          <div class="bonus-expire" id="cardExpire"></div>
         </div>
         <div class="qr-tap" onclick="openQR()">
-          <div class="qr-container">
-            <svg viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-              <rect width="25" height="25" fill="white"/>
-              <!-- TL finder -->
-              <rect x="1" y="1" width="7" height="7" fill="#2C1A0E"/>
-              <rect x="2" y="2" width="5" height="5" fill="white"/>
-              <rect x="3" y="3" width="3" height="3" fill="#2C1A0E"/>
-              <!-- TR finder -->
-              <rect x="17" y="1" width="7" height="7" fill="#2C1A0E"/>
-              <rect x="18" y="2" width="5" height="5" fill="white"/>
-              <rect x="19" y="3" width="3" height="3" fill="#2C1A0E"/>
-              <!-- BL finder -->
-              <rect x="1" y="17" width="7" height="7" fill="#2C1A0E"/>
-              <rect x="2" y="18" width="5" height="5" fill="white"/>
-              <rect x="3" y="19" width="3" height="3" fill="#2C1A0E"/>
-              <!-- data dots scattered -->
-              <rect x="9" y="1" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="11" y="1" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="1" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="10" y="2" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="13" y="2" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="3" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="3" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="11" y="4" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="13" y="4" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="5" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="12" y="5" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="10" y="6" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="6" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="1" y="9" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="4" y="9" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="6" y="9" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="9" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="11" y="9" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="16" y="9" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="18" y="9" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="22" y="9" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="2" y="10" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="5" y="10" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="10" y="10" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="10" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="17" y="10" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="20" y="10" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="1" y="11" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="6" y="11" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="11" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="13" y="11" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="16" y="11" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="21" y="11" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="3" y="12" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="5" y="12" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="11" y="12" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="15" y="12" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="18" y="12" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="2" y="13" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="6" y="13" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="10" y="13" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="13" y="13" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="17" y="13" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="20" y="13" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="1" y="14" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="4" y="14" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="14" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="14" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="16" y="14" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="22" y="14" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="15" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="12" y="15" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="15" y="15" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="18" y="15" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="21" y="15" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="10" y="16" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="16" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="17" y="16" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="20" y="16" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="21" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="12" y="21" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="21" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="17" y="21" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="20" y="21" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="10" y="22" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="13" y="22" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="18" y="22" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="21" y="22" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="9" y="23" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="14" y="23" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="16" y="23" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="20" y="23" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="11" y="24" width="2" height="1" fill="#2C1A0E"/>
-              <rect x="15" y="24" width="1" height="1" fill="#2C1A0E"/>
-              <rect x="17" y="24" width="3" height="1" fill="#2C1A0E"/>
-              <rect x="22" y="24" width="2" height="1" fill="#2C1A0E"/>
-            </svg>
-          </div>
+          <div class="qr-container" id="qrCodeSmall"></div>
+          <div class="qr-hint">Показать QR</div>
         </div>
       </div>
       <div class="card-progress">
         <div class="progress-meta">
-          <span class="progress-label">Уровень: Бронза</span>
-          <span class="progress-next">до Серебра — 400 р.</span>
+          <span class="progress-label" id="cardLevelLabel">Уровень: ...</span>
+          <span class="progress-next" id="cardNextLevel"></span>
         </div>
-        <div class="progress-bar"><div class="progress-fill"></div></div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="cashback-row">
           <span class="cashback-val">Кэшбэк с покупок</span>
-          <span class="cashback-pct">2% · бронза</span>
+          <span class="cashback-pct" id="cardCashback">2% · бронза</span>
         </div>
       </div>
     </div>
   </div>
 
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-val">3</div><div class="stat-lbl">Бонусов</div></div>
-    <div class="stat-card"><div class="stat-val">2%</div><div class="stat-lbl">Кэшбэк</div></div>
-    <div class="stat-card"><div class="stat-val">0 р.</div><div class="stat-lbl">Покупок</div></div>
+    <div class="stat-card"><div class="stat-val" id="statBonuses">0</div><div class="stat-lbl">Бонусов</div></div>
+    <div class="stat-card"><div class="stat-val" id="statCashback">2%</div><div class="stat-lbl">Кэшбэк</div></div>
+    <div class="stat-card"><div class="stat-val" id="statPurchases">0 р.</div><div class="stat-lbl">Покупок</div></div>
   </div>
 
   <div class="spacer"></div>
   <div class="section">
     <div class="section-title">История бонусов</div>
-    <div class="history-list">
-      <div class="history-item">
-        <div class="h-icon plus">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>
-        </div>
-        <div class="h-info"><div class="h-name">Приветственный бонус</div><div class="h-date">02.05.2026 · 14:30</div></div>
-        <div class="h-bonus p">+3 р.</div>
-      </div>
-      <div class="history-item" style="opacity:0.45">
-        <div class="h-icon minus">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4955A" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>
-        </div>
-        <div class="h-info"><div class="h-name">Списание — пример</div><div class="h-date">Пример операции</div></div>
-        <div class="h-bonus m">−1 р.</div>
-      </div>
+    <div class="history-list" id="historyList">
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Загрузка...</div>
     </div>
   </div>
   <div class="spacer"></div>
@@ -722,45 +558,209 @@
 </nav>
 
 <script>
+const API_BASE = window.location.origin;
+const params = new URLSearchParams(window.location.search);
+const USER_ID = params.get('user_id');
+
+let userData = null;
+
+function levelIcon(l) {
+  if (l === 'Золото') return '✦';
+  if (l === 'Серебро') return '◈';
+  return '◆';
+}
+
+function maskPhone(phone) {
+  if (!phone || phone.length < 7) return phone || '';
+  return phone.slice(0, -4).replace(/\d(?=.{4})/g, function(m, i) {
+    return i > phone.length - 9 ? '•' : m;
+  }) + phone.slice(-2);
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (isNaN(d)) return iso;
+  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' })
+    + ' · ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+}
+
+async function loadUser() {
+  if (!USER_ID) {
+    document.getElementById('loadingOverlay').innerHTML = '<div class="loading-text">Ошибка: user_id не указан</div>';
+    return;
+  }
+  try {
+    const res = await fetch(API_BASE + '/api/user/' + USER_ID);
+    if (!res.ok) throw new Error('User not found');
+    userData = await res.json();
+    populateUI();
+    loadHistory();
+    document.getElementById('loadingOverlay').classList.add('hide');
+  } catch (e) {
+    document.getElementById('loadingOverlay').innerHTML = '<div class="loading-text">Пользователь не найден</div>';
+  }
+}
+
+function populateUI() {
+  const u = userData;
+  const fullName = u.first_name + ' ' + (u.last_name ? u.last_name[0] + '.' : '');
+  const icon = levelIcon(u.level);
+
+  // Card
+  document.getElementById('cardLevel').textContent = icon + ' ' + u.level;
+  document.getElementById('cardBonuses').innerHTML = Math.floor(u.bonuses) + '<sup>р.</sup>';
+  document.getElementById('cardLevelLabel').textContent = 'Уровень: ' + u.level;
+  document.getElementById('cardCashback').textContent = u.cashback_pct + '% · ' + u.level.toLowerCase();
+
+  // Progress
+  let nextLevel = '', progress = 0;
+  if (u.total_purchases < 400) {
+    nextLevel = 'до Серебра — ' + Math.round(400 - u.total_purchases) + ' р.';
+    progress = Math.min((u.total_purchases / 400) * 100, 100);
+  } else if (u.total_purchases < 6000) {
+    nextLevel = 'до Золота — ' + Math.round(6000 - u.total_purchases) + ' р.';
+    progress = Math.min(((u.total_purchases - 400) / (6000 - 400)) * 100, 100);
+  } else {
+    nextLevel = 'Максимальный уровень!';
+    progress = 100;
+  }
+  document.getElementById('cardNextLevel').textContent = nextLevel;
+  document.getElementById('progressFill').style.width = progress + '%';
+
+  // Stats
+  document.getElementById('statBonuses').textContent = Math.round(u.bonuses * 100) / 100;
+  document.getElementById('statCashback').textContent = u.cashback_pct + '%';
+  document.getElementById('statPurchases').textContent = Math.round(u.total_purchases) + ' р.';
+
+  // Generate QR codes
+  generateQR();
+
+  // QR modal info
+  document.getElementById('qrName').textContent = u.first_name + ' ' + (u.last_name || '');
+  document.getElementById('qrLevel').textContent = icon + ' ' + u.level;
+  document.getElementById('qrPhone').textContent = maskPhone(u.phone);
+  document.getElementById('qrId').textContent = 'FL-' + String(u.telegram_id).slice(-5).padStart(5, '0');
+  document.getElementById('qrBirthday').textContent = u.birthday || '—';
+  document.getElementById('qrBonuses').textContent = u.bonuses + ' р. · ' + u.cashback_pct + '%';
+}
+
+function generateQR() {
+  const qrData = 'flove:' + userData.telegram_id;
+
+  // Small QR on card
+  const smallContainer = document.getElementById('qrCodeSmall');
+  smallContainer.innerHTML = '';
+  new QRCode(smallContainer, {
+    text: qrData, width: 80, height: 80,
+    colorDark: '#2C1A0E', colorLight: '#FFFFFF',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+
+  // Big QR in modal
+  const bigContainer = document.getElementById('qrCodeBig');
+  const corners = bigContainer.querySelectorAll('.qr-corner');
+  bigContainer.innerHTML = '';
+  corners.forEach(c => bigContainer.appendChild(c));
+  new QRCode(bigContainer, {
+    text: qrData, width: 220, height: 220,
+    colorDark: '#2C1A0E', colorLight: '#FFFFFF',
+    correctLevel: QRCode.CorrectLevel.M
+  });
+}
+
+async function loadHistory() {
+  try {
+    const res = await fetch(API_BASE + '/api/user/' + USER_ID + '/history');
+    const history = await res.json();
+    const list = document.getElementById('historyList');
+
+    if (!history.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Пока нет операций</div>';
+      return;
+    }
+
+    // Notifications
+    const notifList = document.getElementById('notifList');
+    notifList.innerHTML = '';
+    document.getElementById('notifCount').textContent = history.length;
+    if (history.length > 0) document.getElementById('notifDot').style.display = 'block';
+
+    list.innerHTML = history.map(tx => {
+      const isPlus = tx.bonuses_change >= 0;
+      const iconClass = isPlus ? 'plus' : 'minus';
+      const bonusClass = isPlus ? 'p' : 'm';
+      const sign = isPlus ? '+' : '';
+      const iconSvg = isPlus
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4955A" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>';
+
+      return '<div class="history-item">' +
+        '<div class="h-icon ' + iconClass + '">' + iconSvg + '</div>' +
+        '<div class="h-info"><div class="h-name">' + (tx.description || tx.type) + '</div>' +
+        '<div class="h-date">' + formatDate(tx.created_at) + '</div></div>' +
+        '<div class="h-bonus ' + bonusClass + '">' + sign + tx.bonuses_change + ' р.</div></div>';
+    }).join('');
+
+    // Build notifications from history
+    history.slice(0, 10).forEach((tx, i) => {
+      const isPlus = tx.bonuses_change >= 0;
+      const iconType = tx.type === 'welcome' ? 'level' : (isPlus ? 'bonus' : 'promo');
+      const iconSvg = tx.type === 'welcome'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bronze)" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+        : (isPlus
+          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>'
+          : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>');
+      const sign = isPlus ? '+' : '';
+
+      notifList.innerHTML += '<div class="notif-item' + (i < 3 ? ' unread' : '') + '" style="animation-delay:' + (i * 0.05) + 's">' +
+        '<div class="notif-icon ' + iconType + '">' + iconSvg + '</div>' +
+        '<div class="notif-content"><div class="notif-title">' + (tx.description || tx.type) + '</div>' +
+        '<div class="notif-text">' + sign + tx.bonuses_change + ' р.</div>' +
+        '<div class="notif-time">' + formatDate(tx.created_at) + '</div></div></div>';
+    });
+  } catch (e) {
+    document.getElementById('historyList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить историю</div>';
+  }
+}
+
+// Navigation
 function switchPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 function openNotif() {
   document.getElementById('notifOverlay').classList.add('open');
-  document.body.style.overflow='hidden';
-  document.getElementById('notifDot').style.display='none';
+  document.body.style.overflow = 'hidden';
+  document.getElementById('notifDot').style.display = 'none';
 }
-function closeNotif(e) { if(e.target===document.getElementById('notifOverlay')) closeNotifBtn(); }
-function closeNotifBtn() { document.getElementById('notifOverlay').classList.remove('open'); document.body.style.overflow=''; }
+function closeNotif(e) { if (e.target === document.getElementById('notifOverlay')) closeNotifBtn(); }
+function closeNotifBtn() { document.getElementById('notifOverlay').classList.remove('open'); document.body.style.overflow = ''; }
 function openQR() {
   document.getElementById('qrModal').classList.add('open');
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = 'hidden';
 }
-function closeQR(e) { if(e.target===document.getElementById('qrModal')) closeQRBtn(); }
-function closeQRBtn() { document.getElementById('qrModal').classList.remove('open'); document.body.style.overflow=''; }
+function closeQR(e) { if (e.target === document.getElementById('qrModal')) closeQRBtn(); }
+function closeQRBtn() { document.getElementById('qrModal').classList.remove('open'); document.body.style.overflow = ''; }
 
 function launchConfetti() {
   const container = document.getElementById('confettiContainer');
   const colors = ['#627c41','#C4955A','#8aaa5a','#CD7F32','#FAF8F4','#2C1A0E'];
-  for(let i=0;i<60;i++){
+  for (let i = 0; i < 60; i++) {
     const el = document.createElement('div');
-    el.className='conf';
-    el.style.cssText=`
-      left:${Math.random()*100}vw;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      width:${6+Math.random()*8}px;
-      height:${6+Math.random()*8}px;
-      border-radius:${Math.random()>0.5?'50%':'2px'};
-      animation-duration:${1.5+Math.random()*2}s;
-      animation-delay:${Math.random()*0.5}s;
-    `;
+    el.className = 'conf';
+    el.style.cssText = 'left:' + (Math.random()*100) + 'vw;background:' + colors[Math.floor(Math.random()*colors.length)] +
+      ';width:' + (6+Math.random()*8) + 'px;height:' + (6+Math.random()*8) + 'px;border-radius:' + (Math.random()>0.5?'50%':'2px') +
+      ';animation-duration:' + (1.5+Math.random()*2) + 's;animation-delay:' + (Math.random()*0.5) + 's;';
     container.appendChild(el);
-    setTimeout(()=>el.remove(), 3500);
+    setTimeout(() => el.remove(), 3500);
   }
 }
+
+// Init
+loadUser();
 </script>
 </body>
 </html>
