@@ -84,6 +84,29 @@ def init_db() -> None:
             key   TEXT PRIMARY KEY,
             value TEXT
         );
+
+        CREATE TABLE IF NOT EXISTS notifications_log (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_telegram_id INTEGER NOT NULL,
+            type            TEXT    NOT NULL,
+            sent_at         TEXT    DEFAULT (datetime('now','localtime')),
+            FOREIGN KEY (user_telegram_id) REFERENCES users(telegram_id)
+        );
+
+        CREATE TABLE IF NOT EXISTS promotions (
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            name            TEXT    NOT NULL,
+            type            TEXT    NOT NULL DEFAULT 'cashback_multiplier',
+            value           REAL    NOT NULL DEFAULT 2,
+            min_purchase    REAL    DEFAULT 0,
+            promo_code      TEXT    UNIQUE,
+            max_uses        INTEGER DEFAULT 0,
+            used_count      INTEGER DEFAULT 0,
+            start_at        TEXT,
+            end_at          TEXT,
+            is_active       INTEGER DEFAULT 1,
+            created_at      TEXT    DEFAULT (datetime('now','localtime'))
+        );
         """
     )
     # Migrate: add new columns if they don't exist yet (for upgrades from MVP)
@@ -577,3 +600,359 @@ def set_setting(key: str, value: str) -> None:
     )
     conn.commit()
     conn.close()
+
+
+# ─── User Update ────────────────────────────────────────────
+
+
+def update_user(telegram_id: int, **kwargs) -> dict | None:
+    conn = get_db()
+    allowed = {"first_name", "last_name", "phone", "birthday", "bonuses", "is_blocked"}
+    parts, vals = [], []
+    for k, v in kwargs.items():
+        if k in allowed:
+            parts.append(f"{k}=?")
+            vals.append(v)
+    if not parts:
+        conn.close()
+        return get_user(telegram_id)
+    vals.append(telegram_id)
+    conn.execute(f"UPDATE users SET {','.join(parts)} WHERE telegram_id=?", vals)
+    conn.commit()
+    user = get_user(telegram_id, conn)
+    conn.close()
+    return user
+
+
+# ─── Analytics ──────────────────────────────────────────────
+
+
+def get_analytics(period_days: int = 30) -> dict:
+    conn = get_db()
+    # Sales by day
+    sales_by_day = conn.execute(
+        """SELECT date(created_at) as day, SUM(amount) as total, COUNT(*) as cnt,
+                  AVG(amount) as avg_check
+           FROM transactions WHERE type='purchase'
+           AND created_at >= datetime('now', '-' || ? || ' days', 'localtime')
+           GROUP BY date(created_at) ORDER BY day""",
+        (period_days,),
+    ).fetchall()
+
+    # Heatmap: hour x day_of_week
+    heatmap = conn.execute(
+        """SELECT CAST(strftime('%w', created_at) AS INTEGER) as dow,
+                  CAST(strftime('%H', created_at) AS INTEGER) as hour,
+                  COUNT(*) as cnt
+           FROM transactions WHERE type='purchase'
+           GROUP BY dow, hour"""
+    ).fetchall()
+
+    # Totals
+    total_revenue = conn.execute(
+        "SELECT COALESCE(SUM(amount),0) FROM transactions WHERE type='purchase'"
+    ).fetchone()[0]
+    total_purchases = conn.execute(
+        "SELECT COUNT(*) FROM transactions WHERE type='purchase'"
+    ).fetchone()[0]
+    avg_check = round(total_revenue / total_purchases, 2) if total_purchases else 0
+
+    # New clients per day
+    new_clients = conn.execute(
+        """SELECT date(created_at) as day, COUNT(*) as cnt
+           FROM users
+           WHERE created_at >= datetime('now', '-' || ? || ' days', 'localtime')
+           GROUP BY date(created_at) ORDER BY day""",
+        (period_days,),
+    ).fetchall()
+
+    conn.close()
+    return {
+        "sales_by_day": [dict(r) for r in sales_by_day],
+        "heatmap": [dict(r) for r in heatmap],
+        "total_revenue": round(total_revenue, 2),
+        "total_purchases": total_purchases,
+        "avg_check": avg_check,
+        "new_clients": [dict(r) for r in new_clients],
+    }
+
+
+def get_rfm_segments() -> list[dict]:
+    conn = get_db()
+    now = datetime.now()
+    users = conn.execute("SELECT * FROM users").fetchall()
+    results = []
+    for u in users:
+        uid = u["telegram_id"]
+        last_tx = conn.execute(
+            "SELECT MAX(created_at) as last FROM transactions WHERE user_telegram_id=? AND type='purchase'",
+            (uid,),
+        ).fetchone()
+        freq = conn.execute(
+            "SELECT COUNT(*) as cnt FROM transactions WHERE user_telegram_id=? AND type='purchase'",
+            (uid,),
+        ).fetchone()
+        monetary = u["total_purchases"] or 0
+        # R score
+        if last_tx and last_tx["last"]:
+            try:
+                last_dt = datetime.strptime(last_tx["last"][:19], "%Y-%m-%d %H:%M:%S")
+                days_since = (now - last_dt).days
+            except Exception:
+                days_since = 999
+        else:
+            days_since = 999
+        r = 5 if days_since <= 3 else 4 if days_since <= 7 else 3 if days_since <= 14 else 2 if days_since <= 30 else 1
+        # F score
+        f_cnt = freq["cnt"] if freq else 0
+        f = 5 if f_cnt >= 20 else 4 if f_cnt >= 10 else 3 if f_cnt >= 5 else 2 if f_cnt >= 2 else 1
+        # M score
+        m = 5 if monetary >= 10000 else 4 if monetary >= 5000 else 3 if monetary >= 1000 else 2 if monetary >= 200 else 1
+        # Segment
+        rfm = r * 100 + f * 10 + m
+        if r >= 4 and f >= 4:
+            segment = "champion"
+        elif f >= 3:
+            segment = "loyal"
+        elif r >= 3:
+            segment = "promising"
+        elif r >= 2:
+            segment = "sleeping"
+        else:
+            segment = "lost"
+        results.append({
+            "telegram_id": uid,
+            "first_name": u["first_name"],
+            "last_name": u["last_name"],
+            "level": u["level"],
+            "total_purchases": monetary,
+            "bonuses": u["bonuses"],
+            "r": r, "f": f, "m": m,
+            "rfm": rfm,
+            "days_since": days_since,
+            "purchase_count": f_cnt,
+            "segment": segment,
+        })
+    conn.close()
+    return results
+
+
+# ─── Notifications Log ──────────────────────────────────────
+
+
+def was_notified(telegram_id: int, notif_type: str, within_hours: int = 24) -> bool:
+    conn = get_db()
+    row = conn.execute(
+        """SELECT 1 FROM notifications_log
+           WHERE user_telegram_id=? AND type=?
+           AND sent_at >= datetime('now', '-' || ? || ' hours', 'localtime')""",
+        (telegram_id, notif_type, within_hours),
+    ).fetchone()
+    conn.close()
+    return row is not None
+
+
+def log_notification(telegram_id: int, notif_type: str) -> None:
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO notifications_log (user_telegram_id, type) VALUES (?, ?)",
+        (telegram_id, notif_type),
+    )
+    conn.commit()
+    conn.close()
+
+
+def get_birthday_users() -> list[dict]:
+    conn = get_db()
+    today_md = datetime.now().strftime("%m.%d")
+    tomorrow = datetime.now()
+    from datetime import timedelta
+    tomorrow_md = (tomorrow + timedelta(days=1)).strftime("%m.%d")
+    rows = conn.execute(
+        """SELECT * FROM users WHERE is_blocked=0
+           AND (substr(birthday,4,5)=? OR substr(birthday,4,5)=?)""",
+        (today_md, tomorrow_md),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_inactive_users(days: int = 14) -> list[dict]:
+    conn = get_db()
+    rows = conn.execute(
+        """SELECT u.* FROM users u
+           WHERE u.is_blocked=0
+           AND NOT EXISTS (
+               SELECT 1 FROM transactions t
+               WHERE t.user_telegram_id=u.telegram_id
+               AND t.created_at >= datetime('now', '-' || ? || ' days', 'localtime')
+           )""",
+        (days,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_level_approaching_users() -> list[dict]:
+    conn = get_db()
+    rows = conn.execute(
+        """SELECT * FROM users WHERE is_blocked=0
+           AND ((level='Бронза' AND total_purchases >= 350)
+             OR (level='Серебро' AND total_purchases >= 5500))"""
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_high_bonus_users(min_bonuses: float = 50) -> list[dict]:
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM users WHERE is_blocked=0 AND bonuses >= ?",
+        (min_bonuses,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+# ─── Promotions ─────────────────────────────────────────────
+
+
+def create_promotion(name: str, promo_type: str, value: float,
+                     min_purchase: float = 0, promo_code: str | None = None,
+                     max_uses: int = 0, start_at: str | None = None,
+                     end_at: str | None = None) -> dict:
+    conn = get_db()
+    cur = conn.execute(
+        """INSERT INTO promotions (name, type, value, min_purchase, promo_code,
+           max_uses, start_at, end_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (name, promo_type, value, min_purchase, promo_code, max_uses, start_at, end_at),
+    )
+    conn.commit()
+    row = conn.execute("SELECT * FROM promotions WHERE id=?", (cur.lastrowid,)).fetchone()
+    conn.close()
+    return dict(row)
+
+
+def get_promotions(active_only: bool = False) -> list[dict]:
+    conn = get_db()
+    if active_only:
+        rows = conn.execute(
+            """SELECT * FROM promotions WHERE is_active=1
+               AND (start_at IS NULL OR start_at <= datetime('now','localtime'))
+               AND (end_at IS NULL OR end_at >= datetime('now','localtime'))
+               ORDER BY id DESC"""
+        ).fetchall()
+    else:
+        rows = conn.execute("SELECT * FROM promotions ORDER BY id DESC").fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_promotion(promo_id: int) -> dict | None:
+    conn = get_db()
+    row = conn.execute("SELECT * FROM promotions WHERE id=?", (promo_id,)).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def update_promotion(promo_id: int, **kwargs) -> dict | None:
+    conn = get_db()
+    allowed = {"name", "type", "value", "min_purchase", "promo_code",
+               "max_uses", "start_at", "end_at", "is_active"}
+    parts, vals = [], []
+    for k, v in kwargs.items():
+        if k in allowed:
+            parts.append(f"{k}=?")
+            vals.append(v)
+    if parts:
+        vals.append(promo_id)
+        conn.execute(f"UPDATE promotions SET {','.join(parts)} WHERE id=?", vals)
+        conn.commit()
+    row = conn.execute("SELECT * FROM promotions WHERE id=?", (promo_id,)).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def delete_promotion(promo_id: int) -> bool:
+    conn = get_db()
+    conn.execute("DELETE FROM promotions WHERE id=?", (promo_id,))
+    conn.commit()
+    conn.close()
+    return True
+
+
+def check_promo_code(code: str) -> dict | None:
+    conn = get_db()
+    row = conn.execute(
+        """SELECT * FROM promotions WHERE promo_code=? AND is_active=1
+           AND (start_at IS NULL OR start_at <= datetime('now','localtime'))
+           AND (end_at IS NULL OR end_at >= datetime('now','localtime'))
+           AND (max_uses=0 OR used_count < max_uses)""",
+        (code.upper(),),
+    ).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def use_promo_code(code: str) -> None:
+    conn = get_db()
+    conn.execute(
+        "UPDATE promotions SET used_count=used_count+1 WHERE promo_code=?",
+        (code.upper(),),
+    )
+    conn.commit()
+    conn.close()
+
+
+# ─── Export/Import ──────────────────────────────────────────
+
+
+def export_users_csv() -> str:
+    import csv
+    import io
+    conn = get_db()
+    rows = conn.execute("SELECT * FROM users ORDER BY id").fetchall()
+    conn.close()
+    output = io.StringIO()
+    if rows:
+        writer = csv.DictWriter(output, fieldnames=dict(rows[0]).keys())
+        writer.writeheader()
+        for r in rows:
+            writer.writerow(dict(r))
+    return output.getvalue()
+
+
+def import_users_csv(csv_text: str) -> int:
+    import csv
+    import io
+    reader = csv.DictReader(io.StringIO(csv_text))
+    conn = get_db()
+    count = 0
+    for row in reader:
+        tid = int(row.get("telegram_id", 0))
+        if not tid:
+            continue
+        existing = conn.execute(
+            "SELECT 1 FROM users WHERE telegram_id=?", (tid,)
+        ).fetchone()
+        if existing:
+            conn.execute(
+                """UPDATE users SET first_name=?, last_name=?, phone=?, birthday=?
+                   WHERE telegram_id=?""",
+                (row.get("first_name", ""), row.get("last_name", ""),
+                 row.get("phone", ""), row.get("birthday", ""), tid),
+            )
+        else:
+            ref_code = _generate_referral_code()
+            conn.execute(
+                """INSERT INTO users (telegram_id, phone, first_name, last_name,
+                   birthday, bonuses, referral_code)
+                   VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                (tid, row.get("phone", ""), row.get("first_name", ""),
+                 row.get("last_name", ""), row.get("birthday", ""),
+                 float(row.get("bonuses", 0)), ref_code),
+            )
+        count += 1
+    conn.commit()
+    conn.close()
+    return count

@@ -4,6 +4,7 @@ Serves REST API + static webapp files.
 """
 
 import os
+import io
 import logging
 from typing import Optional
 
@@ -11,7 +12,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import uuid
 import shutil
@@ -78,6 +79,39 @@ class BroadcastCreateRequest(BaseModel):
     scheduled_at: Optional[str] = None
 
 
+class UserUpdateRequest(BaseModel):
+    telegram_id: int
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    birthday: Optional[str] = None
+    bonuses: Optional[float] = None
+    is_blocked: Optional[int] = None
+
+
+class PromotionCreateRequest(BaseModel):
+    name: str
+    type: str = "cashback_multiplier"
+    value: float = 2
+    min_purchase: float = 0
+    promo_code: Optional[str] = None
+    max_uses: int = 0
+    start_at: Optional[str] = None
+    end_at: Optional[str] = None
+
+
+class PromotionUpdateRequest(BaseModel):
+    name: Optional[str] = None
+    type: Optional[str] = None
+    value: Optional[float] = None
+    min_purchase: Optional[float] = None
+    promo_code: Optional[str] = None
+    max_uses: Optional[int] = None
+    start_at: Optional[str] = None
+    end_at: Optional[str] = None
+    is_active: Optional[int] = None
+
+
 # ─── User API ───────────────────────────────────────────────
 
 
@@ -113,6 +147,19 @@ def api_update_role(req: RoleUpdateRequest):
     if req.role not in ("client", "admin", "cashier"):
         raise HTTPException(status_code=400, detail="Invalid role")
     user = database.update_user_role(req.telegram_id, req.role)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {"ok": True, "user": user}
+
+
+@app.post("/api/user/update")
+def api_update_user(req: UserUpdateRequest):
+    kwargs = {}
+    for field in ["first_name", "last_name", "phone", "birthday", "bonuses", "is_blocked"]:
+        val = getattr(req, field, None)
+        if val is not None:
+            kwargs[field] = val
+    user = database.update_user(req.telegram_id, **kwargs)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"ok": True, "user": user}
@@ -296,6 +343,15 @@ SETTINGS_DEFAULTS = {
     "bonus_new_client_enabled": "1",
     "bonus_welcome": "3",
     "bonus_welcome_enabled": "1",
+    "notif_birthday_enabled": "1",
+    "notif_inactive_enabled": "1",
+    "notif_inactive_days": "14",
+    "notif_level_enabled": "1",
+    "notif_bonus_reminder_enabled": "1",
+    "notif_bonus_min": "50",
+    "backup_enabled": "0",
+    "backup_hour": "3",
+    "backup_admin_id": "",
 }
 
 
@@ -327,6 +383,121 @@ def api_set_settings(req: SettingsUpdateRequest):
 def api_set_setting(key: str, value: str = ""):
     database.set_setting(key, value)
     return {"ok": True}
+
+
+# ─── Analytics API ──────────────────────────────────────────
+
+
+@app.get("/api/analytics")
+def api_analytics(period: int = Query(default=30, le=365)):
+    return database.get_analytics(period)
+
+
+@app.get("/api/rfm")
+def api_rfm():
+    return database.get_rfm_segments()
+
+
+# ─── Notifications API ─────────────────────────────────────
+
+
+@app.get("/api/notifications/targets")
+def api_notification_targets():
+    birthday = database.get_birthday_users()
+    inactive = database.get_inactive_users(14)
+    approaching = database.get_level_approaching_users()
+    high_bonus = database.get_high_bonus_users(50)
+    return {
+        "birthday": birthday,
+        "inactive": inactive,
+        "level_approaching": approaching,
+        "high_bonus": high_bonus,
+    }
+
+
+# ─── Promotions API ────────────────────────────────────────
+
+
+@app.get("/api/promotions")
+def api_list_promotions(active_only: bool = False):
+    return database.get_promotions(active_only)
+
+
+@app.post("/api/promotions")
+def api_create_promotion(req: PromotionCreateRequest):
+    promo = database.create_promotion(
+        name=req.name, promo_type=req.type, value=req.value,
+        min_purchase=req.min_purchase,
+        promo_code=req.promo_code.upper() if req.promo_code else None,
+        max_uses=req.max_uses, start_at=req.start_at, end_at=req.end_at,
+    )
+    return {"ok": True, "promotion": promo}
+
+
+@app.put("/api/promotions/{promo_id}")
+def api_update_promotion(promo_id: int, req: PromotionUpdateRequest):
+    kwargs = {}
+    for field in ["name", "type", "value", "min_purchase", "promo_code",
+                   "max_uses", "start_at", "end_at", "is_active"]:
+        val = getattr(req, field, None)
+        if val is not None:
+            if field == "promo_code" and isinstance(val, str):
+                val = val.upper()
+            kwargs[field] = val
+    promo = database.update_promotion(promo_id, **kwargs)
+    if not promo:
+        raise HTTPException(status_code=404, detail="Promotion not found")
+    return {"ok": True, "promotion": promo}
+
+
+@app.delete("/api/promotions/{promo_id}")
+def api_delete_promotion(promo_id: int):
+    database.delete_promotion(promo_id)
+    return {"ok": True}
+
+
+@app.get("/api/promo/{code}")
+def api_check_promo(code: str):
+    promo = database.check_promo_code(code)
+    if not promo:
+        raise HTTPException(status_code=404, detail="Promo code not found or expired")
+    return promo
+
+
+# ─── Export/Import API ─────────────────────────────────────
+
+
+@app.get("/api/export/users")
+def api_export_users():
+    csv_data = database.export_users_csv()
+    return StreamingResponse(
+        io.StringIO(csv_data),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=flove_users.csv"},
+    )
+
+
+@app.post("/api/import/users")
+async def api_import_users(file: UploadFile = File(...)):
+    content = await file.read()
+    csv_text = content.decode("utf-8")
+    count = database.import_users_csv(csv_text)
+    return {"ok": True, "imported": count}
+
+
+# ─── Backup API ────────────────────────────────────────────
+
+
+@app.get("/api/backup")
+def api_backup():
+    db_path = database.DB_PATH
+    if not os.path.isfile(db_path):
+        raise HTTPException(status_code=404, detail="Database file not found")
+    return FileResponse(
+        db_path,
+        media_type="application/octet-stream",
+        filename="flove_backup.db",
+    )
 
 
 # ─── Upload API ─────────────────────────────────────────────

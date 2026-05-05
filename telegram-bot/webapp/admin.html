@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FLove — Админ-панель</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 <style>
   :root {
     --bg: #F0EBE1;
@@ -22,6 +23,7 @@
     --border: rgba(92,61,46,0.10);
     --shadow: 0 2px 20px rgba(44,26,14,0.08);
     --mob-nav-h: 86px;
+    --danger: #D04848;
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body { background:var(--bg); color:var(--espresso); font-family:'Jost',sans-serif; font-weight:300; min-height:100vh; }
@@ -32,7 +34,7 @@
   .sb-logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; letter-spacing:0.08em; color:#F5F0E8; }
   .sb-logo span { color:var(--sage); font-style:italic; }
   .sb-sub { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.3); margin-top:4px; }
-  .sb-nav { flex:1; padding:20px 12px; display:flex; flex-direction:column; gap:4px; }
+  .sb-nav { flex:1; padding:20px 12px; display:flex; flex-direction:column; gap:4px; overflow-y:auto; }
   .sb-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px; cursor:pointer; transition:background 0.2s; border:none; background:transparent; width:100%; text-align:left; }
   .sb-item:hover { background:rgba(255,255,255,0.06); }
   .sb-item.active { background:rgba(98,124,65,0.18); }
@@ -51,11 +53,12 @@
   .page-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
   .page-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; letter-spacing:0.02em; }
   .page-date { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--text-muted); margin-top:4px; text-transform:uppercase; }
-  .action-row { display:flex; gap:10px; align-items:center; }
+  .action-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
   .btn-primary { background:var(--sage); color:var(--surface); border:none; border-radius:12px; padding:10px 18px; font-family:'Jost',sans-serif; font-size:12px; font-weight:500; letter-spacing:0.06em; cursor:pointer; transition:opacity 0.2s; display:flex; align-items:center; gap:7px; }
   .btn-primary:hover { opacity:0.85; }
   .btn-secondary { background:var(--surface); color:var(--espresso); border:1px solid var(--border); border-radius:12px; padding:10px 18px; font-family:'Jost',sans-serif; font-size:12px; font-weight:400; letter-spacing:0.06em; cursor:pointer; transition:background 0.2s; }
   .btn-secondary:hover { background:#F0EBE1; }
+  .btn-danger { background:rgba(208,72,72,0.1); color:var(--danger); border:1px solid rgba(208,72,72,0.2); border-radius:12px; padding:10px 18px; font-family:'Jost',sans-serif; font-size:12px; cursor:pointer; }
 
   .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
   .kpi-card { background:var(--surface); border-radius:20px; padding:22px; border:1px solid var(--border); box-shadow:var(--shadow); position:relative; overflow:hidden; transition:transform 0.15s,box-shadow 0.15s; }
@@ -103,11 +106,11 @@
   .mob-admin-icon svg { stroke:var(--sage-l); }
 
   .mobile-bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:200; padding:0 14px 14px; }
-  .mob-nav-inner { background:var(--espresso); border-radius:26px; display:flex; align-items:center; justify-content:space-around; padding:0 6px; height:var(--mob-nav-h); box-shadow:0 8px 40px rgba(44,26,14,0.45); }
-  .mob-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px 6px; cursor:pointer; border:none; background:transparent; flex:1; }
+  .mob-nav-inner { background:var(--espresso); border-radius:26px; display:flex; align-items:center; justify-content:space-around; padding:0 6px; height:var(--mob-nav-h); box-shadow:0 8px 40px rgba(44,26,14,0.45); overflow-x:auto; }
+  .mob-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px 6px; cursor:pointer; border:none; background:transparent; flex:1; min-width:52px; }
   .mob-nav-item svg { width:22px; height:22px; stroke:rgba(245,240,232,0.38); transition:stroke 0.2s; }
   .mob-nav-item.active svg { stroke:var(--sage-l); }
-  .mob-nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.10em; text-transform:uppercase; color:rgba(245,240,232,0.38); transition:color 0.2s; }
+  .mob-nav-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.10em; text-transform:uppercase; color:rgba(245,240,232,0.38); transition:color 0.2s; }
   .mob-nav-item.active .mob-nav-label { color:var(--sage-l); }
 
   .bc-form-group { margin-bottom:16px; }
@@ -115,9 +118,6 @@
   .bc-input, .bc-textarea { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:'Jost',sans-serif; font-size:13px; color:var(--espresso); background:var(--bg); resize:vertical; }
   .bc-textarea { min-height:120px; }
   .bc-select { padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:12px; background:var(--bg); color:var(--espresso); }
-  .bc-preview { background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-top:16px; min-height:80px; font-size:14px; line-height:1.6; }
-  .bc-preview img { max-width:100%; border-radius:10px; margin-bottom:10px; }
-  .bc-preview .prev-btn { display:inline-block; padding:8px 16px; background:var(--sage); color:white; border-radius:8px; font-size:12px; text-decoration:none; margin:4px 4px 4px 0; }
   .bc-btn-row { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
   .bc-history-item { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; }
   .bc-status { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
@@ -148,11 +148,11 @@
   .img-upload-label svg { width:28px; height:28px; stroke:var(--text-muted); }
   .img-remove { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; background:rgba(0,0,0,0.5); color:white; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; }
 
-  .link-modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:1000; }
-  .link-modal { background:var(--surface); border-radius:16px; padding:24px; width:360px; max-width:90%; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
-  .link-modal h3 { font-family:'Cormorant Garamond',serif; font-size:18px; margin-bottom:16px; font-weight:400; }
-  .link-modal input { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:13px; margin-bottom:10px; background:var(--bg); }
-  .link-modal-btns { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+  .link-modal-overlay, .modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:1000; }
+  .link-modal, .modal-box { background:var(--surface); border-radius:16px; padding:24px; width:420px; max-width:90%; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+  .link-modal h3, .modal-box h3 { font-family:'Cormorant Garamond',serif; font-size:18px; margin-bottom:16px; font-weight:400; }
+  .link-modal input, .modal-box input, .modal-box select { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:13px; margin-bottom:10px; background:var(--bg); }
+  .link-modal-btns, .modal-btns { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
 
   .bc-editor:empty:before { content:attr(data-placeholder); color:var(--text-muted); pointer-events:none; }
 
@@ -170,6 +170,36 @@
   .bc-hist-btn:hover { border-color:var(--sage); color:var(--sage); }
   .bc-hist-btn.send { background:var(--sage); color:white; border-color:var(--sage); }
   .bc-hist-btn.send:hover { opacity:0.85; }
+
+  .rfm-chip { display:inline-flex; align-items:center; gap:4px; border-radius:20px; padding:3px 9px; font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.12em; text-transform:uppercase; }
+  .rfm-champion { background:rgba(98,124,65,0.15); color:var(--sage); }
+  .rfm-loyal { background:rgba(196,149,90,0.15); color:var(--caramel); }
+  .rfm-promising { background:rgba(100,149,237,0.12); color:#4A7FBF; }
+  .rfm-sleeping { background:rgba(180,180,200,0.15); color:#888; }
+  .rfm-lost { background:rgba(208,72,72,0.1); color:var(--danger); }
+
+  .chart-container { padding:20px 24px; }
+  .chart-container canvas { max-height:280px; }
+  .period-tabs { display:flex; gap:4px; }
+  .period-tab { padding:6px 14px; border-radius:20px; border:1px solid var(--border); background:transparent; cursor:pointer; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; color:var(--text-muted); }
+  .period-tab.active { background:var(--sage); color:white; border-color:var(--sage); }
+
+  .heatmap-grid { display:grid; grid-template-columns:40px repeat(24, 1fr); gap:2px; padding:10px 24px 24px; font-size:8px; }
+  .heatmap-cell { aspect-ratio:1; border-radius:3px; display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:7px; color:var(--text-muted); }
+  .heatmap-label { display:flex; align-items:center; font-family:'DM Mono',monospace; font-size:8px; color:var(--text-muted); }
+
+  .promo-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:12px; }
+  .promo-card.inactive { opacity:0.6; }
+  .promo-card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .promo-type { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; text-transform:uppercase; padding:3px 8px; border-radius:12px; }
+
+  .notif-card { background:var(--bg); border-radius:12px; padding:14px 18px; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .notif-card-info { flex:1; }
+  .notif-card-count { font-family:'Cormorant Garamond',serif; font-size:28px; color:var(--coffee); line-height:1; }
+
+  .td-actions { display:flex; gap:4px; }
+  .td-actions button { padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-size:11px; }
+  .td-actions button:hover { border-color:var(--sage); }
 
   @media (max-width:900px) { .kpi-grid { grid-template-columns:1fr 1fr; } .two-col { grid-template-columns:1fr; } }
   @media (max-width:640px) {
@@ -199,8 +229,9 @@
   <div class="mob-nav-inner">
     <button class="mob-nav-item active" onclick="mobNav('dashboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="mob-nav-label">Дашборд</span></button>
     <button class="mob-nav-item" onclick="mobNav('clients',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span class="mob-nav-label">Клиенты</span></button>
+    <button class="mob-nav-item" onclick="mobNav('analytics',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="mob-nav-label">Аналитика</span></button>
+    <button class="mob-nav-item" onclick="mobNav('promotions',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="mob-nav-label">Акции</span></button>
     <button class="mob-nav-item" onclick="mobNav('broadcasts',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span class="mob-nav-label">Рассылки</span></button>
-    <button class="mob-nav-item" onclick="mobNav('bonuses',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg><span class="mob-nav-label">Бонусы</span></button>
     <button class="mob-nav-item" onclick="mobNav('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00-.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82 1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="mob-nav-label">Настройки</span></button>
   </div>
 </nav>
@@ -211,11 +242,13 @@
     <nav class="sb-nav">
       <button class="sb-item active" onclick="sbNav(this,'dashboard')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="sb-label">Дашборд</span></button>
       <button class="sb-item" onclick="sbNav(this,'clients')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span class="sb-label">Клиенты</span></button>
+      <button class="sb-item" onclick="sbNav(this,'analytics')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="sb-label">Аналитика</span></button>
+      <button class="sb-item" onclick="sbNav(this,'promotions')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span class="sb-label">Акции</span></button>
       <button class="sb-item" onclick="sbNav(this,'broadcasts')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span><span class="sb-label">Рассылки</span></button>
       <button class="sb-item" onclick="sbNav(this,'bonuses')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg></span><span class="sb-label">Бонусы</span></button>
       <button class="sb-item" onclick="sbNav(this,'settings')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83"/></svg></span><span class="sb-label">Настройки</span></button>
     </nav>
-    <div class="sb-footer"><div class="sb-user"><div class="sb-avatar">A</div><div><div class="sb-user-name">Администратор</div><div class="sb-user-role">Owner · FLove</div></div></div></div>
+    <div class="sb-footer"><div class="sb-user"><div class="sb-avatar">A</div><div><div class="sb-user-name">Администратор</div><div class="sb-user-role">Owner</div></div></div></div>
   </aside>
 
   <main class="content">
@@ -248,9 +281,61 @@
   <div id="pageClients" style="display:none">
     <div class="page-header">
       <div><div class="page-title">Клиенты</div><div class="page-date" id="clientsCount"></div></div>
-      <div class="action-row"><input type="text" id="clientSearch" placeholder="Поиск..." style="padding:10px 16px;border:1px solid var(--border);border-radius:12px;font-family:'Jost',sans-serif;font-size:12px;background:var(--surface);width:200px;" oninput="loadClients()"></div>
+      <div class="action-row">
+        <input type="text" id="clientSearch" placeholder="Поиск..." style="padding:10px 16px;border:1px solid var(--border);border-radius:12px;font-family:'Jost',sans-serif;font-size:12px;background:var(--surface);width:160px;" oninput="loadClients()">
+        <button class="btn-secondary" onclick="exportClients()">Экспорт CSV</button>
+        <button class="btn-secondary" onclick="document.getElementById('importFile').click()">Импорт CSV</button>
+        <input type="file" id="importFile" accept=".csv" style="display:none" onchange="importClients(this)">
+      </div>
     </div>
-    <div class="card"><div class="table-wrap"><table><thead><tr><th>Имя</th><th>Телефон</th><th>Уровень</th><th>Бонусы</th><th>Покупки</th><th>Дата рег.</th></tr></thead><tbody id="clientsTable"></tbody></table></div></div>
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Имя</th><th>Телефон</th><th>Уровень</th><th>RFM</th><th>Бонусы</th><th>Покупки</th><th>Дата рег.</th><th></th></tr></thead><tbody id="clientsTable"></tbody></table></div></div>
+  </div>
+
+  <!-- ANALYTICS -->
+  <div id="pageAnalytics" style="display:none">
+    <div class="page-header">
+      <div><div class="page-title">Аналитика</div><div class="page-date">Обзор продаж и клиентов</div></div>
+      <div class="action-row">
+        <div class="period-tabs">
+          <button class="period-tab" onclick="loadAnalytics(7,this)">7 дней</button>
+          <button class="period-tab active" onclick="loadAnalytics(30,this)">30 дней</button>
+          <button class="period-tab" onclick="loadAnalytics(90,this)">90 дней</button>
+        </div>
+      </div>
+    </div>
+    <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr);">
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--sage),var(--sage-l))"></div><div class="kpi-label">Выручка</div><div class="kpi-val" id="anRevenue">—</div></div>
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--caramel),#E8A84C)"></div><div class="kpi-label">Средний чек</div><div class="kpi-val" id="anAvgCheck">—</div></div>
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--bronze),#E8A84C)"></div><div class="kpi-label">Покупок</div><div class="kpi-val" id="anPurchases">—</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card"><div class="card-head"><div class="card-title">Продажи по дням</div></div>
+        <div class="chart-container"><canvas id="chartSales"></canvas></div>
+      </div>
+      <div class="card"><div class="card-head"><div class="card-title">Средний чек по дням</div></div>
+        <div class="chart-container"><canvas id="chartAvg"></canvas></div>
+      </div>
+    </div>
+    <div class="two-col">
+      <div class="card"><div class="card-head"><div class="card-title">Тепловая карта покупок</div><div class="card-badge">час × день недели</div></div>
+        <div class="heatmap-grid" id="heatmapGrid"></div>
+      </div>
+      <div class="card"><div class="card-head"><div class="card-title">RFM-сегментация</div></div>
+        <div class="mini-stats" id="rfmStats"></div>
+        <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>R</th><th>F</th><th>M</th><th>Сегмент</th></tr></thead><tbody id="rfmTable"></tbody></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROMOTIONS -->
+  <div id="pagePromotions" style="display:none">
+    <div class="page-header">
+      <div><div class="page-title">Акции и промокоды</div><div class="page-date">Управление скидками и бонусами</div></div>
+      <div class="action-row">
+        <button class="btn-primary" onclick="showPromoModal()">+ Создать акцию</button>
+      </div>
+    </div>
+    <div id="promoList"></div>
   </div>
 
   <!-- BROADCASTS -->
@@ -264,8 +349,6 @@
           <div style="font-family:'Cormorant Garamond',serif;font-size:18px;" id="bcFormTitle">Создать рассылку</div>
           <span id="bcEditingId" style="display:none"></span>
         </div>
-
-        <!-- Image upload -->
         <div class="bc-form-group">
           <label class="bc-label">Изображение</label>
           <div class="img-upload-area" id="imgUploadArea" onclick="document.getElementById('imgFileInput').click()">
@@ -276,8 +359,6 @@
           </div>
           <input type="file" id="imgFileInput" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
         </div>
-
-        <!-- Text with WYSIWYG editor -->
         <div class="bc-form-group">
           <label class="bc-label">Текст сообщения</label>
           <div class="fmt-toolbar">
@@ -292,8 +373,6 @@
           <div class="bc-editor with-toolbar" id="bcEditor" contenteditable="true" style="min-height:120px;padding:12px 16px;border:1px solid var(--border);border-radius:0 0 12px 12px;font-family:'Jost',sans-serif;font-size:13px;color:var(--espresso);background:var(--bg);outline:none;line-height:1.6;white-space:pre-wrap;" data-placeholder="Введите текст рассылки..."></div>
           <textarea class="bc-textarea with-toolbar" id="bcTextCode" style="display:none;min-height:120px;font-family:'DM Mono',monospace;font-size:12px;" placeholder="HTML-код рассылки..."></textarea>
         </div>
-
-        <!-- Audience -->
         <div class="bc-form-group">
           <label class="bc-label">Аудитория</label>
           <select class="bc-select" id="bcFilter">
@@ -304,8 +383,6 @@
             <option value="active">Активные за 30 дней</option>
           </select>
         </div>
-
-        <!-- Schedule -->
         <div class="bc-form-group">
           <label class="bc-label">Когда отправить</label>
           <div style="display:flex;gap:10px;align-items:center;">
@@ -316,17 +393,11 @@
             <input type="datetime-local" id="bcScheduleDate" class="bc-input" style="display:none;width:auto;">
           </div>
         </div>
-
-        <!-- Buttons -->
         <div class="bc-form-group">
           <label class="bc-label">Кнопки</label>
           <div class="btn-list" id="bcButtonsList"></div>
-          <button class="btn-add" onclick="addButtonRow()" style="margin-top:8px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Добавить кнопку
-          </button>
+          <button class="btn-add" onclick="addButtonRow()" style="margin-top:8px;">+ Добавить кнопку</button>
         </div>
-
         <div class="bc-btn-row">
           <button class="btn-primary" onclick="sendBroadcastNow()">Отправить</button>
           <button class="btn-secondary" onclick="saveBroadcast()">Сохранить черновик</button>
@@ -338,8 +409,6 @@
         <div id="bcHistory" style="padding:0;"></div>
       </div>
     </div>
-
-    <!-- Link insert modal -->
     <div class="link-modal-overlay" id="linkModal" style="display:none" onclick="if(event.target===this)closeLinkModal()">
       <div class="link-modal">
         <h3>Вставить ссылку</h3>
@@ -370,7 +439,6 @@
       <div class="card" style="padding:24px;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Параметры кэшбэка</div>
         <div style="display:flex;flex-direction:column;gap:20px;" id="cashbackSettings">
-          <!-- Bronze -->
           <div class="setting-row">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div class="bc-label" style="margin-bottom:0">Бронза</div>
@@ -385,7 +453,6 @@
               <span style="font-size:12px;color:var(--text-muted);">р.</span>
             </div>
           </div>
-          <!-- Silver -->
           <div class="setting-row">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div class="bc-label" style="margin-bottom:0">Серебро</div>
@@ -400,7 +467,6 @@
               <span style="font-size:12px;color:var(--text-muted);">р.</span>
             </div>
           </div>
-          <!-- Gold -->
           <div class="setting-row">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div class="bc-label" style="margin-bottom:0">Золото</div>
@@ -420,7 +486,6 @@
       <div class="card" style="padding:24px;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Бонусная программа</div>
         <div style="display:flex;flex-direction:column;gap:20px;">
-          <!-- Referrer bonus -->
           <div class="setting-row">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div class="bc-label" style="margin-bottom:0">Бонус рефереру</div>
@@ -431,7 +496,6 @@
               <span style="font-size:12px;color:var(--text-muted);">р. за каждого приглашённого</span>
             </div>
           </div>
-          <!-- New client bonus -->
           <div class="setting-row">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div class="bc-label" style="margin-bottom:0">Бонус новому клиенту</div>
@@ -442,7 +506,6 @@
               <span style="font-size:12px;color:var(--text-muted);">р. при регистрации по ссылке</span>
             </div>
           </div>
-          <!-- Welcome bonus -->
           <div class="setting-row">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
               <div class="bc-label" style="margin-bottom:0">Приветственный бонус</div>
@@ -454,6 +517,78 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+    <!-- Notifications & Backup settings -->
+    <div class="two-col" style="margin-top:0;">
+      <div class="card" style="padding:24px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Умные уведомления</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div><div class="bc-label" style="margin-bottom:2px">День рождения</div><div style="font-size:11px;color:var(--text-muted);">Поздравления клиентов в их ДР</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="set_notif_birthday_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div><div class="bc-label" style="margin-bottom:2px">Неактивные клиенты</div><div style="font-size:11px;color:var(--text-muted);">Напоминание о себе тем, кто давно не заходил</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="set_notif_inactive_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+              <span style="font-size:11px;color:var(--text-muted);">Неактивен</span>
+              <input type="number" id="set_notif_inactive_days" value="14" min="1" max="90" style="width:60px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:11px;color:var(--text-muted);">дней</span>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div><div class="bc-label" style="margin-bottom:2px">Приближение к уровню</div><div style="font-size:11px;color:var(--text-muted);">Мотивация при приближении к следующему уровню</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="set_notif_level_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div><div class="bc-label" style="margin-bottom:2px">Напоминание о бонусах</div><div style="font-size:11px;color:var(--text-muted);">Напомнить потратить накопленные бонусы</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="set_notif_bonus_reminder_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+              <span style="font-size:11px;color:var(--text-muted);">Мин. бонусов</span>
+              <input type="number" id="set_notif_bonus_min" value="50" min="1" style="width:70px;padding:6px 8px;border:1px solid var(--border);border-radius:8px;font-size:12px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:11px;color:var(--text-muted);">р.</span>
+            </div>
+          </div>
+        </div>
+        <div id="notifTargets" style="margin-top:20px;"></div>
+      </div>
+      <div class="card" style="padding:24px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Автобэкап</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div><div class="bc-label" style="margin-bottom:2px">Ежедневный бэкап</div><div style="font-size:11px;color:var(--text-muted);">Отправка копии БД в Telegram</div></div>
+              <label class="toggle-switch"><input type="checkbox" id="set_backup_enabled" onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="bc-label" style="margin-bottom:6px">Время отправки</div>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <select id="set_backup_hour" class="bc-select" style="width:auto;" onchange="saveSettings()">
+                <option value="0">00:00</option><option value="1">01:00</option><option value="2">02:00</option><option value="3" selected>03:00</option>
+                <option value="4">04:00</option><option value="5">05:00</option><option value="6">06:00</option><option value="7">07:00</option>
+                <option value="8">08:00</option><option value="9">09:00</option><option value="10">10:00</option><option value="11">11:00</option>
+                <option value="12">12:00</option><option value="13">13:00</option><option value="14">14:00</option><option value="15">15:00</option>
+                <option value="16">16:00</option><option value="17">17:00</option><option value="18">18:00</option><option value="19">19:00</option>
+                <option value="20">20:00</option><option value="21">21:00</option><option value="22">22:00</option><option value="23">23:00</option>
+              </select>
+            </div>
+          </div>
+          <div class="setting-row">
+            <div class="bc-label" style="margin-bottom:6px">Telegram ID администратора</div>
+            <input type="text" id="set_backup_admin_id" value="" placeholder="Telegram ID" style="width:160px;padding:8px 12px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);" onchange="saveSettings()">
+          </div>
+          <button class="btn-secondary" onclick="downloadBackup()">Скачать бэкап сейчас</button>
+        </div>
         <div id="settingsSaveStatus" style="margin-top:16px;font-size:12px;color:var(--sage);display:none;">Сохранено</div>
       </div>
     </div>
@@ -462,13 +597,67 @@
   </main>
 </div>
 
+<!-- Client Edit Modal -->
+<div class="modal-overlay" id="clientModal" style="display:none" onclick="if(event.target===this)closeClientModal()">
+  <div class="modal-box">
+    <h3>Редактировать клиента</h3>
+    <input type="hidden" id="editTelegramId">
+    <label class="bc-label">Имя</label>
+    <input type="text" id="editFirstName" placeholder="Имя">
+    <label class="bc-label">Фамилия</label>
+    <input type="text" id="editLastName" placeholder="Фамилия">
+    <label class="bc-label">Телефон</label>
+    <input type="text" id="editPhone" placeholder="+7...">
+    <label class="bc-label">Дата рождения</label>
+    <input type="text" id="editBirthday" placeholder="ДД.ММ.ГГГГ">
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closeClientModal()">Отмена</button>
+      <button class="btn-primary" onclick="saveClient()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Promo Create/Edit Modal -->
+<div class="modal-overlay" id="promoModal" style="display:none" onclick="if(event.target===this)closePromoModal()">
+  <div class="modal-box" style="width:480px;">
+    <h3 id="promoModalTitle">Создать акцию</h3>
+    <input type="hidden" id="promoEditId">
+    <label class="bc-label">Название</label>
+    <input type="text" id="promoName" placeholder="Название акции">
+    <label class="bc-label">Тип</label>
+    <select id="promoType" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);margin-bottom:10px;">
+      <option value="cashback_multiplier">Множитель кэшбэка (x2, x3...)</option>
+      <option value="fixed_discount">Фиксированная скидка (р.)</option>
+      <option value="percentage_discount">Процентная скидка (%)</option>
+    </select>
+    <label class="bc-label">Значение</label>
+    <input type="number" id="promoValue" placeholder="2" step="0.1" min="0">
+    <label class="bc-label">Мин. сумма покупки (р.)</label>
+    <input type="number" id="promoMinPurchase" placeholder="0" min="0">
+    <label class="bc-label">Промокод (необязательно)</label>
+    <input type="text" id="promoCode" placeholder="SPRING2025" style="text-transform:uppercase;">
+    <label class="bc-label">Макс. использований (0 = без лимита)</label>
+    <input type="number" id="promoMaxUses" placeholder="0" min="0">
+    <div style="display:flex;gap:10px;">
+      <div style="flex:1"><label class="bc-label">Начало</label><input type="datetime-local" id="promoStart"></div>
+      <div style="flex:1"><label class="bc-label">Конец</label><input type="datetime-local" id="promoEnd"></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-secondary" onclick="closePromoModal()">Отмена</button>
+      <button class="btn-primary" onclick="savePromo()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <script>
-const API = window.location.origin;
-const params = new URLSearchParams(window.location.search);
-const USER_ID = params.get('user_id') || '0';
-const PAGES = {
+var API = window.location.origin;
+var params = new URLSearchParams(window.location.search);
+var USER_ID = params.get('user_id') || '0';
+var PAGES = {
   dashboard: document.getElementById('pageDashboard'),
   clients: document.getElementById('pageClients'),
+  analytics: document.getElementById('pageAnalytics'),
+  promotions: document.getElementById('pagePromotions'),
   broadcasts: document.getElementById('pageBroadcasts'),
   bonuses: document.getElementById('pageBonuses'),
   settings: document.getElementById('pageSettings'),
@@ -489,9 +678,11 @@ function showPage(section) {
   if (PAGES[section]) PAGES[section].style.display='block';
   if (section === 'dashboard') loadDashboard();
   if (section === 'clients') loadClients();
+  if (section === 'analytics') loadAnalytics(30);
+  if (section === 'promotions') loadPromotions();
   if (section === 'broadcasts') loadBroadcasts();
   if (section === 'bonuses') loadAllTxn();
-  if (section === 'settings') loadSettings();
+  if (section === 'settings') { loadSettings(); loadNotifTargets(); }
 }
 
 function fmtDate(dt) {
@@ -505,9 +696,13 @@ function levelClass(level) {
   return 'level-bronze';
 }
 function levelIcon(level) {
-  if (level==='Золото') return '✦';
-  if (level==='Серебро') return '◈';
-  return '◆';
+  if (level==='Золото') return '\u2726';
+  if (level==='Серебро') return '\u25C8';
+  return '\u25C6';
+}
+function rfmLabel(segment) {
+  var map = {champion:'Чемпион',loyal:'Лояльный',promising:'Перспективный',sleeping:'Засыпающий',lost:'Потерянный'};
+  return map[segment] || segment;
 }
 
 // ─── Dashboard ──────────────────────────────
@@ -515,20 +710,16 @@ async function loadDashboard() {
   var now = new Date();
   var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
   var days = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
-  document.getElementById('dashDate').textContent = String(now.getDate()).padStart(2,'0')+' '+months[now.getMonth()]+' '+now.getFullYear()+' · '+days[now.getDay()];
-
+  document.getElementById('dashDate').textContent = String(now.getDate()).padStart(2,'0')+' '+months[now.getMonth()]+' '+now.getFullYear()+' \u00b7 '+days[now.getDay()];
   try {
     var res = await fetch(API+'/api/admin/stats');
     var s = await res.json();
-
     document.getElementById('kpiUsers').textContent = s.total_users;
     document.getElementById('kpiBonuses').innerHTML = s.total_bonuses+'<sup style="font-size:18px"> р.</sup>';
     document.getElementById('kpiTxn').textContent = s.txn_today;
     document.getElementById('kpiRef').textContent = s.ref_total;
-    document.getElementById('kpiNewMonth').textContent = '↑ +'+s.new_this_month+' за месяц';
+    document.getElementById('kpiNewMonth').textContent = '\u2191 +'+s.new_this_month+' за месяц';
     document.getElementById('txnBadge').textContent = s.recent_transactions.length+' записей';
-
-    // Level stats
     var levels = s.levels || {};
     var total = s.total_users || 1;
     var statsHtml = '';
@@ -538,22 +729,18 @@ async function loadDashboard() {
       statsHtml += '<div class="mini-stat"><div class="mini-stat-label">'+l[0]+'</div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:'+pct+'%;background:'+l[1]+';"></div></div><div class="mini-stat-val">'+cnt+'</div></div>';
     });
     document.getElementById('levelStats').innerHTML = statsHtml;
-
-    // Top clients
     var topHtml = '';
     (s.top_clients || []).slice(0,5).forEach(function(u) {
       topHtml += '<tr><td class="td-name">'+u.first_name+' '+(u.last_name||'')+'</td><td class="td-bonus">'+u.total_purchases+' р.</td><td><span class="level-chip '+levelClass(u.level)+'">'+levelIcon(u.level)+' '+u.level+'</span></td></tr>';
     });
     document.getElementById('topClients').innerHTML = topHtml || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:20px;">Нет данных</td></tr>';
-
-    // Recent transactions
     var txnHtml = '';
     (s.recent_transactions || []).slice(0,10).forEach(function(t) {
       txnHtml += '<tr><td class="td-name">'+(t.first_name||'')+' '+(t.last_name||'')+'</td><td>'+t.type+'</td><td>'+t.amount+' р.</td><td style="color:'+(t.bonuses_change>=0?'var(--sage)':'var(--copper)')+';">'+(t.bonuses_change>=0?'+':'')+t.bonuses_change+' р.</td><td class="td-date">'+fmtDate(t.created_at)+'</td></tr>';
     });
     document.getElementById('recentTxn').innerHTML = txnHtml || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Нет транзакций</td></tr>';
   } catch(e) {
-    document.getElementById('kpiUsers').textContent = '—';
+    document.getElementById('kpiUsers').textContent = '\u2014';
   }
 }
 
@@ -564,362 +751,363 @@ async function loadClients() {
     var res = await fetch(API+'/api/users?search='+encodeURIComponent(search)+'&limit=100');
     var data = await res.json();
     document.getElementById('clientsCount').textContent = data.total+' клиентов';
+    var rfmRes = await fetch(API+'/api/rfm');
+    var rfmData = await rfmRes.json();
+    var rfmMap = {};
+    rfmData.forEach(function(r){ rfmMap[r.telegram_id] = r; });
     var html = '';
     data.users.forEach(function(u) {
-      html += '<tr><td class="td-name">'+u.first_name+' '+(u.last_name||'')+'</td><td class="td-phone">'+(u.phone||'—')+'</td><td><span class="level-chip '+levelClass(u.level)+'">'+levelIcon(u.level)+' '+u.level+'</span></td><td class="td-bonus">'+u.bonuses+' р.</td><td>'+u.total_purchases+' р.</td><td class="td-date">'+fmtDate(u.created_at)+'</td></tr>';
+      var rfm = rfmMap[u.telegram_id];
+      var seg = rfm ? rfm.segment : 'lost';
+      var rfmBadge = '<span class="rfm-chip rfm-'+seg+'">'+rfmLabel(seg)+'</span>';
+      html += '<tr><td class="td-name">'+u.first_name+' '+(u.last_name||'')+'</td><td class="td-phone">'+(u.phone||'\u2014')+'</td><td><span class="level-chip '+levelClass(u.level)+'">'+levelIcon(u.level)+' '+u.level+'</span></td><td>'+rfmBadge+'</td><td class="td-bonus">'+u.bonuses+' р.</td><td>'+u.total_purchases+' р.</td><td class="td-date">'+fmtDate(u.created_at)+'</td><td class="td-actions"><button onclick="editClient('+u.telegram_id+')">&#9998;</button></td></tr>';
     });
-    document.getElementById('clientsTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Нет клиентов</td></tr>';
+    document.getElementById('clientsTable').innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">Нет клиентов</td></tr>';
   } catch(e) {
-    document.getElementById('clientsTable').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';
+    document.getElementById('clientsTable').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';
   }
+}
+
+async function editClient(tid) {
+  try {
+    var res = await fetch(API+'/api/user/'+tid);
+    var u = await res.json();
+    document.getElementById('editTelegramId').value = u.telegram_id;
+    document.getElementById('editFirstName').value = u.first_name || '';
+    document.getElementById('editLastName').value = u.last_name || '';
+    document.getElementById('editPhone').value = u.phone || '';
+    document.getElementById('editBirthday').value = u.birthday || '';
+    document.getElementById('clientModal').style.display = 'flex';
+  } catch(e) { alert('Ошибка загрузки клиента'); }
+}
+function closeClientModal() { document.getElementById('clientModal').style.display = 'none'; }
+async function saveClient() {
+  var data = {
+    telegram_id: parseInt(document.getElementById('editTelegramId').value),
+    first_name: document.getElementById('editFirstName').value.trim(),
+    last_name: document.getElementById('editLastName').value.trim(),
+    phone: document.getElementById('editPhone').value.trim(),
+    birthday: document.getElementById('editBirthday').value.trim()
+  };
+  try {
+    var res = await fetch(API+'/api/user/update', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var result = await res.json();
+    if (result.ok) {
+      closeClientModal();
+      loadClients();
+    } else { alert('Ошибка сохранения'); }
+  } catch(e) { alert('Ошибка сохранения'); }
+}
+
+function exportClients() {
+  window.open(API+'/api/export/users', '_blank');
+}
+async function importClients(input) {
+  if (!input.files || !input.files[0]) return;
+  var formData = new FormData();
+  formData.append('file', input.files[0]);
+  try {
+    var res = await fetch(API+'/api/import/users', {method:'POST',body:formData});
+    var data = await res.json();
+    if (data.ok) {
+      alert('Импортировано: '+data.imported+' клиентов');
+      loadClients();
+    }
+  } catch(e) { alert('Ошибка импорта'); }
+  input.value = '';
+}
+
+// ─── Analytics ──────────────────────────────
+var salesChart = null, avgChart = null;
+
+async function loadAnalytics(period, btn) {
+  if (btn) {
+    document.querySelectorAll('.period-tab').forEach(function(t){t.classList.remove('active');});
+    btn.classList.add('active');
+  }
+  try {
+    var res = await fetch(API+'/api/analytics?period='+period);
+    var d = await res.json();
+    document.getElementById('anRevenue').innerHTML = d.total_revenue.toLocaleString('ru')+' <sup style="font-size:18px">р.</sup>';
+    document.getElementById('anAvgCheck').innerHTML = d.avg_check.toLocaleString('ru')+' <sup style="font-size:18px">р.</sup>';
+    document.getElementById('anPurchases').textContent = d.total_purchases;
+    // Sales chart
+    var labels = d.sales_by_day.map(function(r){return r.day.slice(5);});
+    var values = d.sales_by_day.map(function(r){return r.total;});
+    if (salesChart) salesChart.destroy();
+    salesChart = new Chart(document.getElementById('chartSales'), {
+      type:'line',
+      data:{labels:labels,datasets:[{label:'Продажи (р.)',data:values,borderColor:'#627c41',backgroundColor:'rgba(98,124,65,0.1)',fill:true,tension:0.3}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+    });
+    // Avg check chart
+    var avgLabels = d.sales_by_day.map(function(r){return r.day.slice(5);});
+    var avgValues = d.sales_by_day.map(function(r){return Math.round(r.avg_check);});
+    if (avgChart) avgChart.destroy();
+    avgChart = new Chart(document.getElementById('chartAvg'), {
+      type:'bar',
+      data:{labels:avgLabels,datasets:[{label:'Средний чек (р.)',data:avgValues,backgroundColor:'rgba(196,149,90,0.5)',borderRadius:6}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+    });
+    // Heatmap
+    renderHeatmap(d.heatmap);
+    // RFM
+    loadRFM();
+  } catch(e) { console.error('Analytics error', e); }
+}
+
+function renderHeatmap(data) {
+  var grid = document.getElementById('heatmapGrid');
+  var dayNames = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+  var map = {};
+  var maxVal = 1;
+  data.forEach(function(r){
+    var key = r.dow+'-'+r.hour;
+    map[key] = r.cnt;
+    if (r.cnt > maxVal) maxVal = r.cnt;
+  });
+  var html = '<div class="heatmap-label"></div>';
+  for (var h=0; h<24; h++) html += '<div class="heatmap-label" style="justify-content:center;">'+h+'</div>';
+  for (var d=0; d<7; d++) {
+    html += '<div class="heatmap-label">'+dayNames[d]+'</div>';
+    for (var h=0; h<24; h++) {
+      var cnt = map[d+'-'+h] || 0;
+      var intensity = cnt / maxVal;
+      var bg = cnt === 0 ? 'rgba(44,26,14,0.04)' : 'rgba(98,124,65,'+Math.max(0.1,intensity).toFixed(2)+')';
+      var color = intensity > 0.5 ? 'white' : 'var(--text-muted)';
+      html += '<div class="heatmap-cell" style="background:'+bg+';color:'+color+';">'+(cnt||'')+'</div>';
+    }
+  }
+  grid.innerHTML = html;
+}
+
+async function loadRFM() {
+  try {
+    var res = await fetch(API+'/api/rfm');
+    var data = await res.json();
+    var segments = {champion:0,loyal:0,promising:0,sleeping:0,lost:0};
+    data.forEach(function(r){ segments[r.segment] = (segments[r.segment]||0)+1; });
+    var total = data.length || 1;
+    var colors = {champion:'var(--sage)',loyal:'var(--caramel)',promising:'#4A7FBF',sleeping:'#888',lost:'var(--danger)'};
+    var statsHtml = '';
+    Object.keys(segments).forEach(function(seg) {
+      var cnt = segments[seg];
+      var pct = Math.round(cnt/total*100);
+      statsHtml += '<div class="mini-stat"><div class="mini-stat-label"><span class="rfm-chip rfm-'+seg+'">'+rfmLabel(seg)+'</span></div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:'+pct+'%;background:'+colors[seg]+';"></div></div><div class="mini-stat-val">'+cnt+'</div></div>';
+    });
+    document.getElementById('rfmStats').innerHTML = statsHtml;
+    var tableHtml = '';
+    data.slice(0,20).forEach(function(r) {
+      tableHtml += '<tr><td class="td-name">'+r.first_name+' '+(r.last_name||'')+'</td><td>'+r.r+'</td><td>'+r.f+'</td><td>'+r.m+'</td><td><span class="rfm-chip rfm-'+r.segment+'">'+rfmLabel(r.segment)+'</span></td></tr>';
+    });
+    document.getElementById('rfmTable').innerHTML = tableHtml || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Нет данных</td></tr>';
+  } catch(e) { console.error('RFM error', e); }
+}
+
+// ─── Promotions ─────────────────────────────
+function promoTypeLabel(type) {
+  var map = {cashback_multiplier:'Множитель кэшбэка',fixed_discount:'Фиксированная скидка',percentage_discount:'Процентная скидка'};
+  return map[type] || type;
+}
+function promoTypeColor(type) {
+  if (type==='cashback_multiplier') return 'background:var(--sage-light);color:var(--sage);';
+  if (type==='fixed_discount') return 'background:rgba(196,149,90,0.12);color:var(--caramel);';
+  return 'background:rgba(100,149,237,0.12);color:#4A7FBF;';
+}
+
+async function loadPromotions() {
+  try {
+    var res = await fetch(API+'/api/promotions');
+    var list = await res.json();
+    var html = '';
+    if (!list.length) {
+      html = '<div class="card" style="padding:40px;text-align:center;color:var(--text-muted);">Нет акций. Нажмите «Создать акцию» для начала.</div>';
+    } else {
+      list.forEach(function(p) {
+        var inactive = p.is_active ? '' : ' inactive';
+        var valueLabel = p.type==='cashback_multiplier' ? 'x'+p.value : (p.type==='percentage_discount' ? p.value+'%' : p.value+' р.');
+        html += '<div class="promo-card'+inactive+'">';
+        html += '<div class="promo-card-header"><div><div style="font-size:15px;font-weight:400;">'+p.name+'</div><div style="font-size:11px;color:var(--text-muted);margin-top:2px;">'+promoTypeLabel(p.type)+' '+valueLabel+'</div></div>';
+        html += '<span class="promo-type" style="'+promoTypeColor(p.type)+'">'+valueLabel+'</span></div>';
+        html += '<div style="display:flex;gap:16px;font-size:11px;color:var(--text-muted);flex-wrap:wrap;">';
+        if (p.promo_code) html += '<span>Код: <b style="color:var(--espresso);">'+p.promo_code+'</b></span>';
+        if (p.min_purchase > 0) html += '<span>Мин. покупка: '+p.min_purchase+' р.</span>';
+        html += '<span>Использовано: '+p.used_count+(p.max_uses?' / '+p.max_uses:'')+'</span>';
+        if (p.start_at) html += '<span>С: '+fmtDate(p.start_at)+'</span>';
+        if (p.end_at) html += '<span>До: '+fmtDate(p.end_at)+'</span>';
+        html += '</div>';
+        html += '<div style="display:flex;gap:6px;margin-top:12px;">';
+        html += '<button class="bc-hist-btn" onclick="editPromo('+p.id+')">Редактировать</button>';
+        html += '<button class="bc-hist-btn" onclick="togglePromo('+p.id+','+(p.is_active?0:1)+')">'+(p.is_active?'Выключить':'Включить')+'</button>';
+        html += '<button class="bc-hist-btn" onclick="deletePromo('+p.id+')" style="color:var(--danger);border-color:rgba(208,72,72,0.2);">Удалить</button>';
+        html += '</div></div>';
+      });
+    }
+    document.getElementById('promoList').innerHTML = html;
+  } catch(e) { document.getElementById('promoList').innerHTML = '<div style="padding:24px;color:var(--text-muted);">Ошибка загрузки</div>'; }
+}
+
+function showPromoModal(data) {
+  document.getElementById('promoModalTitle').textContent = data ? 'Редактировать акцию' : 'Создать акцию';
+  document.getElementById('promoEditId').value = data ? data.id : '';
+  document.getElementById('promoName').value = data ? data.name : '';
+  document.getElementById('promoType').value = data ? data.type : 'cashback_multiplier';
+  document.getElementById('promoValue').value = data ? data.value : '';
+  document.getElementById('promoMinPurchase').value = data ? data.min_purchase : '0';
+  document.getElementById('promoCode').value = data ? (data.promo_code||'') : '';
+  document.getElementById('promoMaxUses').value = data ? data.max_uses : '0';
+  document.getElementById('promoStart').value = data && data.start_at ? data.start_at.replace(' ','T').slice(0,16) : '';
+  document.getElementById('promoEnd').value = data && data.end_at ? data.end_at.replace(' ','T').slice(0,16) : '';
+  document.getElementById('promoModal').style.display = 'flex';
+}
+function closePromoModal() { document.getElementById('promoModal').style.display = 'none'; }
+async function editPromo(id) {
+  try {
+    var res = await fetch(API+'/api/promotions');
+    var list = await res.json();
+    var p = list.find(function(x){return x.id===id;});
+    if (p) showPromoModal(p);
+  } catch(e) {}
+}
+async function savePromo() {
+  var editId = document.getElementById('promoEditId').value;
+  var data = {
+    name: document.getElementById('promoName').value.trim(),
+    type: document.getElementById('promoType').value,
+    value: parseFloat(document.getElementById('promoValue').value) || 0,
+    min_purchase: parseFloat(document.getElementById('promoMinPurchase').value) || 0,
+    promo_code: document.getElementById('promoCode').value.trim() || null,
+    max_uses: parseInt(document.getElementById('promoMaxUses').value) || 0,
+    start_at: document.getElementById('promoStart').value ? document.getElementById('promoStart').value.replace('T',' ') : null,
+    end_at: document.getElementById('promoEnd').value ? document.getElementById('promoEnd').value.replace('T',' ') : null
+  };
+  if (!data.name) { alert('Введите название акции'); return; }
+  try {
+    var url = editId ? API+'/api/promotions/'+editId : API+'/api/promotions';
+    var method = editId ? 'PUT' : 'POST';
+    var res = await fetch(url, {method:method,headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var result = await res.json();
+    if (result.ok) { closePromoModal(); loadPromotions(); }
+    else alert('Ошибка: '+(result.detail||''));
+  } catch(e) { alert('Ошибка сохранения'); }
+}
+async function togglePromo(id, active) {
+  await fetch(API+'/api/promotions/'+id, {method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({is_active:active})});
+  loadPromotions();
+}
+async function deletePromo(id) {
+  if (!confirm('Удалить акцию?')) return;
+  await fetch(API+'/api/promotions/'+id, {method:'DELETE'});
+  loadPromotions();
 }
 
 // ─── Broadcasts ─────────────────────────────
 var bcUploadedImageUrl = null;
 var bcCodeMode = false;
-
-function execFmt(command) {
-  document.execCommand(command, false, null);
-  document.getElementById('bcEditor').focus();
-}
-
+function execFmt(command) { document.execCommand(command, false, null); document.getElementById('bcEditor').focus(); }
 function toggleCodeView() {
   var editor = document.getElementById('bcEditor');
   var codeTA = document.getElementById('bcTextCode');
   var btn = document.getElementById('codeToggleBtn');
   bcCodeMode = !bcCodeMode;
-  if (bcCodeMode) {
-    codeTA.value = editor.innerHTML;
-    editor.style.display = 'none';
-    codeTA.style.display = 'block';
-    btn.style.background = 'var(--caramel-light)';
-  } else {
-    editor.innerHTML = codeTA.value;
-    codeTA.style.display = 'none';
-    editor.style.display = 'block';
-    btn.style.background = '';
-  }
+  if (bcCodeMode) { codeTA.value = editor.innerHTML; editor.style.display='none'; codeTA.style.display='block'; btn.style.background='var(--caramel-light)'; }
+  else { editor.innerHTML = codeTA.value; codeTA.style.display='none'; editor.style.display='block'; btn.style.background=''; }
 }
-
-function getEditorHtml() {
-  if (bcCodeMode) return document.getElementById('bcTextCode').value;
-  return document.getElementById('bcEditor').innerHTML;
-}
-
-function setEditorHtml(html) {
-  document.getElementById('bcEditor').innerHTML = html || '';
-  document.getElementById('bcTextCode').value = html || '';
-}
-
-function toggleScheduleDate() {
-  var type = document.getElementById('bcScheduleType').value;
-  document.getElementById('bcScheduleDate').style.display = type === 'scheduled' ? 'block' : 'none';
-}
-
+function getEditorHtml() { return bcCodeMode ? document.getElementById('bcTextCode').value : document.getElementById('bcEditor').innerHTML; }
+function setEditorHtml(html) { document.getElementById('bcEditor').innerHTML = html||''; document.getElementById('bcTextCode').value = html||''; }
+function toggleScheduleDate() { document.getElementById('bcScheduleDate').style.display = document.getElementById('bcScheduleType').value==='scheduled'?'block':'none'; }
 function showLinkModal() {
-  var sel = window.getSelection();
-  var selected = sel ? sel.toString() : '';
-  document.getElementById('linkText').value = selected || '';
+  var sel = window.getSelection(); var selected = sel?sel.toString():'';
+  document.getElementById('linkText').value = selected||'';
   document.getElementById('linkUrl').value = '';
   document.getElementById('linkModal').style.display = 'flex';
-  document.getElementById('linkUrl').focus();
 }
-function closeLinkModal() { document.getElementById('linkModal').style.display = 'none'; }
+function closeLinkModal() { document.getElementById('linkModal').style.display='none'; }
 function insertLink() {
   var text = document.getElementById('linkText').value;
   var url = document.getElementById('linkUrl').value;
   if (!url) { closeLinkModal(); return; }
-  if (bcCodeMode) {
-    var ta = document.getElementById('bcTextCode');
-    var start = ta.selectionStart, end = ta.selectionEnd;
-    var linkHtml = '<a href="' + url + '">' + (text || url) + '</a>';
-    ta.value = ta.value.substring(0, start) + linkHtml + ta.value.substring(end);
-  } else {
-    document.execCommand('createLink', false, url);
-  }
+  if (bcCodeMode) { var ta=document.getElementById('bcTextCode'); var s=ta.selectionStart,e=ta.selectionEnd; ta.value=ta.value.substring(0,s)+'<a href="'+url+'">'+(text||url)+'</a>'+ta.value.substring(e); }
+  else { document.execCommand('createLink',false,url); }
   closeLinkModal();
 }
-
 async function handleImageUpload(input) {
-  if (!input.files || !input.files[0]) return;
-  var file = input.files[0];
-  var area = document.getElementById('imgUploadArea');
+  if (!input.files||!input.files[0]) return;
+  var file = input.files[0]; var area = document.getElementById('imgUploadArea');
   var reader = new FileReader();
-  reader.onload = function(e) {
-    area.classList.add('has-image');
-    area.innerHTML = '<img src="' + e.target.result + '"><button class="img-remove" onclick="event.stopPropagation();removeImage()">×</button>';
-  };
+  reader.onload = function(e){ area.classList.add('has-image'); area.innerHTML = '<img src="'+e.target.result+'"><button class="img-remove" onclick="event.stopPropagation();removeImage()">\u00d7</button>'; };
   reader.readAsDataURL(file);
-  var formData = new FormData();
-  formData.append('file', file);
-  try {
-    var res = await fetch(API + '/api/upload', { method: 'POST', body: formData });
-    var data = await res.json();
-    if (data.ok) bcUploadedImageUrl = data.url;
-  } catch(e) { console.error('Upload error', e); }
+  var formData = new FormData(); formData.append('file', file);
+  try { var res = await fetch(API+'/api/upload',{method:'POST',body:formData}); var data = await res.json(); if(data.ok) bcUploadedImageUrl=data.url; } catch(e){}
 }
-
 function removeImage() {
-  bcUploadedImageUrl = null;
-  var area = document.getElementById('imgUploadArea');
+  bcUploadedImageUrl = null; var area = document.getElementById('imgUploadArea');
   area.classList.remove('has-image');
-  area.innerHTML = '<div class="img-upload-label" id="imgUploadLabel"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Нажмите для загрузки картинки</span></div>';
+  area.innerHTML = '<div class="img-upload-label"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Нажмите для загрузки картинки</span></div>';
   document.getElementById('imgFileInput').value = '';
 }
-
-function addButtonRow(text, url) {
-  var list = document.getElementById('bcButtonsList');
-  var row = document.createElement('div');
-  row.className = 'btn-row';
-  row.innerHTML = '<input type="text" placeholder="Название кнопки" value="' + (text || '') + '">' +
-    '<input type="url" placeholder="https://..." value="' + (url || '') + '">' +
-    '<button class="btn-remove" onclick="this.parentElement.remove()">×</button>';
+function addButtonRow(text,url) {
+  var list = document.getElementById('bcButtonsList'); var row = document.createElement('div'); row.className='btn-row';
+  row.innerHTML = '<input type="text" placeholder="Название кнопки" value="'+(text||'')+'">'+'<input type="url" placeholder="https://..." value="'+(url||'')+'">'+'<button class="btn-remove" onclick="this.parentElement.remove()">\u00d7</button>';
   list.appendChild(row);
 }
-
-function getButtons() {
-  var rows = document.querySelectorAll('#bcButtonsList .btn-row');
-  var buttons = [];
-  rows.forEach(function(row) {
-    var inputs = row.querySelectorAll('input');
-    var t = inputs[0].value.trim();
-    var u = inputs[1].value.trim();
-    if (t && u) buttons.push({ text: t, url: u });
-  });
-  return buttons;
-}
-
+function getButtons() { var rows=document.querySelectorAll('#bcButtonsList .btn-row'); var buttons=[]; rows.forEach(function(row){var inputs=row.querySelectorAll('input');var t=inputs[0].value.trim();var u=inputs[1].value.trim();if(t&&u)buttons.push({text:t,url:u});}); return buttons; }
 function getBroadcastData() {
-  var text = getEditorHtml();
-  var filterVal = document.getElementById('bcFilter').value;
-  var filterType = 'all', filterValue = null;
-  if (filterVal.startsWith('level:')) { filterType='level'; filterValue=filterVal.split(':')[1]; }
-  else if (filterVal==='active') { filterType='active'; }
-  var buttons = getButtons();
-  var scheduledAt = null;
-  if (document.getElementById('bcScheduleType').value === 'scheduled') {
-    scheduledAt = document.getElementById('bcScheduleDate').value || null;
-  }
-  return {
-    admin_telegram_id: parseInt(USER_ID)||0,
-    text: text,
-    buttons: buttons,
-    filter_type: filterType,
-    filter_value: filterValue,
-    photo_url: bcUploadedImageUrl,
-    scheduled_at: scheduledAt
-  };
+  var text=getEditorHtml(); var fv=document.getElementById('bcFilter').value; var ft='all',fval=null;
+  if(fv.startsWith('level:')){ft='level';fval=fv.split(':')[1];}else if(fv==='active'){ft='active';}
+  var scheduledAt=null; if(document.getElementById('bcScheduleType').value==='scheduled'){scheduledAt=document.getElementById('bcScheduleDate').value||null;}
+  return {admin_telegram_id:parseInt(USER_ID)||0,text:text,buttons:getButtons(),filter_type:ft,filter_value:fval,photo_url:bcUploadedImageUrl,scheduled_at:scheduledAt};
 }
-
 function resetBroadcastForm() {
-  setEditorHtml('');
-  removeImage();
-  document.getElementById('bcButtonsList').innerHTML = '';
-  document.getElementById('bcFilter').value = 'all';
-  document.getElementById('bcScheduleType').value = 'now';
-  toggleScheduleDate();
-  document.getElementById('bcEditingId').textContent = '';
-  document.getElementById('bcFormTitle').textContent = 'Создать рассылку';
+  setEditorHtml(''); removeImage(); document.getElementById('bcButtonsList').innerHTML='';
+  document.getElementById('bcFilter').value='all'; document.getElementById('bcScheduleType').value='now'; toggleScheduleDate();
+  document.getElementById('bcEditingId').textContent=''; document.getElementById('bcFormTitle').textContent='Создать рассылку';
 }
-
 async function saveBroadcast() {
-  var data = getBroadcastData();
-  if (!data.text.trim() || data.text === '<br>') { alert('Введите текст рассылки'); return; }
-  try {
-    var res = await fetch(API+'/api/broadcast', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
-    });
-    var result = await res.json();
-    if (result.ok) {
-      alert('Черновик сохранён!');
-      resetBroadcastForm();
-      loadBroadcasts();
-    }
-  } catch(e) { alert('Ошибка сохранения'); }
+  var data=getBroadcastData(); if(!data.text.trim()||data.text==='<br>'){alert('Введите текст рассылки');return;}
+  try{var res=await fetch(API+'/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});var result=await res.json();if(result.ok){alert('Черновик сохранён!');resetBroadcastForm();loadBroadcasts();}}catch(e){alert('Ошибка сохранения');}
 }
-
 async function sendBroadcastNow() {
-  var data = getBroadcastData();
-  if (!data.text.trim() || data.text === '<br>') { alert('Введите текст рассылки'); return; }
-  if (!confirm('Отправить рассылку сейчас?')) return;
-  try {
-    var res = await fetch(API+'/api/broadcast', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify(data)
-    });
-    var result = await res.json();
-    if (result.ok) {
-      var sendRes = await fetch(API+'/api/broadcast/'+result.broadcast.id+'/send', {method:'POST'});
-      var sendData = await sendRes.json();
-      if (sendData.ok) {
-        alert('Рассылка отправлена! Получателей: ' + sendData.recipients_count);
-      } else {
-        alert('Рассылка сохранена, но отправка не удалась.');
-      }
-      resetBroadcastForm();
-      loadBroadcasts();
-    }
-  } catch(e) { alert('Ошибка отправки'); }
+  var data=getBroadcastData(); if(!data.text.trim()||data.text==='<br>'){alert('Введите текст рассылки');return;}
+  if(!confirm('Отправить рассылку сейчас?'))return;
+  try{var res=await fetch(API+'/api/broadcast',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});var result=await res.json();if(result.ok){var sendRes=await fetch(API+'/api/broadcast/'+result.broadcast.id+'/send',{method:'POST'});var sendData=await sendRes.json();if(sendData.ok){alert('Рассылка отправлена! Получателей: '+sendData.recipients_count);}resetBroadcastForm();loadBroadcasts();}}catch(e){alert('Ошибка отправки');}
 }
-
 async function editBroadcast(id) {
-  try {
-    var res = await fetch(API+'/api/broadcast/'+id);
-    var b = await res.json();
-    setEditorHtml(b.text || '');
-    bcUploadedImageUrl = b.photo_url || null;
-    if (bcUploadedImageUrl) {
-      var area = document.getElementById('imgUploadArea');
-      area.classList.add('has-image');
-      area.innerHTML = '<img src="' + bcUploadedImageUrl + '"><button class="img-remove" onclick="event.stopPropagation();removeImage()">×</button>';
-    }
-    document.getElementById('bcButtonsList').innerHTML = '';
-    var buttons = [];
-    try { buttons = typeof b.buttons === 'string' ? JSON.parse(b.buttons) : (b.buttons || []); } catch(e) {}
-    buttons.forEach(function(btn) { addButtonRow(btn.text, btn.url); });
-    var fv = b.filter_type === 'level' ? 'level:'+b.filter_value : (b.filter_type || 'all');
-    document.getElementById('bcFilter').value = fv;
-    document.getElementById('bcFormTitle').textContent = 'Редактировать рассылку #' + id;
-    document.getElementById('bcEditingId').textContent = id;
-    window.scrollTo({top:0, behavior:'smooth'});
-  } catch(e) { alert('Ошибка загрузки рассылки'); }
+  try{var res=await fetch(API+'/api/broadcast/'+id);var b=await res.json();setEditorHtml(b.text||'');bcUploadedImageUrl=b.photo_url||null;if(bcUploadedImageUrl){var area=document.getElementById('imgUploadArea');area.classList.add('has-image');area.innerHTML='<img src="'+bcUploadedImageUrl+'"><button class="img-remove" onclick="event.stopPropagation();removeImage()">\u00d7</button>';}document.getElementById('bcButtonsList').innerHTML='';var buttons=[];try{buttons=typeof b.buttons==='string'?JSON.parse(b.buttons):(b.buttons||[]);}catch(e){}buttons.forEach(function(btn){addButtonRow(btn.text,btn.url);});var fv=b.filter_type==='level'?'level:'+b.filter_value:(b.filter_type||'all');document.getElementById('bcFilter').value=fv;document.getElementById('bcFormTitle').textContent='Редактировать рассылку #'+id;document.getElementById('bcEditingId').textContent=id;window.scrollTo({top:0,behavior:'smooth'});}catch(e){alert('Ошибка загрузки рассылки');}
 }
-
 async function copyBroadcast(id) {
-  try {
-    var res = await fetch(API+'/api/broadcast/'+id);
-    var b = await res.json();
-    setEditorHtml(b.text || '');
-    bcUploadedImageUrl = b.photo_url || null;
-    if (bcUploadedImageUrl) {
-      var area = document.getElementById('imgUploadArea');
-      area.classList.add('has-image');
-      area.innerHTML = '<img src="' + bcUploadedImageUrl + '"><button class="img-remove" onclick="event.stopPropagation();removeImage()">×</button>';
-    }
-    document.getElementById('bcButtonsList').innerHTML = '';
-    var buttons = [];
-    try { buttons = typeof b.buttons === 'string' ? JSON.parse(b.buttons) : (b.buttons || []); } catch(e) {}
-    buttons.forEach(function(btn) { addButtonRow(btn.text, btn.url); });
-    var fv = b.filter_type === 'level' ? 'level:'+b.filter_value : (b.filter_type || 'all');
-    document.getElementById('bcFilter').value = fv;
-    document.getElementById('bcFormTitle').textContent = 'Копия рассылки';
-    document.getElementById('bcEditingId').textContent = '';
-    window.scrollTo({top:0, behavior:'smooth'});
-  } catch(e) { alert('Ошибка копирования'); }
+  try{var res=await fetch(API+'/api/broadcast/'+id);var b=await res.json();setEditorHtml(b.text||'');bcUploadedImageUrl=b.photo_url||null;if(bcUploadedImageUrl){var area=document.getElementById('imgUploadArea');area.classList.add('has-image');area.innerHTML='<img src="'+bcUploadedImageUrl+'"><button class="img-remove" onclick="event.stopPropagation();removeImage()">\u00d7</button>';}document.getElementById('bcButtonsList').innerHTML='';var buttons=[];try{buttons=typeof b.buttons==='string'?JSON.parse(b.buttons):(b.buttons||[]);}catch(e){}buttons.forEach(function(btn){addButtonRow(btn.text,btn.url);});var fv=b.filter_type==='level'?'level:'+b.filter_value:(b.filter_type||'all');document.getElementById('bcFilter').value=fv;document.getElementById('bcFormTitle').textContent='Копия рассылки';document.getElementById('bcEditingId').textContent='';window.scrollTo({top:0,behavior:'smooth'});}catch(e){alert('Ошибка копирования');}
 }
-
 async function sendExistingBroadcast(id) {
-  if (!confirm('Отправить эту рассылку?')) return;
-  try {
-    var res = await fetch(API+'/api/broadcast/'+id+'/send', {method:'POST'});
-    var data = await res.json();
-    if (data.ok) {
-      alert('Рассылка отправлена! Получателей: ' + data.recipients_count);
-      loadBroadcasts();
-    }
-  } catch(e) { alert('Ошибка отправки'); }
+  if(!confirm('Отправить эту рассылку?'))return;
+  try{var res=await fetch(API+'/api/broadcast/'+id+'/send',{method:'POST'});var data=await res.json();if(data.ok){alert('Рассылка отправлена! Получателей: '+data.recipients_count);loadBroadcasts();}}catch(e){alert('Ошибка отправки');}
 }
-
 async function loadBroadcasts() {
-  try {
-    var res = await fetch(API+'/api/broadcasts');
-    var list = await res.json();
-    var html = '';
-    if (!list.length) {
-      html = '<div style="padding:24px;text-align:center;color:var(--text-muted);">Нет рассылок</div>';
-    } else {
-      list.forEach(function(b) {
-        var statusClass = b.status==='sent'?'sent':(b.status==='queued'?'queued':'draft');
-        var statusLabel = b.status==='sent'?'Отправлено':(b.status==='queued'?'В очереди':'Черновик');
-        var textPreview = (b.text||'').replace(/<[^>]*>/g,'').substring(0,60);
-        if ((b.text||'').replace(/<[^>]*>/g,'').length > 60) textPreview += '...';
-        html += '<div class="bc-history-item" style="flex-wrap:wrap;"><div style="flex:1;min-width:150px;"><div style="font-size:13px;font-weight:400;margin-bottom:4px;">'+textPreview+'</div><div class="td-date">'+fmtDate(b.created_at)+'</div>';
-        html += '<div class="bc-history-actions">';
-        if (b.status === 'draft') {
-          html += '<button class="bc-hist-btn" onclick="editBroadcast('+b.id+')">Редактировать</button>';
-          html += '<button class="bc-hist-btn send" onclick="sendExistingBroadcast('+b.id+')">Отправить</button>';
-        }
-        html += '<button class="bc-hist-btn" onclick="copyBroadcast('+b.id+')">Копировать</button>';
-        html += '</div></div>';
-        html += '<div style="text-align:right;"><span class="bc-status '+statusClass+'">'+statusLabel+'</span>';
-        if (b.status==='sent') html += '<div class="td-date" style="margin-top:4px;">'+b.successful+'/'+b.total_recipients+'</div>';
-        html += '</div></div>';
-      });
-    }
-    document.getElementById('bcHistory').innerHTML = html;
-  } catch(e) {
-    document.getElementById('bcHistory').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);">Ошибка загрузки</div>';
-  }
+  try{var res=await fetch(API+'/api/broadcasts');var list=await res.json();var html='';if(!list.length){html='<div style="padding:24px;text-align:center;color:var(--text-muted);">Нет рассылок</div>';}else{list.forEach(function(b){var sc=b.status==='sent'?'sent':(b.status==='queued'?'queued':'draft');var sl=b.status==='sent'?'Отправлено':(b.status==='queued'?'В очереди':'Черновик');var tp=(b.text||'').replace(/<[^>]*>/g,'').substring(0,60);if((b.text||'').replace(/<[^>]*>/g,'').length>60)tp+='...';html+='<div class="bc-history-item" style="flex-wrap:wrap;"><div style="flex:1;min-width:150px;"><div style="font-size:13px;font-weight:400;margin-bottom:4px;">'+tp+'</div><div class="td-date">'+fmtDate(b.created_at)+'</div>';html+='<div class="bc-history-actions">';if(b.status==='draft'){html+='<button class="bc-hist-btn" onclick="editBroadcast('+b.id+')">Редактировать</button>';html+='<button class="bc-hist-btn send" onclick="sendExistingBroadcast('+b.id+')">Отправить</button>';}html+='<button class="bc-hist-btn" onclick="copyBroadcast('+b.id+')">Копировать</button>';html+='</div></div>';html+='<div style="text-align:right;"><span class="bc-status '+sc+'">'+sl+'</span>';if(b.status==='sent')html+='<div class="td-date" style="margin-top:4px;">'+b.successful+'/'+b.total_recipients+'</div>';html+='</div></div>';});}document.getElementById('bcHistory').innerHTML=html;}catch(e){document.getElementById('bcHistory').innerHTML='<div style="padding:24px;text-align:center;color:var(--text-muted);">Ошибка загрузки</div>';}
 }
 
 // ─── All Transactions ───────────────────────
 async function loadAllTxn() {
-  try {
-    var res = await fetch(API+'/api/admin/transactions?limit=100');
-    var data = await res.json();
-    var html = '';
-    data.transactions.forEach(function(t) {
-      html += '<tr><td class="td-name">'+(t.first_name||'')+' '+(t.last_name||'')+'</td><td>'+t.type+'</td><td>'+t.amount+' р.</td><td style="color:'+(t.bonuses_change>=0?'var(--sage)':'var(--copper)')+';">'+(t.bonuses_change>=0?'+':'')+t.bonuses_change+' р.</td><td>'+(t.description||'—')+'</td><td class="td-date">'+fmtDate(t.created_at)+'</td></tr>';
-    });
-    document.getElementById('allTxnTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Нет транзакций</td></tr>';
-  } catch(e) {
-    document.getElementById('allTxnTable').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';
-  }
+  try{var res=await fetch(API+'/api/admin/transactions?limit=100');var data=await res.json();var html='';data.transactions.forEach(function(t){html+='<tr><td class="td-name">'+(t.first_name||'')+' '+(t.last_name||'')+'</td><td>'+t.type+'</td><td>'+t.amount+' р.</td><td style="color:'+(t.bonuses_change>=0?'var(--sage)':'var(--copper)')+';">'+(t.bonuses_change>=0?'+':'')+t.bonuses_change+' р.</td><td>'+(t.description||'\u2014')+'</td><td class="td-date">'+fmtDate(t.created_at)+'</td></tr>';});document.getElementById('allTxnTable').innerHTML=html||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Нет транзакций</td></tr>';}catch(e){document.getElementById('allTxnTable').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';}
 }
 
 // ─── Settings ───────────────────────────────
 var settingsSaveTimer = null;
-
 async function loadSettings() {
-  try {
-    var res = await fetch(API+'/api/settings');
-    var s = await res.json();
-    var keys = ['cashback_bronze_pct','cashback_bronze_min','cashback_bronze_max','cashback_bronze_enabled',
-      'cashback_silver_pct','cashback_silver_min','cashback_silver_max','cashback_silver_enabled',
-      'cashback_gold_pct','cashback_gold_min','cashback_gold_max','cashback_gold_enabled',
-      'bonus_referrer','bonus_referrer_enabled','bonus_new_client','bonus_new_client_enabled',
-      'bonus_welcome','bonus_welcome_enabled'];
-    keys.forEach(function(k) {
-      var el = document.getElementById('set_'+k);
-      if (!el) return;
-      if (el.type === 'checkbox') el.checked = s[k] === '1' || s[k] === 'true';
-      else el.value = s[k] || '';
-    });
-  } catch(e) { console.error('Settings load error', e); }
+  try{var res=await fetch(API+'/api/settings');var s=await res.json();var keys=['cashback_bronze_pct','cashback_bronze_min','cashback_bronze_max','cashback_bronze_enabled','cashback_silver_pct','cashback_silver_min','cashback_silver_max','cashback_silver_enabled','cashback_gold_pct','cashback_gold_min','cashback_gold_max','cashback_gold_enabled','bonus_referrer','bonus_referrer_enabled','bonus_new_client','bonus_new_client_enabled','bonus_welcome','bonus_welcome_enabled','notif_birthday_enabled','notif_inactive_enabled','notif_inactive_days','notif_level_enabled','notif_bonus_reminder_enabled','notif_bonus_min','backup_enabled','backup_hour','backup_admin_id'];keys.forEach(function(k){var el=document.getElementById('set_'+k);if(!el)return;if(el.type==='checkbox')el.checked=s[k]==='1'||s[k]==='true';else el.value=s[k]||'';});}catch(e){console.error('Settings load error',e);}
 }
-
-function saveSettings() {
-  clearTimeout(settingsSaveTimer);
-  settingsSaveTimer = setTimeout(doSaveSettings, 500);
-}
-
+function saveSettings() { clearTimeout(settingsSaveTimer); settingsSaveTimer=setTimeout(doSaveSettings,500); }
 async function doSaveSettings() {
-  var keys = ['cashback_bronze_pct','cashback_bronze_min','cashback_bronze_max','cashback_bronze_enabled',
-    'cashback_silver_pct','cashback_silver_min','cashback_silver_max','cashback_silver_enabled',
-    'cashback_gold_pct','cashback_gold_min','cashback_gold_max','cashback_gold_enabled',
-    'bonus_referrer','bonus_referrer_enabled','bonus_new_client','bonus_new_client_enabled',
-    'bonus_welcome','bonus_welcome_enabled'];
-  var settings = {};
-  keys.forEach(function(k) {
-    var el = document.getElementById('set_'+k);
-    if (!el) return;
-    if (el.type === 'checkbox') settings[k] = el.checked ? '1' : '0';
-    else settings[k] = el.value;
-  });
-  try {
-    await fetch(API+'/api/settings', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({settings:settings})
-    });
-    var status = document.getElementById('settingsSaveStatus');
-    status.style.display = 'block';
-    setTimeout(function(){ status.style.display='none'; }, 2000);
-  } catch(e) { alert('Ошибка сохранения настроек'); }
+  var keys=['cashback_bronze_pct','cashback_bronze_min','cashback_bronze_max','cashback_bronze_enabled','cashback_silver_pct','cashback_silver_min','cashback_silver_max','cashback_silver_enabled','cashback_gold_pct','cashback_gold_min','cashback_gold_max','cashback_gold_enabled','bonus_referrer','bonus_referrer_enabled','bonus_new_client','bonus_new_client_enabled','bonus_welcome','bonus_welcome_enabled','notif_birthday_enabled','notif_inactive_enabled','notif_inactive_days','notif_level_enabled','notif_bonus_reminder_enabled','notif_bonus_min','backup_enabled','backup_hour','backup_admin_id'];
+  var settings={};keys.forEach(function(k){var el=document.getElementById('set_'+k);if(!el)return;if(el.type==='checkbox')settings[k]=el.checked?'1':'0';else settings[k]=el.value;});
+  try{await fetch(API+'/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({settings:settings})});var status=document.getElementById('settingsSaveStatus');status.style.display='block';setTimeout(function(){status.style.display='none';},2000);}catch(e){alert('Ошибка сохранения настроек');}
 }
+
+async function loadNotifTargets() {
+  try{var res=await fetch(API+'/api/notifications/targets');var d=await res.json();var html='';html+='<div class="notif-card"><div class="notif-card-info"><div class="bc-label" style="margin-bottom:2px">ДР сегодня/завтра</div><div style="font-size:11px;color:var(--text-muted);">Клиенты с днём рождения</div></div><div class="notif-card-count">'+d.birthday.length+'</div></div>';html+='<div class="notif-card"><div class="notif-card-info"><div class="bc-label" style="margin-bottom:2px">Неактивные</div><div style="font-size:11px;color:var(--text-muted);">Давно не покупали</div></div><div class="notif-card-count">'+d.inactive.length+'</div></div>';html+='<div class="notif-card"><div class="notif-card-info"><div class="bc-label" style="margin-bottom:2px">Приближение к уровню</div><div style="font-size:11px;color:var(--text-muted);">Скоро повысятся</div></div><div class="notif-card-count">'+d.level_approaching.length+'</div></div>';html+='<div class="notif-card"><div class="notif-card-info"><div class="bc-label" style="margin-bottom:2px">Много бонусов</div><div style="font-size:11px;color:var(--text-muted);">Напомнить потратить</div></div><div class="notif-card-count">'+d.high_bonus.length+'</div></div>';document.getElementById('notifTargets').innerHTML=html;}catch(e){}
+}
+
+function downloadBackup() { window.open(API+'/api/backup','_blank'); }
 
 // Init
 loadDashboard();
