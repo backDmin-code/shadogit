@@ -18,7 +18,7 @@
     --bronze: #CD7F32;
     --text-muted: #8C7B6B;
     --border: rgba(92,61,46,0.12);
-    --nav-h: 130px;
+    --nav-h: 86px;
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 
@@ -60,43 +60,69 @@
   }
   .logo { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; letter-spacing:0.08em; color:var(--cream); }
   .logo span { color:var(--sage); font-style:italic; }
-  .logo-sub { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.35); margin-top:3px; }
   .h-btn { width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; }
 
-  .card-wrap { padding:20px 16px 6px; }
+  .card-wrap { padding:14px 16px 6px; }
   .loyalty-card {
     background:linear-gradient(135deg,var(--espresso) 0%,#3D2314 50%,#1E0F06 100%);
-    border-radius:24px; padding:26px 24px 22px;
+    border-radius:24px; padding:20px 22px 18px;
     position:relative; overflow:hidden;
     box-shadow:0 20px 60px rgba(44,26,14,0.35),0 4px 12px rgba(44,26,14,0.2);
   }
   .card-grain { position:absolute; inset:0; border-radius:24px; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); opacity:0.4; pointer-events:none; }
   .card-deco { position:absolute; right:-30px; top:-30px; width:180px; height:180px; border-radius:50%; border:1px solid rgba(98,124,65,0.2); pointer-events:none; }
   .card-deco::after { content:''; position:absolute; inset:20px; border-radius:50%; border:1px solid rgba(98,124,65,0.1); }
-  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
   .card-brand { font-family:'Cormorant Garamond',serif; color:var(--cream); font-size:28px; font-weight:400; letter-spacing:0.06em; }
   .card-brand small { display:block; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; color:rgba(245,240,232,0.4); margin-top:3px; text-transform:uppercase; }
   .level-badge { background:linear-gradient(135deg,var(--bronze),#E8A84C); border-radius:20px; padding:6px 14px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--espresso); text-transform:uppercase; display:flex; align-items:center; gap:5px; flex-shrink:0; }
 
-  .card-qr-area { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; }
-  .card-bonuses { flex:1; }
-  .bonus-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:rgba(245,240,232,0.4); text-transform:uppercase; margin-bottom:6px; }
-  .bonus-amount { font-family:'Cormorant Garamond',serif; font-size:64px; line-height:1; color:var(--caramel); font-weight:300; }
-  .bonus-amount sup { font-size:26px; vertical-align:super; }
-  .bonus-expire { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.12em; color:rgba(245,240,232,0.3); margin-top:8px; }
+  .card-qr-area { display:flex; flex-direction:column; gap:14px; }
+  .card-bonuses {
+    background: rgba(196,149,90,0.1);
+    border: 1px solid rgba(196,149,90,0.22);
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bonus-left { display:flex; flex-direction:column; gap:4px; }
+  .bonus-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.22em; color:rgba(245,240,232,0.45); text-transform:uppercase; }
+  .bonus-amount {
+    font-family:'Cormorant Garamond',serif;
+    font-size:46px; line-height:1;
+    color:#F5E5C8;
+    font-weight:400;
+    text-shadow: 0 0 40px rgba(196,149,90,0.5);
+  }
+  .bonus-amount sup { font-size:22px; vertical-align:super; color:var(--caramel); }
+  .bonus-expire { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; color:rgba(245,240,232,0.28); margin-top:2px; }
 
-  .qr-tap { cursor:pointer; transition:transform 0.2s,opacity 0.2s; flex-shrink:0; }
-  .qr-tap:active { transform:scale(0.94); opacity:0.8; }
-  .qr-container { background:var(--warm-white); border-radius:14px; padding:10px; width:100px; height:100px; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 20px rgba(0,0,0,0.3); overflow:hidden; }
-  .qr-container img, .qr-container canvas { width:80px!important; height:80px!important; }
-  .qr-hint { text-align:center; margin-top:6px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; color:rgba(245,240,232,0.3); text-transform:uppercase; }
+  .bonus-qr { cursor:pointer; transition:opacity 0.2s, transform 0.2s; flex-shrink:0; }
+  .bonus-qr:active { opacity:0.7; transform:scale(0.95); }
 
-  .card-progress { margin-top:22px; border-top:1px solid rgba(255,255,255,0.07); padding-top:16px; }
+  .card-client-strip {
+    display:flex; gap:0; border-radius:14px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.07);
+  }
+  .card-client-field {
+    flex:1; padding:10px 14px;
+    background:rgba(255,255,255,0.04);
+    border-right:1px solid rgba(255,255,255,0.06);
+  }
+  .card-client-field:last-child { border-right:none; }
+  .card-client-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.28); margin-bottom:4px; }
+  .card-client-val { font-family:'Cormorant Garamond',serif; font-size:14px; color:rgba(245,240,232,0.8); letter-spacing:0.03em; }
+  .card-client-val.accent { color:var(--sage); font-family:'DM Mono',monospace; font-size:12px; letter-spacing:0.08em; }
+
+  .card-progress { margin-top:16px; border-top:1px solid rgba(255,255,255,0.07); padding-top:12px; }
   .progress-meta { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
   .progress-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.18em; color:rgba(245,240,232,0.4); text-transform:uppercase; }
   .progress-next { font-size:13px; color:var(--caramel); font-family:'Cormorant Garamond',serif; font-style:italic; }
   .progress-bar { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
-  .progress-fill { height:100%; width:0%; border-radius:2px; background:linear-gradient(90deg,var(--sage),#8aaa5a); transition:width 1s ease-out; }
+  .progress-fill { height:100%; width:0%; border-radius:2px; background:linear-gradient(90deg,var(--sage),#8aaa5a); transition:width 1.2s ease-out; }
   .cashback-row { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
   .cashback-val { font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--cream); font-style:italic; }
   .cashback-pct { font-family:'DM Mono',monospace; font-size:12px; color:var(--sage); letter-spacing:0.1em; }
@@ -117,7 +143,7 @@
     display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
   }
   .notif-panel-title { font-family:'Cormorant Garamond',serif; font-size:20px; color:#F5F0E8; letter-spacing:0.04em; }
-  .notif-badge-count { background:var(--copper); border-radius:20px; padding:2px 8px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#fff; }
+  .notif-badge-count { background:var(--bronze); border-radius:20px; padding:2px 8px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#fff; }
   .notif-close-btn { width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; }
   .notif-close-btn svg { stroke:rgba(245,240,232,0.6); }
   .notif-list { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
@@ -136,15 +162,11 @@
   .notif-text { font-size:11px; color:var(--text-muted); line-height:1.5; }
   .notif-time { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text-muted); margin-top:6px; }
 
+  .spacer { height:12px; }
   .section { padding:18px 16px 0; animation:fadeUp 0.5s ease both; }
   @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
   .section-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:400; color:var(--coffee); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
   .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
-
-  .stats-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; padding:14px 16px 0; }
-  .stat-card { background:var(--warm-white); border-radius:18px; padding:16px 12px; text-align:center; border:1px solid var(--border); }
-  .stat-val { font-family:'Cormorant Garamond',serif; font-size:24px; color:var(--coffee); }
-  .stat-lbl { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); margin-top:3px; }
 
   .history-list { display:flex; flex-direction:column; gap:10px; }
   .history-item { background:var(--warm-white); border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:14px; border:1px solid var(--border); }
@@ -169,6 +191,46 @@
   .ref-text { font-size:11px; color:rgba(245,240,232,0.7); line-height:1.5; padding-top:3px; }
   .share-btn { width:100%; margin-top:16px; background:linear-gradient(135deg,var(--sage),#8aaa5a); border:none; border-radius:14px; padding:14px; font-family:'Jost',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.06em; color:var(--warm-white); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
 
+  .ref-history-list { display:flex; flex-direction:column; gap:8px; }
+  .ref-history-item { background:var(--warm-white); border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:12px; border:1px solid var(--border); }
+  .ref-h-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--sage),#8aaa5a); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:15px; color:var(--warm-white); }
+  .ref-h-info { flex:1; }
+  .ref-h-name { font-size:12px; font-weight:400; color:var(--espresso); }
+  .ref-h-date { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.08em; color:var(--text-muted); margin-top:2px; }
+  .ref-h-bonus { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:600; color:var(--sage); }
+  .ref-h-status { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:20px; margin-top:3px; text-align:center; }
+  .ref-h-status.done { background:rgba(98,124,65,0.12); color:var(--sage); }
+
+  /* ── MAP BLOCK ── */
+  .map-block {
+    margin: 0 16px 16px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(44,26,14,0.12);
+    border: 1px solid var(--border);
+    height:180px; background:linear-gradient(135deg,rgba(98,124,65,0.15),rgba(196,149,90,0.1));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .map-block:active { opacity:0.9; transform:scale(0.99); }
+  .map-overlay-badge {
+    position:absolute; bottom:12px; left:12px;
+    background:var(--espresso); color:var(--cream);
+    border-radius:30px; padding:7px 14px;
+    font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:6px;
+    box-shadow: 0 2px 12px rgba(44,26,14,0.3);
+  }
+  .map-overlay-badge svg { stroke:var(--sage); flex-shrink:0; }
+  .map-open-hint {
+    position:absolute; top:10px; right:10px;
+    background:rgba(245,240,232,0.92); backdrop-filter:blur(6px);
+    border-radius:20px; padding:5px 10px;
+    font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--coffee); display:flex; align-items:center; gap:4px;
+  }
+
   .contacts-card { background:var(--warm-white); border-radius:20px; padding:20px; margin:0 16px; border:1px solid var(--border); }
   .contact-item { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--border); }
   .contact-item:last-child { border-bottom:none; padding-bottom:0; }
@@ -180,42 +242,41 @@
   .contact-item a:hover { color:var(--sage); }
 
   /* ── BOTTOM NAV ── */
-  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:200; padding:0 14px 18px; }
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:200; padding:0 14px 14px; }
   .bottom-nav-inner {
     background:var(--espresso);
-    border-radius:28px;
+    border-radius:26px;
     display:flex; align-items:center; justify-content:space-around;
-    padding:0 8px;
+    padding:0 6px;
     height:var(--nav-h);
     box-shadow:0 8px 40px rgba(44,26,14,0.45),0 2px 8px rgba(44,26,14,0.2);
   }
   .nav-item {
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
-    padding:12px 18px; border-radius:0; cursor:pointer;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    padding:8px 6px; border-radius:0; cursor:pointer;
     border:none; background:transparent; flex:1;
   }
   .nav-item.active { background:transparent; }
-  .nav-item svg { width:30px; height:30px; stroke:rgba(245,240,232,0.38); transition:stroke 0.2s; }
+  .nav-item svg { width:22px; height:22px; stroke:rgba(245,240,232,0.38); transition:stroke 0.2s; }
   .nav-item.active svg { stroke:var(--sage); }
-  .nav-label { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(245,240,232,0.38); transition:color 0.2s; }
+  .nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.10em; text-transform:uppercase; color:rgba(245,240,232,0.38); transition:color 0.2s; }
   .nav-item.active .nav-label { color:var(--sage); }
 
   .nav-qr {
-    width:82px; height:82px; border-radius:24px; flex-shrink:0;
+    width:58px; height:58px; border-radius:17px; flex-shrink:0;
     background:linear-gradient(135deg,var(--sage),#8aaa5a);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
     cursor:pointer; border:none;
-    box-shadow:0 6px 24px rgba(98,124,65,0.55);
+    box-shadow:0 4px 18px rgba(98,124,65,0.5);
     transition:transform 0.15s,box-shadow 0.15s;
-    margin:0 8px;
+    margin:0 6px;
   }
-  .nav-qr:active { transform:scale(0.93); box-shadow:0 2px 12px rgba(98,124,65,0.4); }
-  .nav-qr svg { width:32px; height:32px; stroke:var(--warm-white); }
-  .nav-qr-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(245,240,232,0.8); }
+  .nav-qr:active { transform:scale(0.93); box-shadow:0 2px 10px rgba(98,124,65,0.35); }
+  .nav-qr svg { width:24px; height:24px; stroke:var(--warm-white); }
+  .nav-qr-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(245,240,232,0.8); }
 
   .page { display:none; }
   .page.active { display:block; animation:fadeUp 0.3s ease; }
-  .spacer { height:20px; }
 
   /* ── QR FULLSCREEN MODAL ── */
   .qr-modal {
@@ -228,11 +289,7 @@
   .qr-modal.open { opacity:1; pointer-events:all; }
 
   .qr-modal-bg { position:absolute; inset:0; pointer-events:none; }
-  .qr-orb {
-    position:absolute; border-radius:50%;
-    filter:blur(60px); opacity:0;
-    transition:opacity 0.8s ease 0.2s;
-  }
+  .qr-orb { position:absolute; border-radius:50%; filter:blur(60px); opacity:0; transition:opacity 0.8s ease 0.2s; }
   .qr-modal.open .qr-orb { opacity:1; }
   .qr-orb-1 { width:260px; height:260px; background:radial-gradient(circle,rgba(98,124,65,0.18),transparent 70%); top:-60px; right:-60px; }
   .qr-orb-2 { width:200px; height:200px; background:radial-gradient(circle,rgba(196,149,90,0.12),transparent 70%); bottom:-40px; left:-40px; }
@@ -269,7 +326,6 @@
     padding:12px; background:#fff; border-radius:16px;
     box-shadow:0 8px 32px rgba(44,26,14,0.12);
   }
-  .qr-code-inner img, .qr-code-inner canvas { width:220px!important; height:220px!important; display:block; }
   .qr-corner { position:absolute; width:22px; height:22px; }
   .qr-corner.tl { top:-2px; left:-2px; border-top:2px solid #8aaa5a; border-left:2px solid #8aaa5a; border-radius:5px 0 0 0; }
   .qr-corner.tr { top:-2px; right:-2px; border-top:2px solid #8aaa5a; border-right:2px solid #8aaa5a; border-radius:0 5px 0 0; }
@@ -308,31 +364,9 @@
     80% { opacity:1; }
     100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
   }
-
-  .loading-overlay {
-    position:fixed; inset:0; z-index:999;
-    background:var(--cream);
-    display:flex; align-items:center; justify-content:center;
-    flex-direction:column; gap:12px;
-    transition:opacity 0.4s;
-  }
-  .loading-overlay.hide { opacity:0; pointer-events:none; }
-  .loading-spinner {
-    width:32px; height:32px; border:2px solid var(--border);
-    border-top-color:var(--sage); border-radius:50%;
-    animation:spin 0.8s linear infinite;
-  }
-  @keyframes spin { to { transform:rotate(360deg); } }
-  .loading-text { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--text-muted); }
 </style>
 </head>
 <body>
-
-<!-- LOADING -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <div class="loading-text">Загрузка карты...</div>
-</div>
 
 <!-- CONFETTI CONTAINER -->
 <div class="confetti-container" id="confettiContainer"></div>
@@ -346,10 +380,10 @@
   <div class="qr-modal-card">
     <div class="qr-identity">
       <div class="qr-id-left">
-        <div class="qr-id-name" id="qrName">...</div>
+        <div class="qr-id-name" id="qrName">—</div>
         <div class="qr-id-sub">FLove · Карта лояльности</div>
       </div>
-      <div class="qr-id-badge" id="qrLevel">...</div>
+      <div class="qr-id-badge" id="qrBadge">◆ Бронза</div>
     </div>
     <div class="qr-code-wrap">
       <div class="qr-code-inner" id="qrCodeBig">
@@ -363,19 +397,19 @@
     <div class="qr-info-strip">
       <div class="qr-info-field">
         <div class="qr-info-label">Телефон</div>
-        <div class="qr-info-val" id="qrPhone">...</div>
+        <div class="qr-info-val" id="qrPhone">—</div>
       </div>
       <div class="qr-info-field">
         <div class="qr-info-label">ID клиента</div>
-        <div class="qr-info-val accent" id="qrId">...</div>
+        <div class="qr-info-val accent" id="qrClientId">—</div>
       </div>
       <div class="qr-info-field">
         <div class="qr-info-label">Дата рождения</div>
-        <div class="qr-info-val" id="qrBirthday">...</div>
+        <div class="qr-info-val" id="qrBirthday">—</div>
       </div>
       <div class="qr-info-field">
         <div class="qr-info-label">Бонусов</div>
-        <div class="qr-info-val accent" id="qrBonuses">...</div>
+        <div class="qr-info-val accent" id="qrBonuses">—</div>
       </div>
     </div>
   </div>
@@ -401,7 +435,6 @@
 <div class="header">
   <div>
     <div class="logo">FL<span>ove</span></div>
-    <div class="logo-sub">Карта лояльности</div>
   </div>
   <div class="h-btn" onclick="openNotif()" style="position:relative;">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(245,240,232,0.5)" stroke-width="1.5" stroke-linecap="round">
@@ -419,43 +452,44 @@
       <div class="card-deco"></div>
       <div class="card-top">
         <div>
-          <div class="card-brand">FLove<small>loyalty card · Минск</small></div>
+          <div class="card-brand"><small style="font-size:10px; letter-spacing:0.25em;">LOYALTY CARD</small></div>
         </div>
-        <div class="level-badge" id="cardLevel">...</div>
+        <div class="level-badge" id="levelBadge">◆ Бронза</div>
       </div>
       <div class="card-qr-area">
         <div class="card-bonuses">
-          <div class="bonus-label">Бонусный счёт</div>
-          <div class="bonus-amount" id="cardBonuses">0<sup>р.</sup></div>
-          <div class="bonus-expire" id="cardExpire"></div>
+          <div class="bonus-left">
+            <div class="bonus-label">Бонусный счёт</div>
+            <div class="bonus-amount" id="bonusAmount">0<sup>р.</sup></div>
+          </div>
+          <div class="bonus-qr" id="qrCodeSmall" onclick="openQR()"></div>
         </div>
-        <div class="qr-tap" onclick="openQR()">
-          <div class="qr-container" id="qrCodeSmall"></div>
-          <div class="qr-hint">Показать QR</div>
+        <div class="card-client-strip">
+          <div class="card-client-field">
+            <div class="card-client-label">Клиент</div>
+            <div class="card-client-val" id="clientName">—</div>
+          </div>
+          <div class="card-client-field">
+            <div class="card-client-label">ID</div>
+            <div class="card-client-val accent" id="clientId">—</div>
+          </div>
         </div>
       </div>
       <div class="card-progress">
         <div class="progress-meta">
-          <span class="progress-label" id="cardLevelLabel">Уровень: ...</span>
-          <span class="progress-next" id="cardNextLevel"></span>
+          <span class="progress-label" id="progressLabel">Уровень: Бронза</span>
+          <span class="progress-next" id="progressNext">до Серебра — 400 р.</span>
         </div>
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
         <div class="cashback-row">
           <span class="cashback-val">Кэшбэк с покупок</span>
-          <span class="cashback-pct" id="cardCashback">2% · бронза</span>
+          <span class="cashback-pct" id="cashbackPct">2%</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="stats-row">
-    <div class="stat-card"><div class="stat-val" id="statBonuses">0</div><div class="stat-lbl">Бонусов</div></div>
-    <div class="stat-card"><div class="stat-val" id="statCashback">2%</div><div class="stat-lbl">Кэшбэк</div></div>
-    <div class="stat-card"><div class="stat-val" id="statPurchases">0 р.</div><div class="stat-lbl">Покупок</div></div>
-  </div>
-
-  <div class="spacer"></div>
-  <div class="section">
+  <div class="section" style="padding-top:14px;">
     <div class="section-title">История бонусов</div>
     <div class="history-list" id="historyList">
       <div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Загрузка...</div>
@@ -468,19 +502,49 @@
 <div id="page-ref" class="page">
   <div class="spacer"></div>
   <div class="section"><div class="section-title">Бонус за друга</div></div>
-  <div class="referral-card">
-    <div class="ref-title">Пригласи — получи вместе</div>
-    <div class="ref-sub">Вы и ваш друг получите бонусы после его первой покупки</div>
-    <div class="ref-reward"><div class="ref-pill">+3 р. другу</div><div class="ref-pill">+2 р. вам</div></div>
-    <div class="ref-how">
-      <div class="ref-step"><div class="ref-num">1</div><div class="ref-text">Поделитесь реферальной ссылкой с незарегистрированным другом</div></div>
-      <div class="ref-step"><div class="ref-num">2</div><div class="ref-text">Друг регистрируется и получает 3 приветственных бонуса</div></div>
-      <div class="ref-step"><div class="ref-num">3</div><div class="ref-text">При первой покупке — вам зачисляется 2 рубля автоматически</div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 0;">
+    <div style="background:linear-gradient(135deg,var(--coffee),var(--espresso)); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid rgba(98,124,65,0.2);">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(98,124,65,0.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8aaa5a" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--cream);line-height:1;" id="refCountStat">0</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-top:2px;">Приглашено</div>
+      </div>
     </div>
-    <button class="share-btn" onclick="alert('Ссылка скопирована!')">
+    <div style="background:linear-gradient(135deg,var(--coffee),var(--espresso)); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid rgba(196,149,90,0.2);">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(196,149,90,0.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--cream);line-height:1;" id="refBonusStat">0 р.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-top:2px;">Получено всего</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="referral-card" style="margin-top:10px;">
+    <div class="ref-title">Пригласи — получи вместе</div>
+    <div class="ref-sub">Вы и ваш друг получите бонусы при регистрации</div>
+    <div class="ref-reward"><div class="ref-pill">+3 р. другу</div><div class="ref-pill">+5 р. вам</div></div>
+    <div class="ref-how">
+      <div class="ref-step"><div class="ref-num">1</div><div class="ref-text">Поделитесь реферальной ссылкой с другом</div></div>
+      <div class="ref-step"><div class="ref-num">2</div><div class="ref-text">Друг регистрируется и получает 3 приветственных бонуса</div></div>
+      <div class="ref-step"><div class="ref-num">3</div><div class="ref-text">Вам зачисляется 5 бонусных рублей автоматически</div></div>
+    </div>
+    <button class="share-btn" onclick="copyRefLink()">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
-      Поделиться ссылкой
+      <span id="shareBtnTxt">Поделиться ссылкой</span>
     </button>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="section">
+    <div class="section-title">История рефералов</div>
+    <div class="ref-history-list" id="refHistoryList">
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Загрузка...</div>
+    </div>
   </div>
   <div class="spacer"></div>
 </div>
@@ -488,7 +552,20 @@
 <!-- PAGE: CONTACTS -->
 <div id="page-info" class="page">
   <div class="spacer"></div>
-  <div class="section"><div class="section-title">Контакты</div></div>
+  <div class="section"><div class="section-title">Адрес</div></div>
+
+  <div class="map-block" onclick="window.open('https://yandex.com/maps/-/CPWA64YC','_blank')">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1" stroke-linecap="round" opacity="0.4"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    <div class="map-overlay-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      пр. Независимости, 91
+    </div>
+    <div class="map-open-hint">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coffee)" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      Открыть карту
+    </div>
+  </div>
+
   <div class="contacts-card">
     <div class="contact-item">
       <div class="contact-icon">
@@ -560,120 +637,111 @@
 <script>
 const API_BASE = window.location.origin;
 const params = new URLSearchParams(window.location.search);
-const USER_ID = params.get('user_id');
+const USER_ID = params.get('user_id') || (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user ? Telegram.WebApp.initDataUnsafe.user.id : '0');
 
 let userData = null;
+let refCode = '';
+let botUsername = '';
 
-function levelIcon(l) {
-  if (l === 'Золото') return '✦';
-  if (l === 'Серебро') return '◈';
-  return '◆';
+function formatDate(dt) {
+  if (!dt) return '';
+  const d = new Date(dt.replace(' ', 'T'));
+  const day = String(d.getDate()).padStart(2,'0');
+  const mon = String(d.getMonth()+1).padStart(2,'0');
+  const year = d.getFullYear();
+  const h = String(d.getHours()).padStart(2,'0');
+  const m = String(d.getMinutes()).padStart(2,'0');
+  return day + '.' + mon + '.' + year + ' · ' + h + ':' + m;
 }
 
 function maskPhone(phone) {
-  if (!phone || phone.length < 7) return phone || '';
-  return phone.slice(0, -4).replace(/\d(?=.{4})/g, function(m, i) {
-    return i > phone.length - 9 ? '•' : m;
-  }) + phone.slice(-2);
+  if (!phone || phone.length < 6) return phone || '—';
+  return phone.slice(0, -4).replace(/./g, function(c, i) { return i > 5 ? '•' : c; }) + ' ' + phone.slice(-2);
 }
 
-function formatDate(iso) {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (isNaN(d)) return iso;
-  return d.toLocaleDateString('ru-RU', { day:'2-digit', month:'2-digit', year:'numeric' })
-    + ' · ' + d.toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+function getLevelIcon(level) {
+  if (level === 'Золото') return '✦';
+  if (level === 'Серебро') return '◈';
+  return '◆';
 }
 
 async function loadUser() {
-  if (!USER_ID) {
-    document.getElementById('loadingOverlay').innerHTML = '<div class="loading-text">Ошибка: user_id не указан</div>';
-    return;
-  }
   try {
     const res = await fetch(API_BASE + '/api/user/' + USER_ID);
     if (!res.ok) throw new Error('User not found');
     userData = await res.json();
-    populateUI();
+
+    document.getElementById('bonusAmount').innerHTML = Math.floor(userData.bonuses) + '<sup>р.</sup>';
+    document.getElementById('levelBadge').textContent = getLevelIcon(userData.level) + ' ' + userData.level;
+    document.getElementById('clientName').textContent = userData.first_name + ' ' + (userData.last_name || '').charAt(0) + '.';
+    document.getElementById('clientId').textContent = 'FL-' + String(userData.id).padStart(5, '0');
+    document.getElementById('cashbackPct').textContent = userData.cashback_pct + '%';
+
+    // Progress bar
+    var total = userData.total_purchases || 0;
+    var level = userData.level;
+    var nextLevel, nextThreshold, currentThreshold;
+    if (level === 'Бронза') { nextLevel = 'Серебра'; nextThreshold = 400; currentThreshold = 0; }
+    else if (level === 'Серебро') { nextLevel = 'Золота'; nextThreshold = 6000; currentThreshold = 400; }
+    else { nextLevel = ''; nextThreshold = 6000; currentThreshold = 6000; }
+
+    document.getElementById('progressLabel').textContent = 'Уровень: ' + level;
+    if (nextLevel) {
+      var remaining = Math.max(0, nextThreshold - total);
+      document.getElementById('progressNext').textContent = 'до ' + nextLevel + ' — ' + remaining + ' р.';
+      var pct = Math.min(100, ((total - currentThreshold) / (nextThreshold - currentThreshold)) * 100);
+      document.getElementById('progressFill').style.width = Math.max(2, pct) + '%';
+    } else {
+      document.getElementById('progressNext').textContent = 'Максимальный уровень';
+      document.getElementById('progressFill').style.width = '100%';
+    }
+
+    // QR Modal info
+    document.getElementById('qrName').textContent = userData.first_name + ' ' + (userData.last_name || '');
+    document.getElementById('qrBadge').textContent = getLevelIcon(userData.level) + ' ' + userData.level;
+    document.getElementById('qrPhone').textContent = maskPhone(userData.phone);
+    document.getElementById('qrClientId').textContent = 'FL-' + String(userData.id).padStart(5, '0');
+    document.getElementById('qrBirthday').textContent = userData.birthday || '—';
+    document.getElementById('qrBonuses').textContent = Math.floor(userData.bonuses) + ' р. · ' + userData.cashback_pct + '%';
+
+    refCode = userData.referral_code || '';
+
+    generateQR();
     loadHistory();
-    document.getElementById('loadingOverlay').classList.add('hide');
-  } catch (e) {
-    document.getElementById('loadingOverlay').innerHTML = '<div class="loading-text">Пользователь не найден</div>';
+    loadReferrals();
+    launchConfetti();
+  } catch(e) {
+    document.getElementById('bonusAmount').innerHTML = '0<sup>р.</sup>';
+    document.getElementById('historyList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить данные</div>';
   }
-}
-
-function populateUI() {
-  const u = userData;
-  const fullName = u.first_name + ' ' + (u.last_name ? u.last_name[0] + '.' : '');
-  const icon = levelIcon(u.level);
-
-  // Card
-  document.getElementById('cardLevel').textContent = icon + ' ' + u.level;
-  document.getElementById('cardBonuses').innerHTML = Math.floor(u.bonuses) + '<sup>р.</sup>';
-  document.getElementById('cardLevelLabel').textContent = 'Уровень: ' + u.level;
-  document.getElementById('cardCashback').textContent = u.cashback_pct + '% · ' + u.level.toLowerCase();
-
-  // Progress
-  let nextLevel = '', progress = 0;
-  if (u.total_purchases < 400) {
-    nextLevel = 'до Серебра — ' + Math.round(400 - u.total_purchases) + ' р.';
-    progress = Math.min((u.total_purchases / 400) * 100, 100);
-  } else if (u.total_purchases < 6000) {
-    nextLevel = 'до Золота — ' + Math.round(6000 - u.total_purchases) + ' р.';
-    progress = Math.min(((u.total_purchases - 400) / (6000 - 400)) * 100, 100);
-  } else {
-    nextLevel = 'Максимальный уровень!';
-    progress = 100;
-  }
-  document.getElementById('cardNextLevel').textContent = nextLevel;
-  document.getElementById('progressFill').style.width = progress + '%';
-
-  // Stats
-  document.getElementById('statBonuses').textContent = Math.round(u.bonuses * 100) / 100;
-  document.getElementById('statCashback').textContent = u.cashback_pct + '%';
-  document.getElementById('statPurchases').textContent = Math.round(u.total_purchases) + ' р.';
-
-  // Generate QR codes
-  generateQR();
-
-  // QR modal info
-  document.getElementById('qrName').textContent = u.first_name + ' ' + (u.last_name || '');
-  document.getElementById('qrLevel').textContent = icon + ' ' + u.level;
-  document.getElementById('qrPhone').textContent = maskPhone(u.phone);
-  document.getElementById('qrId').textContent = 'FL-' + String(u.telegram_id).slice(-5).padStart(5, '0');
-  document.getElementById('qrBirthday').textContent = u.birthday || '—';
-  document.getElementById('qrBonuses').textContent = u.bonuses + ' р. · ' + u.cashback_pct + '%';
 }
 
 function generateQR() {
-  const qrData = 'flove:' + userData.telegram_id;
+  var qrData = 'flove:' + USER_ID;
 
   // Small QR on card
-  const smallContainer = document.getElementById('qrCodeSmall');
-  smallContainer.innerHTML = '';
-  new QRCode(smallContainer, {
-    text: qrData, width: 80, height: 80,
-    colorDark: '#2C1A0E', colorLight: '#FFFFFF',
-    correctLevel: QRCode.CorrectLevel.M
-  });
+  var small = document.getElementById('qrCodeSmall');
+  small.innerHTML = '';
+  new QRCode(small, { text:qrData, width:72, height:72, colorDark:'#2C1A0E', colorLight:'rgba(0,0,0,0)', correctLevel:QRCode.CorrectLevel.M });
+  // Make QR bg transparent
+  var canvas = small.querySelector('canvas');
+  if (canvas) { canvas.style.borderRadius = '8px'; }
+  var img = small.querySelector('img');
+  if (img) { img.style.borderRadius = '8px'; }
 
   // Big QR in modal
-  const bigContainer = document.getElementById('qrCodeBig');
-  const corners = bigContainer.querySelectorAll('.qr-corner');
-  bigContainer.innerHTML = '';
-  corners.forEach(c => bigContainer.appendChild(c));
-  new QRCode(bigContainer, {
-    text: qrData, width: 220, height: 220,
-    colorDark: '#2C1A0E', colorLight: '#FFFFFF',
-    correctLevel: QRCode.CorrectLevel.M
-  });
+  var big = document.getElementById('qrCodeBig');
+  var corners = big.querySelectorAll('.qr-corner');
+  big.innerHTML = '';
+  corners.forEach(function(c) { big.appendChild(c); });
+  new QRCode(big, { text:qrData, width:220, height:220, colorDark:'#2C1A0E', colorLight:'#FFFFFF', correctLevel:QRCode.CorrectLevel.M });
 }
 
 async function loadHistory() {
   try {
-    const res = await fetch(API_BASE + '/api/user/' + USER_ID + '/history');
-    const history = await res.json();
-    const list = document.getElementById('historyList');
+    var res = await fetch(API_BASE + '/api/user/' + USER_ID + '/history');
+    var history = await res.json();
+    var list = document.getElementById('historyList');
 
     if (!history.length) {
       list.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Пока нет операций</div>';
@@ -681,17 +749,17 @@ async function loadHistory() {
     }
 
     // Notifications
-    const notifList = document.getElementById('notifList');
+    var notifList = document.getElementById('notifList');
     notifList.innerHTML = '';
     document.getElementById('notifCount').textContent = history.length;
     if (history.length > 0) document.getElementById('notifDot').style.display = 'block';
 
-    list.innerHTML = history.map(tx => {
-      const isPlus = tx.bonuses_change >= 0;
-      const iconClass = isPlus ? 'plus' : 'minus';
-      const bonusClass = isPlus ? 'p' : 'm';
-      const sign = isPlus ? '+' : '';
-      const iconSvg = isPlus
+    list.innerHTML = history.map(function(tx) {
+      var isPlus = tx.bonuses_change >= 0;
+      var iconClass = isPlus ? 'plus' : 'minus';
+      var bonusClass = isPlus ? 'p' : 'm';
+      var sign = isPlus ? '+' : '';
+      var iconSvg = isPlus
         ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>'
         : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4955A" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>';
 
@@ -702,32 +770,73 @@ async function loadHistory() {
         '<div class="h-bonus ' + bonusClass + '">' + sign + tx.bonuses_change + ' р.</div></div>';
     }).join('');
 
-    // Build notifications from history
-    history.slice(0, 10).forEach((tx, i) => {
-      const isPlus = tx.bonuses_change >= 0;
-      const iconType = tx.type === 'welcome' ? 'level' : (isPlus ? 'bonus' : 'promo');
-      const iconSvg = tx.type === 'welcome'
+    // Build notifications
+    history.slice(0, 10).forEach(function(tx, i) {
+      var isPlus = tx.bonuses_change >= 0;
+      var iconType = tx.type === 'welcome' ? 'level' : (isPlus ? 'bonus' : 'promo');
+      var iconSvg = tx.type === 'welcome'
         ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bronze)" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
         : (isPlus
           ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>'
           : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>');
-      const sign = isPlus ? '+' : '';
+      var sign = isPlus ? '+' : '';
 
-      notifList.innerHTML += '<div class="notif-item' + (i < 3 ? ' unread' : '') + '" style="animation-delay:' + (i * 0.05) + 's">' +
+      notifList.innerHTML += '<div class="notif-item' + (i < 3 ? ' unread' : '') + '" style="animation-delay:' + (i*0.05) + 's">' +
         '<div class="notif-icon ' + iconType + '">' + iconSvg + '</div>' +
         '<div class="notif-content"><div class="notif-title">' + (tx.description || tx.type) + '</div>' +
         '<div class="notif-text">' + sign + tx.bonuses_change + ' р.</div>' +
         '<div class="notif-time">' + formatDate(tx.created_at) + '</div></div></div>';
     });
-  } catch (e) {
+  } catch(e) {
     document.getElementById('historyList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить историю</div>';
   }
 }
 
+async function loadReferrals() {
+  try {
+    var res = await fetch(API_BASE + '/api/user/' + USER_ID + '/referrals');
+    var data = await res.json();
+
+    document.getElementById('refCountStat').textContent = data.stats.total;
+    document.getElementById('refBonusStat').textContent = '+' + data.stats.total_bonus + ' р.';
+    refCode = data.referral_code || refCode;
+
+    var list = document.getElementById('refHistoryList');
+    if (!data.referrals || !data.referrals.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Пока нет приглашённых друзей</div>';
+      return;
+    }
+
+    list.innerHTML = data.referrals.map(function(ref) {
+      var initial = (ref.first_name || '?').charAt(0);
+      return '<div class="ref-history-item">' +
+        '<div class="ref-h-avatar">' + initial + '</div>' +
+        '<div class="ref-h-info">' +
+        '<div class="ref-h-name">' + ref.first_name + ' ' + (ref.last_name || '').charAt(0) + '.</div>' +
+        '<div class="ref-h-date">' + formatDate(ref.created_at) + '</div></div>' +
+        '<div style="text-align:right;">' +
+        '<div class="ref-h-bonus">+' + ref.referrer_bonus + ' р.</div>' +
+        '<div class="ref-h-status done">Начислено</div></div></div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('refHistoryList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить данные</div>';
+  }
+}
+
+function copyRefLink() {
+  var link = 'https://t.me/FLoveBot?start=ref_' + refCode;
+  var btn = document.getElementById('shareBtnTxt');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link);
+  }
+  btn.textContent = 'Ссылка скопирована!';
+  setTimeout(function() { btn.textContent = 'Поделиться ссылкой'; }, 2000);
+}
+
 // Navigation
 function switchPage(id, btn) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
   document.getElementById('page-' + id).classList.add('active');
   if (btn) btn.classList.add('active');
 }
@@ -746,16 +855,16 @@ function closeQR(e) { if (e.target === document.getElementById('qrModal')) close
 function closeQRBtn() { document.getElementById('qrModal').classList.remove('open'); document.body.style.overflow = ''; }
 
 function launchConfetti() {
-  const container = document.getElementById('confettiContainer');
-  const colors = ['#627c41','#C4955A','#8aaa5a','#CD7F32','#FAF8F4','#2C1A0E'];
-  for (let i = 0; i < 60; i++) {
-    const el = document.createElement('div');
+  var container = document.getElementById('confettiContainer');
+  var colors = ['#627c41','#C4955A','#8aaa5a','#CD7F32','#FAF8F4','#2C1A0E'];
+  for (var i = 0; i < 60; i++) {
+    var el = document.createElement('div');
     el.className = 'conf';
     el.style.cssText = 'left:' + (Math.random()*100) + 'vw;background:' + colors[Math.floor(Math.random()*colors.length)] +
       ';width:' + (6+Math.random()*8) + 'px;height:' + (6+Math.random()*8) + 'px;border-radius:' + (Math.random()>0.5?'50%':'2px') +
       ';animation-duration:' + (1.5+Math.random()*2) + 's;animation-delay:' + (Math.random()*0.5) + 's;';
     container.appendChild(el);
-    setTimeout(() => el.remove(), 3500);
+    setTimeout(function(e) { e.remove(); }, 3500, el);
   }
 }
 

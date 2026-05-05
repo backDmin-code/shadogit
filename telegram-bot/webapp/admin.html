@@ -24,246 +24,107 @@
     --mob-nav-h: 86px;
   }
   * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-  body {
-    background: var(--bg);
-    color: var(--espresso);
-    font-family: 'Jost', sans-serif;
-    font-weight:300;
-    min-height:100vh;
-  }
+  body { background:var(--bg); color:var(--espresso); font-family:'Jost',sans-serif; font-weight:300; min-height:100vh; }
 
-  /* ── SIDEBAR (desktop) ── */
   .layout { display:flex; min-height:100vh; }
-  .sidebar {
-    width:240px; flex-shrink:0;
-    background: var(--espresso);
-    display:flex; flex-direction:column;
-    position:sticky; top:0; height:100vh;
-  }
-  .sidebar-brand {
-    padding: 28px 24px 24px;
-    border-bottom:1px solid rgba(255,255,255,0.07);
-  }
-  .sb-logo {
-    font-family:'Cormorant Garamond', serif;
-    font-size:24px; font-weight:600; letter-spacing:0.08em; color:#F5F0E8;
-  }
+  .sidebar { width:240px; flex-shrink:0; background:var(--espresso); display:flex; flex-direction:column; position:sticky; top:0; height:100vh; }
+  .sidebar-brand { padding:28px 24px 24px; border-bottom:1px solid rgba(255,255,255,0.07); }
+  .sb-logo { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:600; letter-spacing:0.08em; color:#F5F0E8; }
   .sb-logo span { color:var(--sage); font-style:italic; }
-  .sb-sub {
-    font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.2em;
-    text-transform:uppercase; color:rgba(245,240,232,0.3); margin-top:4px;
-  }
+  .sb-sub { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.3); margin-top:4px; }
   .sb-nav { flex:1; padding:20px 12px; display:flex; flex-direction:column; gap:4px; }
-  .sb-item {
-    display:flex; align-items:center; gap:12px;
-    padding:11px 14px; border-radius:12px; cursor:pointer;
-    transition:background 0.2s; border:none; background:transparent; width:100%;
-    text-align:left;
-  }
+  .sb-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:12px; cursor:pointer; transition:background 0.2s; border:none; background:transparent; width:100%; text-align:left; }
   .sb-item:hover { background:rgba(255,255,255,0.06); }
   .sb-item.active { background:rgba(98,124,65,0.18); }
   .sb-icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .sb-icon svg { width:18px; height:18px; stroke:rgba(245,240,232,0.5); }
   .sb-item.active .sb-icon svg { stroke:var(--sage-l); }
-  .sb-label {
-    font-family:'Jost', sans-serif; font-size:12px; font-weight:400;
-    letter-spacing:0.04em; color:rgba(245,240,232,0.6);
-  }
+  .sb-label { font-family:'Jost',sans-serif; font-size:12px; font-weight:400; letter-spacing:0.04em; color:rgba(245,240,232,0.6); }
   .sb-item.active .sb-label { color:var(--sage-l); }
-  .sb-footer {
-    padding:20px 24px;
-    border-top:1px solid rgba(255,255,255,0.07);
-  }
+  .sb-footer { padding:20px 24px; border-top:1px solid rgba(255,255,255,0.07); }
   .sb-user { display:flex; align-items:center; gap:10px; }
-  .sb-avatar {
-    width:34px; height:34px; border-radius:50%;
-    background:rgba(98,124,65,0.2); border:1px solid rgba(98,124,65,0.35);
-    display:flex; align-items:center; justify-content:center;
-    font-size:13px; color:var(--sage-l);
-  }
+  .sb-avatar { width:34px; height:34px; border-radius:50%; background:rgba(98,124,65,0.2); border:1px solid rgba(98,124,65,0.35); display:flex; align-items:center; justify-content:center; font-size:13px; color:var(--sage-l); }
   .sb-user-name { font-size:12px; color:rgba(245,240,232,0.8); }
-  .sb-user-role {
-    font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.15em;
-    text-transform:uppercase; color:rgba(245,240,232,0.3); margin-top:1px;
-  }
+  .sb-user-role { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.15em; text-transform:uppercase; color:rgba(245,240,232,0.3); margin-top:1px; }
 
-  /* ── CONTENT ── */
-  .content { flex:1; padding:32px; max-width: calc(100% - 240px); overflow-x:hidden; }
-
-  /* Page header */
-  .page-header {
-    display:flex; align-items:flex-start; justify-content:space-between;
-    margin-bottom:28px; flex-wrap:wrap; gap:16px;
-  }
-  .page-title {
-    font-family:'Cormorant Garamond', serif;
-    font-size:32px; font-weight:300; letter-spacing:0.02em;
-  }
-  .page-date {
-    font-family:'DM Mono', monospace; font-size:9px; letter-spacing:0.2em;
-    color:var(--text-muted); margin-top:4px; text-transform:uppercase;
-  }
+  .content { flex:1; padding:32px; max-width:calc(100% - 240px); overflow-x:hidden; }
+  .page-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:28px; flex-wrap:wrap; gap:16px; }
+  .page-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; letter-spacing:0.02em; }
+  .page-date { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em; color:var(--text-muted); margin-top:4px; text-transform:uppercase; }
   .action-row { display:flex; gap:10px; align-items:center; }
-  .btn-primary {
-    background: var(--sage); color:var(--surface);
-    border:none; border-radius:12px; padding:10px 18px;
-    font-family:'Jost', sans-serif; font-size:12px; font-weight:500;
-    letter-spacing:0.06em; cursor:pointer; transition:opacity 0.2s;
-    display:flex; align-items:center; gap:7px;
-  }
+  .btn-primary { background:var(--sage); color:var(--surface); border:none; border-radius:12px; padding:10px 18px; font-family:'Jost',sans-serif; font-size:12px; font-weight:500; letter-spacing:0.06em; cursor:pointer; transition:opacity 0.2s; display:flex; align-items:center; gap:7px; }
   .btn-primary:hover { opacity:0.85; }
-  .btn-secondary {
-    background:var(--surface); color:var(--espresso);
-    border:1px solid var(--border); border-radius:12px; padding:10px 18px;
-    font-family:'Jost', sans-serif; font-size:12px; font-weight:400;
-    letter-spacing:0.06em; cursor:pointer; transition:background 0.2s;
-  }
+  .btn-secondary { background:var(--surface); color:var(--espresso); border:1px solid var(--border); border-radius:12px; padding:10px 18px; font-family:'Jost',sans-serif; font-size:12px; font-weight:400; letter-spacing:0.06em; cursor:pointer; transition:background 0.2s; }
   .btn-secondary:hover { background:#F0EBE1; }
 
-  /* ── KPI CARDS ── */
-  .kpi-grid {
-    display:grid; grid-template-columns: repeat(4, 1fr);
-    gap:16px; margin-bottom:24px;
-  }
-  .kpi-card {
-    background:var(--surface); border-radius:20px; padding:22px;
-    border:1px solid var(--border); box-shadow:var(--shadow);
-    position:relative; overflow:hidden;
-    transition: transform 0.15s, box-shadow 0.15s;
-  }
+  .kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:24px; }
+  .kpi-card { background:var(--surface); border-radius:20px; padding:22px; border:1px solid var(--border); box-shadow:var(--shadow); position:relative; overflow:hidden; transition:transform 0.15s,box-shadow 0.15s; }
   .kpi-card:hover { transform:translateY(-2px); box-shadow:0 6px 30px rgba(44,26,14,0.12); }
-  .kpi-accent {
-    position:absolute; top:0; left:0; right:0; height:3px; border-radius:20px 20px 0 0;
-  }
-  .kpi-label {
-    font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.2em;
-    text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;
-  }
-  .kpi-val {
-    font-family:'Cormorant Garamond', serif; font-size:36px; font-weight:300;
-    line-height:1; margin-bottom:6px;
-  }
-  .kpi-delta { font-family:'DM Mono', monospace; font-size:9px; letter-spacing:0.1em; }
+  .kpi-accent { position:absolute; top:0; left:0; right:0; height:3px; border-radius:20px 20px 0 0; }
+  .kpi-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; }
+  .kpi-val { font-family:'Cormorant Garamond',serif; font-size:36px; font-weight:300; line-height:1; margin-bottom:6px; }
+  .kpi-delta { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; }
   .kpi-delta.up { color:var(--sage); }
-  .kpi-delta.down { color:var(--copper); }
 
-  /* ── TWO COL ── */
   .two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:24px; }
-
-  /* ── TABLE ── */
-  .card {
-    background:var(--surface); border-radius:20px; border:1px solid var(--border);
-    box-shadow:var(--shadow); overflow:hidden;
-  }
-  .card-head {
-    padding:20px 24px 0;
-    display:flex; align-items:center; justify-content:space-between;
-  }
-  .card-title {
-    font-family:'Cormorant Garamond', serif; font-size:18px; font-weight:400;
-    letter-spacing:0.03em;
-  }
-  .card-badge {
-    background:var(--sage-light); border:1px solid rgba(98,124,65,0.2);
-    border-radius:20px; padding:4px 12px;
-    font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.15em;
-    color:var(--sage); text-transform:uppercase;
-  }
+  .card { background:var(--surface); border-radius:20px; border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; }
+  .card-head { padding:20px 24px 0; display:flex; align-items:center; justify-content:space-between; }
+  .card-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:400; letter-spacing:0.03em; }
+  .card-badge { background:var(--sage-light); border:1px solid rgba(98,124,65,0.2); border-radius:20px; padding:4px 12px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.15em; color:var(--sage); text-transform:uppercase; }
   .table-wrap { overflow-x:auto; }
   table { width:100%; border-collapse:collapse; }
-  thead th {
-    padding:14px 24px 10px;
-    font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.2em;
-    text-transform:uppercase; color:var(--text-muted);
-    text-align:left; border-bottom:1px solid var(--border);
-    white-space:nowrap;
-  }
-  tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; cursor:pointer; }
+  thead th { padding:14px 24px 10px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:var(--text-muted); text-align:left; border-bottom:1px solid var(--border); white-space:nowrap; }
+  tbody tr { border-bottom:1px solid var(--border); transition:background 0.15s; }
   tbody tr:last-child { border-bottom:none; }
   tbody tr:hover { background:rgba(44,26,14,0.02); }
   tbody td { padding:14px 24px; font-size:13px; color:var(--espresso); white-space:nowrap; }
   .td-name { font-weight:400; }
-  .td-phone { font-family:'DM Mono', monospace; font-size:11px; letter-spacing:0.1em; color:var(--text-muted); }
-  .level-chip {
-    display:inline-flex; align-items:center; gap:5px;
-    border-radius:20px; padding:4px 10px;
-    font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.12em;
-    text-transform:uppercase;
-  }
+  .td-phone { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.1em; color:var(--text-muted); }
+  .level-chip { display:inline-flex; align-items:center; gap:5px; border-radius:20px; padding:4px 10px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; text-transform:uppercase; }
   .level-bronze { background:rgba(205,127,50,0.1); color:var(--bronze); }
   .level-silver { background:rgba(180,180,200,0.15); color:#888; }
   .level-gold { background:rgba(220,180,60,0.12); color:#B8962A; }
-  .td-bonus { font-family:'Cormorant Garamond', serif; font-size:18px; color:var(--coffee); }
-  .td-cashback { font-family:'DM Mono', monospace; font-size:10px; color:var(--sage); }
-  .td-date { font-family:'DM Mono', monospace; font-size:9px; color:var(--text-muted); letter-spacing:0.08em; }
-  .td-actions { display:flex; gap:6px; }
-  .tbl-btn {
-    padding:5px 12px; border-radius:8px; border:none; cursor:pointer;
-    font-family:'Jost', sans-serif; font-size:10px; font-weight:500;
-    transition:opacity 0.2s;
-  }
-  .tbl-btn:hover { opacity:0.8; }
-  .tbl-btn-add { background:var(--sage-light); color:var(--sage); }
-  .tbl-btn-info { background:var(--caramel-light); color:var(--caramel); }
+  .td-bonus { font-family:'Cormorant Garamond',serif; font-size:18px; color:var(--coffee); }
+  .td-cashback { font-family:'DM Mono',monospace; font-size:10px; color:var(--sage); }
+  .td-date { font-family:'DM Mono',monospace; font-size:9px; color:var(--text-muted); letter-spacing:0.08em; }
 
-  /* ── MINI CHART ── */
-  .chart-card { padding:20px 24px 24px; }
-  .chart-svg { width:100%; margin-top:16px; }
-  .chart-bar { transition:opacity 0.15s; cursor:pointer; }
-  .chart-bar:hover { opacity:0.75; }
-
-  /* ── STATS MINI ── */
   .mini-stats { display:flex; flex-direction:column; gap:12px; padding:16px 24px 24px; }
   .mini-stat { display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .mini-stat-label { font-size:12px; color:var(--espresso); font-weight:400; flex:1; }
   .mini-stat-bar { flex:2; height:4px; background:rgba(44,26,14,0.08); border-radius:2px; overflow:hidden; }
   .mini-stat-fill { height:100%; border-radius:2px; }
-  .mini-stat-val { font-family:'DM Mono', monospace; font-size:10px; color:var(--text-muted); letter-spacing:0.08em; min-width:40px; text-align:right; }
+  .mini-stat-val { font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); letter-spacing:0.08em; min-width:40px; text-align:right; }
 
-  /* ── MOBILE HEADER ── */
-  .mobile-header {
-    display:none; background:var(--espresso);
-    padding:14px 20px; align-items:center; justify-content:space-between;
-    position:sticky; top:0; z-index:100;
-  }
-  .mobile-logo { font-family:'Cormorant Garamond', serif; font-size:20px; font-weight:600; color:#F5F0E8; letter-spacing:0.08em; }
+  .mobile-header { display:none; background:var(--espresso); padding:14px 20px; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+  .mobile-logo { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:600; color:#F5F0E8; letter-spacing:0.08em; }
   .mobile-logo span { color:var(--sage); font-style:italic; }
-  .mobile-admin { font-family:'DM Mono', monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.35); }
+  .mobile-admin { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(245,240,232,0.35); }
   .mob-admin-icon { width:36px; height:36px; border-radius:50%; background:rgba(98,124,65,0.2); border:1px solid rgba(98,124,65,0.3); display:flex; align-items:center; justify-content:center; }
   .mob-admin-icon svg { stroke:var(--sage-l); }
 
-  /* ── MOBILE BOTTOM NAV ── */
-  .mobile-bottom-nav {
-    display:none; position:fixed; bottom:0; left:0; right:0; z-index:200;
-    padding:0 14px 14px;
-  }
-  .mob-nav-inner {
-    background:var(--espresso); border-radius:26px;
-    display:flex; align-items:center; justify-content:space-around;
-    padding:0 6px; height:var(--mob-nav-h);
-    box-shadow:0 8px 40px rgba(44,26,14,0.45);
-  }
-  .mob-nav-item {
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
-    padding:8px 6px; border-radius:0; cursor:pointer;
-    transition:none; border:none; background:transparent; flex:1;
-  }
+  .mobile-bottom-nav { display:none; position:fixed; bottom:0; left:0; right:0; z-index:200; padding:0 14px 14px; }
+  .mob-nav-inner { background:var(--espresso); border-radius:26px; display:flex; align-items:center; justify-content:space-around; padding:0 6px; height:var(--mob-nav-h); box-shadow:0 8px 40px rgba(44,26,14,0.45); }
+  .mob-nav-item { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px; padding:8px 6px; cursor:pointer; border:none; background:transparent; flex:1; }
   .mob-nav-item svg { width:22px; height:22px; stroke:rgba(245,240,232,0.38); transition:stroke 0.2s; }
   .mob-nav-item.active svg { stroke:var(--sage-l); }
   .mob-nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.10em; text-transform:uppercase; color:rgba(245,240,232,0.38); transition:color 0.2s; }
-  .mob-nav-item.active { background:transparent; }
   .mob-nav-item.active .mob-nav-label { color:var(--sage-l); }
-  /* QR special button */
-  .mob-nav-item.qr-btn { flex:0 0 56px; }
-  .mob-nav-item.qr-btn svg { stroke:var(--caramel); width:24px; height:24px; }
-  .mob-nav-item.qr-btn .mob-nav-label { color:var(--caramel); opacity:0.8; }
 
-  /* ── RESPONSIVE ── */
-  @media (max-width: 900px) {
-    .kpi-grid { grid-template-columns:1fr 1fr; }
-    .two-col { grid-template-columns:1fr; }
-  }
-  @media (max-width: 640px) {
+  .bc-form-group { margin-bottom:16px; }
+  .bc-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; display:block; }
+  .bc-input, .bc-textarea { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:'Jost',sans-serif; font-size:13px; color:var(--espresso); background:var(--bg); resize:vertical; }
+  .bc-textarea { min-height:120px; font-family:'DM Mono',monospace; font-size:12px; }
+  .bc-select { padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:12px; background:var(--bg); color:var(--espresso); }
+  .bc-preview { background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-top:16px; min-height:80px; }
+  .bc-btn-row { display:flex; gap:10px; margin-top:16px; }
+  .bc-history-item { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; }
+  .bc-status { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
+  .bc-status.sent { background:rgba(98,124,65,0.12); color:var(--sage); }
+  .bc-status.draft { background:rgba(196,149,90,0.12); color:var(--caramel); }
+  .bc-status.queued { background:rgba(205,127,50,0.1); color:var(--bronze); }
+
+  @media (max-width:900px) { .kpi-grid { grid-template-columns:1fr 1fr; } .two-col { grid-template-columns:1fr; } }
+  @media (max-width:640px) {
     .sidebar { display:none; }
     .mobile-header { display:flex; }
     .mobile-bottom-nav { display:block; }
@@ -281,829 +142,328 @@
 </head>
 <body>
 
-<!-- MOBILE HEADER -->
 <div class="mobile-header">
-  <div>
-    <div class="mobile-logo">FL<span>ove</span></div>
-    <div class="mobile-admin">Admin Panel</div>
-  </div>
-  <div class="mob-admin-icon">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg>
-  </div>
+  <div><div class="mobile-logo">FL<span>ove</span></div><div class="mobile-admin">Admin Panel</div></div>
+  <div class="mob-admin-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg></div>
 </div>
 
-<!-- MOBILE BOTTOM NAV -->
 <nav class="mobile-bottom-nav">
   <div class="mob-nav-inner">
-    <button class="mob-nav-item active" onclick="mobNav('dashboard',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <span class="mob-nav-label">Дашборд</span>
-    </button>
-    <button class="mob-nav-item" onclick="mobNav('clients',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-      <span class="mob-nav-label">Клиенты</span>
-    </button>
-    <button class="mob-nav-item" onclick="mobNav('bonuses',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M8 7V5a2 2 0 014 0v2M12 12v4M10 14h4"/></svg>
-      <span class="mob-nav-label">Бонусы</span>
-    </button>
-    <button class="mob-nav-item" onclick="mobNav('analytics',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      <span class="mob-nav-label">Аналитика</span>
-    </button>
-    <button class="mob-nav-item" onclick="mobNav('settings',this)">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      <span class="mob-nav-label">Настройки</span>
-    </button>
+    <button class="mob-nav-item active" onclick="mobNav('dashboard',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span class="mob-nav-label">Дашборд</span></button>
+    <button class="mob-nav-item" onclick="mobNav('clients',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span class="mob-nav-label">Клиенты</span></button>
+    <button class="mob-nav-item" onclick="mobNav('broadcasts',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span class="mob-nav-label">Рассылки</span></button>
+    <button class="mob-nav-item" onclick="mobNav('bonuses',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg><span class="mob-nav-label">Бонусы</span></button>
+    <button class="mob-nav-item" onclick="mobNav('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00-.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82 1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="mob-nav-label">Настройки</span></button>
   </div>
 </nav>
 
 <div class="layout">
-  <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="sb-logo">FL<span>ove</span></div>
-      <div class="sb-sub">Admin Panel</div>
-    </div>
+    <div class="sidebar-brand"><div class="sb-logo">FL<span>ove</span></div><div class="sb-sub">Admin Panel</div></div>
     <nav class="sb-nav">
-      <button class="sb-item active" onclick="sbNav(this,'dashboard')">
-        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
-        <span class="sb-label">Дашборд</span>
-      </button>
-      <button class="sb-item" onclick="sbNav(this,'clients')">
-        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></span>
-        <span class="sb-label">Клиенты</span>
-      </button>
-      <button class="sb-item" onclick="sbNav(this,'bonuses')">
-        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M8 7V5a2 2 0 014 0v2M12 12v4M10 14h4"/></svg></span>
-        <span class="sb-label">Бонусы</span>
-      </button>
-      <button class="sb-item" onclick="sbNav(this,'analytics')">
-        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
-        <span class="sb-label">Аналитика</span>
-      </button>
-      <button class="sb-item" onclick="sbNav(this,'settings')">
-        <span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
-        <span class="sb-label">Настройки</span>
-      </button>
+      <button class="sb-item active" onclick="sbNav(this,'dashboard')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="sb-label">Дашборд</span></button>
+      <button class="sb-item" onclick="sbNav(this,'clients')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span><span class="sb-label">Клиенты</span></button>
+      <button class="sb-item" onclick="sbNav(this,'broadcasts')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span><span class="sb-label">Рассылки</span></button>
+      <button class="sb-item" onclick="sbNav(this,'bonuses')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg></span><span class="sb-label">Бонусы</span></button>
+      <button class="sb-item" onclick="sbNav(this,'settings')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83"/></svg></span><span class="sb-label">Настройки</span></button>
     </nav>
-    <div class="sb-footer">
-      <div class="sb-user">
-        <div class="sb-avatar">A</div>
-        <div>
-          <div class="sb-user-name">Администратор</div>
-          <div class="sb-user-role">Owner · FLove</div>
-        </div>
-      </div>
-    </div>
+    <div class="sb-footer"><div class="sb-user"><div class="sb-avatar">A</div><div><div class="sb-user-name">Администратор</div><div class="sb-user-role">Owner · FLove</div></div></div></div>
   </aside>
 
-  <!-- MAIN CONTENT -->
-  <main class="content" id="mainContent">
+  <main class="content">
+
+  <!-- DASHBOARD -->
   <div id="pageDashboard">
-
     <div class="page-header">
-      <div>
-        <div class="page-title">Дашборд</div>
-        <div class="page-date">02 мая 2026 · суббота</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-secondary">Экспорт CSV</button>
-        <button class="btn-primary">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          Начислить бонус
-        </button>
-      </div>
+      <div><div class="page-title">Дашборд</div><div class="page-date" id="dashDate"></div></div>
     </div>
-
-    <!-- KPI -->
     <div class="kpi-grid">
-      <div class="kpi-card">
-        <div class="kpi-accent" style="background:linear-gradient(90deg,var(--caramel),#E8A84C)"></div>
-        <div class="kpi-label">Всего клиентов</div>
-        <div class="kpi-val">247</div>
-        <div class="kpi-delta up">↑ +12 за месяц</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-accent" style="background:linear-gradient(90deg,var(--sage),var(--sage-l))"></div>
-        <div class="kpi-label">Активных бонусов</div>
-        <div class="kpi-val">1 284<sup style="font-size:18px"> р.</sup></div>
-        <div class="kpi-delta up">↑ живые счета</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-accent" style="background:linear-gradient(90deg,var(--bronze),#E8A84C)"></div>
-        <div class="kpi-label">Транзакций сегодня</div>
-        <div class="kpi-val">31</div>
-        <div class="kpi-delta up">↑ +8 vs вчера</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-accent" style="background:linear-gradient(90deg,var(--copper),#E8604C)"></div>
-        <div class="kpi-label">Реф. регистраций</div>
-        <div class="kpi-val">18</div>
-        <div class="kpi-delta down">↓ −3 vs прошлый мес.</div>
-      </div>
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--caramel),#E8A84C)"></div><div class="kpi-label">Всего клиентов</div><div class="kpi-val" id="kpiUsers">—</div><div class="kpi-delta up" id="kpiNewMonth"></div></div>
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--sage),var(--sage-l))"></div><div class="kpi-label">Активных бонусов</div><div class="kpi-val" id="kpiBonuses">—</div><div class="kpi-delta up">живые счета</div></div>
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--bronze),#E8A84C)"></div><div class="kpi-label">Транзакций сегодня</div><div class="kpi-val" id="kpiTxn">—</div><div class="kpi-delta up">за сегодня</div></div>
+      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--copper),#E8604C)"></div><div class="kpi-label">Реф. регистраций</div><div class="kpi-val" id="kpiRef">—</div><div class="kpi-delta up">всего</div></div>
     </div>
-
-    <!-- Chart + mini stats -->
     <div class="two-col">
-      <div class="card chart-card">
-        <div class="card-head">
-          <div class="card-title">Регистрации за месяц</div>
-          <div class="card-badge">Апрель 2026</div>
-        </div>
-        <svg class="chart-svg" viewBox="0 0 360 130" xmlns="http://www.w3.org/2000/svg" fill="none">
-          <defs>
-            <linearGradient id="barGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#627c41"/>
-              <stop offset="100%" stop-color="#627c41" stop-opacity="0.35"/>
-            </linearGradient>
-          </defs>
-          <rect class="chart-bar" x="20" y="70" width="44" height="50" rx="6" fill="url(#barGrad)" opacity="0.7"/>
-          <rect class="chart-bar" x="80" y="50" width="44" height="70" rx="6" fill="url(#barGrad)" opacity="0.8"/>
-          <rect class="chart-bar" x="140" y="25" width="44" height="95" rx="6" fill="url(#barGrad)"/>
-          <rect class="chart-bar" x="200" y="40" width="44" height="80" rx="6" fill="url(#barGrad)" opacity="0.85"/>
-          <rect class="chart-bar" x="280" y="58" width="44" height="62" rx="6" fill="url(#barGrad)" opacity="0.7"/>
-          <text x="42" y="128" text-anchor="middle" font-family="DM Mono, monospace" font-size="7" fill="#9C8B7A" letter-spacing="0.1em">НЕД 1</text>
-          <text x="102" y="128" text-anchor="middle" font-family="DM Mono, monospace" font-size="7" fill="#9C8B7A" letter-spacing="0.1em">НЕД 2</text>
-          <text x="162" y="128" text-anchor="middle" font-family="DM Mono, monospace" font-size="7" fill="#9C8B7A" letter-spacing="0.1em">НЕД 3</text>
-          <text x="222" y="128" text-anchor="middle" font-family="DM Mono, monospace" font-size="7" fill="#9C8B7A" letter-spacing="0.1em">НЕД 4</text>
-          <text x="302" y="128" text-anchor="middle" font-family="DM Mono, monospace" font-size="7" fill="#9C8B7A" letter-spacing="0.1em">МАЙ</text>
-          <text x="42" y="64" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#5C3D2E">28</text>
-          <text x="102" y="44" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#5C3D2E">47</text>
-          <text x="162" y="20" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#5C3D2E">68</text>
-          <text x="222" y="35" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#5C3D2E">52</text>
-          <text x="302" y="53" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="11" fill="#5C3D2E">12</text>
-        </svg>
+      <div class="card"><div class="card-head"><div class="card-title">Уровни клиентов</div></div>
+        <div class="mini-stats" id="levelStats"></div>
       </div>
-
-      <div class="card">
-        <div class="card-head" style="padding-bottom:16px;">
-          <div class="card-title">Уровни клиентов</div>
-        </div>
-        <div class="mini-stats">
-          <div class="mini-stat">
-            <div class="mini-stat-label">◆ Бронза</div>
-            <div class="mini-stat-bar"><div class="mini-stat-fill" style="width:72%;background:var(--bronze);"></div></div>
-            <div class="mini-stat-val">178</div>
-          </div>
-          <div class="mini-stat">
-            <div class="mini-stat-label">◈ Серебро</div>
-            <div class="mini-stat-bar"><div class="mini-stat-fill" style="width:22%;background:#A0A0B8;"></div></div>
-            <div class="mini-stat-val">54</div>
-          </div>
-          <div class="mini-stat">
-            <div class="mini-stat-label">✦ Золото</div>
-            <div class="mini-stat-bar"><div class="mini-stat-fill" style="width:6%;background:#C8A830;"></div></div>
-            <div class="mini-stat-val">15</div>
-          </div>
-          <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px;">
-            <div class="mini-stat">
-              <div class="mini-stat-label">Реферальных</div>
-              <div class="mini-stat-bar"><div class="mini-stat-fill" style="width:26%;background:var(--sage);"></div></div>
-              <div class="mini-stat-val">64</div>
-            </div>
-            <div class="mini-stat" style="margin-top:12px;">
-              <div class="mini-stat-label">Активных 30д.</div>
-              <div class="mini-stat-bar"><div class="mini-stat-fill" style="width:55%;background:var(--caramel);"></div></div>
-              <div class="mini-stat-val">136</div>
-            </div>
-          </div>
-        </div>
+      <div class="card"><div class="card-head"><div class="card-title">Топ клиенты</div></div>
+        <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>Покупки</th><th>Уровень</th></tr></thead><tbody id="topClients"></tbody></table></div>
       </div>
     </div>
-
-    <!-- Clients table -->
-    <div class="card">
-      <div class="card-head" style="margin-bottom:16px;">
-        <div class="card-title">Последние регистрации</div>
-        <div class="card-badge">247 клиентов</div>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Клиент</th>
-              <th>Телефон</th>
-              <th>Уровень</th>
-              <th>Бонусы</th>
-              <th>Кэшбэк</th>
-              <th>Дата рег.</th>
-              <th>Действия</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td class="td-name">Александра М.</td>
-              <td class="td-phone">+375 29 ••• •• 42</td>
-              <td><span class="level-chip level-bronze">◆ Бронза</span></td>
-              <td class="td-bonus">3 р.</td>
-              <td class="td-cashback">2%</td>
-              <td class="td-date">02.05.2026</td>
-              <td><div class="td-actions">
-                <button class="tbl-btn tbl-btn-add">+ Бонус</button>
-                <button class="tbl-btn tbl-btn-info">Инфо</button>
-              </div></td>
-            </tr>
-            <tr>
-              <td class="td-name">Дмитрий К.</td>
-              <td class="td-phone">+375 44 ••• •• 17</td>
-              <td><span class="level-chip level-silver">◈ Серебро</span></td>
-              <td class="td-bonus">84 р.</td>
-              <td class="td-cashback">5%</td>
-              <td class="td-date">14.04.2026</td>
-              <td><div class="td-actions">
-                <button class="tbl-btn tbl-btn-add">+ Бонус</button>
-                <button class="tbl-btn tbl-btn-info">Инфо</button>
-              </div></td>
-            </tr>
-            <tr>
-              <td class="td-name">Виктория Н.</td>
-              <td class="td-phone">+375 33 ••• •• 08</td>
-              <td><span class="level-chip level-gold">✦ Золото</span></td>
-              <td class="td-bonus">312 р.</td>
-              <td class="td-cashback">10%</td>
-              <td class="td-date">02.01.2026</td>
-              <td><div class="td-actions">
-                <button class="tbl-btn tbl-btn-add">+ Бонус</button>
-                <button class="tbl-btn tbl-btn-info">Инфо</button>
-              </div></td>
-            </tr>
-            <tr>
-              <td class="td-name">Михаил Р.</td>
-              <td class="td-phone">+375 29 ••• •• 91</td>
-              <td><span class="level-chip level-bronze">◆ Бронза</span></td>
-              <td class="td-bonus">3 р.</td>
-              <td class="td-cashback">2%</td>
-              <td class="td-date">01.05.2026</td>
-              <td><div class="td-actions">
-                <button class="tbl-btn tbl-btn-add">+ Бонус</button>
-                <button class="tbl-btn tbl-btn-info">Инфо</button>
-              </div></td>
-            </tr>
-            <tr>
-              <td class="td-name">Анна В.</td>
-              <td class="td-phone">+375 25 ••• •• 55</td>
-              <td><span class="level-chip level-silver">◈ Серебро</span></td>
-              <td class="td-bonus">127 р.</td>
-              <td class="td-cashback">5%</td>
-              <td class="td-date">03.03.2026</td>
-              <td><div class="td-actions">
-                <button class="tbl-btn tbl-btn-add">+ Бонус</button>
-                <button class="tbl-btn tbl-btn-info">Инфо</button>
-              </div></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="card" style="margin-bottom:24px"><div class="card-head"><div class="card-title">Последние транзакции</div><div class="card-badge" id="txnBadge">—</div></div>
+      <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>Тип</th><th>Сумма</th><th>Бонусы</th><th>Дата</th></tr></thead><tbody id="recentTxn"></tbody></table></div>
     </div>
+  </div>
 
-  </div><!-- /pageDashboard -->
-
-  <!-- CLIENTS PAGE -->
+  <!-- CLIENTS -->
   <div id="pageClients" style="display:none">
     <div class="page-header">
-      <div>
-        <div class="page-title">Клиенты</div>
-        <div class="page-date">247 зарегистрированных</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-secondary">Экспорт CSV</button>
-        <button class="btn-primary">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          Добавить клиента
-        </button>
-      </div>
+      <div><div class="page-title">Клиенты</div><div class="page-date" id="clientsCount"></div></div>
+      <div class="action-row"><input type="text" id="clientSearch" placeholder="Поиск..." style="padding:10px 16px;border:1px solid var(--border);border-radius:12px;font-family:'Jost',sans-serif;font-size:12px;background:var(--surface);width:200px;" oninput="loadClients()"></div>
     </div>
-    <!-- Search -->
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:20px;display:flex;gap:12px;align-items:center;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-      <input style="flex:1;border:none;background:transparent;font-family:'Jost',sans-serif;font-size:13px;color:var(--espresso);outline:none;" placeholder="Поиск по имени или телефону..."/>
-      <div style="display:flex;gap:8px;">
-        <span style="background:var(--sage-light);border:1px solid rgba(98,124,65,0.2);border-radius:20px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;color:var(--sage);cursor:pointer;">ВСЕ</span>
-        <span style="background:rgba(205,127,50,0.1);border:1px solid rgba(205,127,50,0.2);border-radius:20px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;color:var(--bronze);cursor:pointer;">◆ БРОНЗА</span>
-        <span style="background:rgba(180,180,200,0.1);border:1px solid rgba(180,180,200,0.2);border-radius:20px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;color:#888;cursor:pointer;">◈ СЕРЕБРО</span>
-        <span style="background:rgba(220,180,60,0.1);border:1px solid rgba(220,180,60,0.2);border-radius:20px;padding:4px 12px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;color:#B8962A;cursor:pointer;">✦ ЗОЛОТО</span>
-      </div>
-    </div>
-    <!-- Client cards grid -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;">
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(44,26,14,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-          <div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--sage),var(--sage-l));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;flex-shrink:0;">А</div>
-          <div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;">Александра М.</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:2px;">+375 29 ••• •• 42</div>
-          </div>
-          <span class="level-chip level-bronze" style="margin-left:auto;">◆ Бронза</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--caramel);">3</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Бонусов</div>
-          </div>
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--sage);">2%</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Кэшбэк</div>
-          </div>
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--coffee);">80</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Покупок р.</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;">
-          <button class="tbl-btn tbl-btn-add" style="flex:1;padding:8px;">+ Бонус</button>
-          <button class="tbl-btn tbl-btn-info" style="flex:1;padding:8px;">Профиль</button>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(44,26,14,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-          <div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#8aaa5a,#627c41);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;flex-shrink:0;">Д</div>
-          <div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;">Дмитрий К.</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:2px;">+375 44 ••• •• 17</div>
-          </div>
-          <span class="level-chip level-silver" style="margin-left:auto;">◈ Серебро</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--caramel);">84</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Бонусов</div>
-          </div>
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--sage);">5%</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Кэшбэк</div>
-          </div>
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--coffee);">1 800</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Покупок р.</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;">
-          <button class="tbl-btn tbl-btn-add" style="flex:1;padding:8px;">+ Бонус</button>
-          <button class="tbl-btn tbl-btn-info" style="flex:1;padding:8px;">Профиль</button>
-        </div>
-      </div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:22px;box-shadow:var(--shadow);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 30px rgba(44,26,14,0.14)'" onmouseout="this.style.transform='';this.style.boxShadow=''">
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;">
-          <div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--bronze),#E8A84C);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;color:#fff;flex-shrink:0;">В</div>
-          <div>
-            <div style="font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;">Виктория Н.</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:2px;">+375 33 ••• •• 08</div>
-          </div>
-          <span class="level-chip level-gold" style="margin-left:auto;">✦ Золото</span>
-        </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--caramel);">312</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Бонусов</div>
-          </div>
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--sage);">10%</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Кэшбэк</div>
-          </div>
-          <div style="text-align:center;background:rgba(44,26,14,0.04);border-radius:10px;padding:10px 6px;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--coffee);">6 200</div>
-            <div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);margin-top:2px;">Покупок р.</div>
-          </div>
-        </div>
-        <div style="display:flex;gap:8px;margin-top:14px;">
-          <button class="tbl-btn tbl-btn-add" style="flex:1;padding:8px;">+ Бонус</button>
-          <button class="tbl-btn tbl-btn-info" style="flex:1;padding:8px;">Профиль</button>
-        </div>
-      </div>
-    </div>
-  </div><!-- /pageClients -->
+    <div class="card"><div class="table-wrap"><table><thead><tr><th>Имя</th><th>Телефон</th><th>Уровень</th><th>Бонусы</th><th>Покупки</th><th>Дата рег.</th></tr></thead><tbody id="clientsTable"></tbody></table></div></div>
+  </div>
 
-  <!-- BONUSES PAGE -->
+  <!-- BROADCASTS -->
+  <div id="pageBroadcasts" style="display:none">
+    <div class="page-header">
+      <div><div class="page-title">Рассылки</div><div class="page-date">Создание и управление рассылками</div></div>
+    </div>
+    <div class="two-col">
+      <div class="card" style="padding:24px;">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Создать рассылку</div>
+        <div class="bc-form-group">
+          <label class="bc-label">Текст сообщения (HTML)</label>
+          <textarea class="bc-textarea" id="bcText" placeholder="Введите текст рассылки...&#10;&#10;Поддерживается HTML:&#10;<b>жирный</b>&#10;<i>курсив</i>&#10;<u>подчёркнутый</u>&#10;<a href='url'>ссылка</a>"></textarea>
+        </div>
+        <div class="bc-form-group">
+          <label class="bc-label">Аудитория</label>
+          <select class="bc-select" id="bcFilter">
+            <option value="all">Все пользователи</option>
+            <option value="level:Бронза">Бронза</option>
+            <option value="level:Серебро">Серебро</option>
+            <option value="level:Золото">Золото</option>
+            <option value="active">Активные за 30 дней</option>
+          </select>
+        </div>
+        <div class="bc-form-group">
+          <label class="bc-label">Кнопки (JSON, необязательно)</label>
+          <input class="bc-input" id="bcButtons" placeholder='[{"text":"Открыть","url":"https://..."}]'>
+        </div>
+        <div class="bc-label">Превью</div>
+        <div class="bc-preview" id="bcPreview">Введите текст выше...</div>
+        <div class="bc-btn-row">
+          <button class="btn-primary" onclick="saveBroadcast()">Сохранить черновик</button>
+          <button class="btn-secondary" onclick="updatePreview()">Обновить превью</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">История рассылок</div></div>
+        <div id="bcHistory" style="padding:0;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BONUSES -->
   <div id="pageBonuses" style="display:none">
     <div class="page-header">
-      <div>
-        <div class="page-title">Бонусная программа</div>
-        <div class="page-date">Управление начислениями</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-primary">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
-          Начислить вручную
-        </button>
-      </div>
+      <div><div class="page-title">Бонусы</div><div class="page-date">Все транзакции системы</div></div>
     </div>
-    <!-- Levels info -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;">
-      <div style="background:var(--surface);border:1px solid rgba(205,127,50,0.25);border-radius:20px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--bronze),#E8A84C);border-radius:20px 20px 0 0;"></div>
-        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">◆ Уровень Бронза</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:var(--bronze);line-height:1;">2%</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">кэшбэк с каждой покупки</div>
-        <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);">0 — 399 р. покупок</div>
-        <div style="margin-top:16px;background:rgba(205,127,50,0.08);border-radius:10px;padding:10px 14px;font-size:12px;color:var(--bronze);">178 клиентов · 72%</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid rgba(160,160,180,0.3);border-radius:20px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#A0A0B8,#C8C8D8);border-radius:20px 20px 0 0;"></div>
-        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">◈ Уровень Серебро</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:#888;line-height:1;">5%</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">кэшбэк с каждой покупки</div>
-        <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);">400 — 5 999 р. покупок</div>
-        <div style="margin-top:16px;background:rgba(160,160,180,0.08);border-radius:10px;padding:10px 14px;font-size:12px;color:#888;">54 клиента · 22%</div>
-      </div>
-      <div style="background:var(--surface);border:1px solid rgba(220,180,60,0.25);border-radius:20px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;">
-        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#C8A830,#E8CA50);border-radius:20px 20px 0 0;"></div>
-        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);margin-bottom:10px;">✦ Уровень Золото</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:42px;font-weight:300;color:#B8962A;line-height:1;">10%</div>
-        <div style="font-size:12px;color:var(--text-muted);margin-top:8px;">кэшбэк с каждой покупки</div>
-        <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);">от 6 000 р. покупок</div>
-        <div style="margin-top:16px;background:rgba(200,168,48,0.08);border-radius:10px;padding:10px 14px;font-size:12px;color:#B8962A;">15 клиентов · 6%</div>
-      </div>
+    <div class="card"><div class="card-head"><div class="card-title">Транзакции</div></div>
+      <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>Тип</th><th>Сумма</th><th>Бонусы</th><th>Описание</th><th>Дата</th></tr></thead><tbody id="allTxnTable"></tbody></table></div>
     </div>
-    <!-- Recent bonus activity -->
-    <div class="card">
-      <div class="card-head" style="margin-bottom:0;padding-bottom:16px;">
-        <div class="card-title">Последние транзакции</div>
-        <div class="card-badge">Сегодня · 31</div>
-      </div>
-      <div style="padding:0 24px 20px;display:flex;flex-direction:column;gap:1px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--sage);">+</div>
-            <div>
-              <div style="font-size:13px;font-weight:400;">Александра М.</div>
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:2px;">Начисление · 14:32</div>
-            </div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sage);">+1.60 р.</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);">покупка 80 р.</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--border);">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:var(--caramel-light);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--caramel);">−</div>
-            <div>
-              <div style="font-size:13px;font-weight:400;">Дмитрий К.</div>
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:2px;">Списание · 13:11</div>
-            </div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--caramel);">−42.00 р.</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);">остаток: 42 р.</div>
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0;">
-          <div style="display:flex;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border-radius:10px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--sage);">+</div>
-            <div>
-              <div style="font-size:13px;font-weight:400;">Виктория Н.</div>
-              <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);margin-top:2px;">Начисление · 11:45</div>
-            </div>
-          </div>
-          <div style="text-align:right;">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sage);">+62.00 р.</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text-muted);">покупка 620 р.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /pageBonuses -->
+  </div>
 
-  <!-- ANALYTICS PAGE -->
-  <div id="pageAnalytics" style="display:none">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Аналитика</div>
-        <div class="page-date">Апрель — Май 2026</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-secondary">Скачать отчёт</button>
-      </div>
-    </div>
-    <!-- Metrics row -->
-    <div class="kpi-grid" style="margin-bottom:20px;">
-      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--sage),var(--sage-l))"></div><div class="kpi-label">Средний чек</div><div class="kpi-val">186<sup style="font-size:16px"> р.</sup></div><div class="kpi-delta up">↑ +14 р. vs март</div></div>
-      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--caramel),#E8A84C)"></div><div class="kpi-label">Повторных визитов</div><div class="kpi-val">68<sup style="font-size:16px">%</sup></div><div class="kpi-delta up">↑ +5% vs март</div></div>
-      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--bronze),#E8A84C)"></div><div class="kpi-label">Выдано бонусов</div><div class="kpi-val">892<sup style="font-size:16px"> р.</sup></div><div class="kpi-delta up">↑ за месяц</div></div>
-      <div class="kpi-card"><div class="kpi-accent" style="background:linear-gradient(90deg,var(--copper),#E8604C)"></div><div class="kpi-label">Конверсия в Серебро</div><div class="kpi-val">21<sup style="font-size:16px">%</sup></div><div class="kpi-delta down">↓ −2% vs март</div></div>
-    </div>
-    <!-- Chart full width -->
-    <div class="card" style="margin-bottom:20px;">
-      <div class="card-head" style="padding-bottom:0;">
-        <div class="card-title">Динамика транзакций</div>
-        <div class="card-badge">Апрель 2026</div>
-      </div>
-      <svg style="width:100%;margin-top:16px;padding:0 24px 24px;" viewBox="0 0 700 160" xmlns="http://www.w3.org/2000/svg" fill="none">
-        <defs>
-          <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stop-color="#627c41" stop-opacity="0.25"/>
-            <stop offset="100%" stop-color="#627c41" stop-opacity="0"/>
-          </linearGradient>
-        </defs>
-        <path d="M30,130 C80,100 120,70 170,55 C220,40 260,80 310,60 C360,40 400,30 450,45 C500,60 550,40 620,35 L620,145 L30,145 Z" fill="url(#lineGrad)"/>
-        <path d="M30,130 C80,100 120,70 170,55 C220,40 260,80 310,60 C360,40 400,30 450,45 C500,60 550,40 620,35" stroke="#627c41" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="170" cy="55" r="4" fill="#627c41"/>
-        <circle cx="310" cy="60" r="4" fill="#627c41"/>
-        <circle cx="450" cy="45" r="4" fill="#627c41"/>
-        <circle cx="620" cy="35" r="5" fill="#8aaa5a" stroke="#fff" stroke-width="2"/>
-        <text x="30" y="155" font-family="DM Mono, monospace" font-size="8" fill="#9C8B7A" letter-spacing="0.08em">1 апр</text>
-        <text x="170" y="155" font-family="DM Mono, monospace" font-size="8" fill="#9C8B7A" letter-spacing="0.08em">8 апр</text>
-        <text x="310" y="155" font-family="DM Mono, monospace" font-size="8" fill="#9C8B7A" letter-spacing="0.08em">16 апр</text>
-        <text x="450" y="155" font-family="DM Mono, monospace" font-size="8" fill="#9C8B7A" letter-spacing="0.08em">24 апр</text>
-        <text x="600" y="155" font-family="DM Mono, monospace" font-size="8" fill="#9C8B7A" letter-spacing="0.08em">май</text>
-      </svg>
-    </div>
-    <!-- Two mini cards -->
-    <div class="two-col">
-      <div class="card">
-        <div class="card-head" style="padding-bottom:16px;"><div class="card-title">Топ клиенты</div></div>
-        <div style="padding:0 24px 20px;display:flex;flex-direction:column;gap:12px;">
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--bronze),#E8A84C);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;">В</div><div style="flex:1;font-size:13px;">Виктория Н.</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--coffee);">6 200 р.</div></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--sage),var(--sage-l));display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;">Д</div><div style="flex:1;font-size:13px;">Дмитрий К.</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--coffee);">1 800 р.</div></div>
-          <div style="display:flex;align-items:center;gap:10px;"><div style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#a0a0b8,#c8c8d8);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;">А</div><div style="flex:1;font-size:13px;">Анна В.</div><div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--coffee);">980 р.</div></div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-head" style="padding-bottom:16px;"><div class="card-title">По дням недели</div></div>
-        <div style="padding:0 24px 20px;display:flex;flex-direction:column;gap:10px;">
-          <div class="mini-stat"><div class="mini-stat-label">Понедельник</div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:40%;background:var(--sage);"></div></div><div class="mini-stat-val">18 txn</div></div>
-          <div class="mini-stat"><div class="mini-stat-label">Вторник</div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:55%;background:var(--sage);"></div></div><div class="mini-stat-val">24 txn</div></div>
-          <div class="mini-stat"><div class="mini-stat-label">Пятница</div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:85%;background:var(--caramel);"></div></div><div class="mini-stat-val">38 txn</div></div>
-          <div class="mini-stat"><div class="mini-stat-label">Суббота</div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:95%;background:var(--caramel);"></div></div><div class="mini-stat-val">43 txn</div></div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /pageAnalytics -->
-
-  <!-- NOTIFICATIONS PAGE -->
-  <div id="pageNotifications" style="display:none">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Уведомления</div>
-        <div class="page-date">3 непрочитанных</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-secondary" onclick="document.querySelectorAll('.notif-item.unread').forEach(n=>{n.classList.remove('unread');})">Отметить все прочитанными</button>
-      </div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <!-- Unread -->
-      <div class="notif-item unread" style="background:var(--surface);border:1px solid rgba(98,124,65,0.3);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;position:relative;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 24px rgba(44,26,14,0.12)'" onmouseout="this.style.boxShadow=''">
-        <div style="width:42px;height:42px;border-radius:8px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:400;margin-bottom:4px;">Новая регистрация</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Михаил Р. зарегистрировался по реферальной ссылке. Начислено 3 бонуса.</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:8px;">Сегодня · 15:44</div>
-        </div>
-        <div style="width:8px;height:8px;border-radius:2px;background:var(--sage);flex-shrink:0;margin-top:6px;"></div>
-      </div>
-      <div class="notif-item unread" style="background:var(--surface);border:1px solid rgba(196,149,90,0.3);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;position:relative;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 24px rgba(44,26,14,0.12)'" onmouseout="this.style.boxShadow=''">
-        <div style="width:42px;height:42px;border-radius:8px;background:var(--caramel-light);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:400;margin-bottom:4px;">Повышение уровня ✦</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Виктория Н. достигла уровня Золото. Кэшбэк обновлён до 10%.</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:8px;">Сегодня · 11:45</div>
-        </div>
-        <div style="width:8px;height:8px;border-radius:2px;background:var(--caramel);flex-shrink:0;margin-top:6px;"></div>
-      </div>
-      <div class="notif-item unread" style="background:var(--surface);border:1px solid rgba(224,124,64,0.25);border-radius:18px;padding:20px 22px;box-shadow:var(--shadow);display:flex;align-items:flex-start;gap:16px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 4px 24px rgba(44,26,14,0.12)'" onmouseout="this.style.boxShadow=''">
-        <div style="width:42px;height:42px;border-radius:8px;background:rgba(224,124,64,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--copper)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:400;margin-bottom:4px;">Бонусы истекают</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">У 12 клиентов бонусы не использовались более 90 дней. Рекомендуем отправить напоминание.</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:8px;">Вчера · 09:00</div>
-        </div>
-        <div style="width:8px;height:8px;border-radius:2px;background:var(--copper);flex-shrink:0;margin-top:6px;"></div>
-      </div>
-      <!-- Read -->
-      <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-muted);padding:8px 4px;">Прочитанные</div>
-      <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px 22px;display:flex;align-items:flex-start;gap:16px;opacity:0.65;cursor:pointer;">
-        <div style="width:42px;height:42px;border-radius:8px;background:rgba(44,26,14,0.05);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-4 0v2M8 7V5a2 2 0 014 0v2M12 12v4M10 14h4"/></svg>
-        </div>
-        <div style="flex:1;">
-          <div style="font-size:14px;font-weight:400;margin-bottom:4px;">Начисление завершено</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.5;">Массовое начисление 3 р. для 12 новых клиентов выполнено успешно.</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;color:var(--text-muted);margin-top:8px;">29 апр. · 18:22</div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /pageNotifications -->
-
-  <!-- SETTINGS PAGE -->
+  <!-- SETTINGS -->
   <div id="pageSettings" style="display:none">
-    <div class="page-header">
-      <div>
-        <div class="page-title">Настройки</div>
-        <div class="page-date">Конфигурация системы</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-primary">Сохранить изменения</button>
-      </div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-      <!-- Cashback settings -->
+    <div class="page-header"><div><div class="page-title">Настройки</div><div class="page-date">Параметры системы</div></div></div>
+    <div class="two-col">
       <div class="card" style="padding:24px;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Параметры кэшбэка</div>
         <div style="display:flex;flex-direction:column;gap:16px;">
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Бронза — % кэшбэка</div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <input type="number" value="2" style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--bronze);background:var(--bg);outline:none;text-align:center;"/>
-              <div style="font-size:12px;color:var(--text-muted);">при покупках до 399 р.</div>
-            </div>
-          </div>
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Серебро — % кэшбэка</div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <input type="number" value="5" style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#888;background:var(--bg);outline:none;text-align:center;"/>
-              <div style="font-size:12px;color:var(--text-muted);">400 — 5 999 р. покупок</div>
-            </div>
-          </div>
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Золото — % кэшбэка</div>
-            <div style="display:flex;align-items:center;gap:12px;">
-              <input type="number" value="10" style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#B8962A;background:var(--bg);outline:none;text-align:center;"/>
-              <div style="font-size:12px;color:var(--text-muted);">от 6 000 р. покупок</div>
-            </div>
-          </div>
+          <div><div class="bc-label">Бронза — % кэшбэка</div><div style="display:flex;align-items:center;gap:12px;"><input type="number" value="2" disabled style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--bronze);background:var(--bg);text-align:center;"/><div style="font-size:12px;color:var(--text-muted);">до 399 р. покупок</div></div></div>
+          <div><div class="bc-label">Серебро — % кэшбэка</div><div style="display:flex;align-items:center;gap:12px;"><input type="number" value="5" disabled style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#888;background:var(--bg);text-align:center;"/><div style="font-size:12px;color:var(--text-muted);">400 — 5999 р.</div></div></div>
+          <div><div class="bc-label">Золото — % кэшбэка</div><div style="display:flex;align-items:center;gap:12px;"><input type="number" value="10" disabled style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#B8962A;background:var(--bg);text-align:center;"/><div style="font-size:12px;color:var(--text-muted);">от 6000 р.</div></div></div>
         </div>
       </div>
-      <!-- Account settings -->
       <div class="card" style="padding:24px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Аккаунт администратора</div>
-        <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);">
-          <div style="width:54px;height:54px;border-radius:16px;background:linear-gradient(135deg,var(--sage),var(--sage-l));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:26px;color:#fff;">A</div>
-          <div>
-            <div style="font-size:15px;font-weight:400;">Администратор</div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;color:var(--text-muted);margin-top:3px;">OWNER · FLOVE</div>
-          </div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:14px;">
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Название заведения</div>
-            <input type="text" value="FLove" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Jost',sans-serif;font-size:13px;color:var(--espresso);background:var(--bg);outline:none;"/>
-          </div>
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;">Телефон для связи</div>
-            <input type="tel" value="+375 29 229 90 01" style="width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:13px;color:var(--espresso);background:var(--bg);outline:none;letter-spacing:0.06em;"/>
-          </div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Реферальная программа</div>
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div><div class="bc-label">Бонус рефереру</div><div style="font-size:14px;color:var(--sage);font-weight:400;">5 р. за каждого приглашённого</div></div>
+          <div><div class="bc-label">Бонус новому клиенту</div><div style="font-size:14px;color:var(--caramel);font-weight:400;">3 р. при регистрации по ссылке</div></div>
+          <div><div class="bc-label">Приветственный бонус</div><div style="font-size:14px;color:var(--coffee);font-weight:400;">3 р. всем новым клиентам</div></div>
         </div>
       </div>
     </div>
-  </div><!-- /pageSettings -->
-
-  <!-- QR PAGE -->
-  <div id="pageQR" style="display:none">
-    <div class="page-header">
-      <div>
-        <div class="page-title">QR-код заведения</div>
-        <div class="page-date">Для регистрации клиентов</div>
-      </div>
-      <div class="action-row">
-        <button class="btn-secondary" onclick="window.print()">Распечатать</button>
-        <button class="btn-primary">Скачать PNG</button>
-      </div>
-    </div>
-    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
-      <!-- QR Hero -->
-      <div style="flex:1;min-width:320px;max-width:520px;background:linear-gradient(145deg,var(--espresso),#1a0f07);border-radius:28px;padding:44px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(44,26,14,0.35);">
-        <!-- decorative bg circles -->
-        <div style="position:absolute;top:-60px;right:-60px;width:200px;height:200px;border-radius:50%;border:1px solid rgba(98,124,65,0.12);pointer-events:none;"></div>
-        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;border:1px solid rgba(98,124,65,0.08);pointer-events:none;"></div>
-        <div style="position:absolute;bottom:-80px;left:-80px;width:240px;height:240px;border-radius:50%;border:1px solid rgba(196,149,90,0.08);pointer-events:none;"></div>
-        <!-- Logo top -->
-        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:600;letter-spacing:0.1em;color:#F5F0E8;margin-bottom:6px;">FL<span style="color:var(--sage-l);font-style:italic;">ove</span></div>
-        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.25em;text-transform:uppercase;color:rgba(245,240,232,0.3);margin-bottom:32px;">Программа лояльности</div>
-        <!-- QR code SVG (static demo) -->
-        <div style="background:#FAF8F4;border-radius:20px;padding:20px;box-shadow:0 8px 40px rgba(0,0,0,0.4);position:relative;">
-          <!-- corner accents -->
-          <div style="position:absolute;top:-2px;left:-2px;width:20px;height:20px;border-top:2px solid var(--sage-l);border-left:2px solid var(--sage-l);border-radius:4px 0 0 0;"></div>
-          <div style="position:absolute;top:-2px;right:-2px;width:20px;height:20px;border-top:2px solid var(--sage-l);border-right:2px solid var(--sage-l);border-radius:0 4px 0 0;"></div>
-          <div style="position:absolute;bottom:-2px;left:-2px;width:20px;height:20px;border-bottom:2px solid var(--sage-l);border-left:2px solid var(--sage-l);border-radius:0 0 0 4px;"></div>
-          <div style="position:absolute;bottom:-2px;right:-2px;width:20px;height:20px;border-bottom:2px solid var(--sage-l);border-right:2px solid var(--sage-l);border-radius:0 0 4px 0;"></div>
-          <svg width="200" height="200" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
-            <!-- QR demo pattern -->
-            <rect width="21" height="21" fill="#FAF8F4"/>
-            <!-- finder top-left -->
-            <rect x="0" y="0" width="7" height="7" fill="none" stroke="#2C1A0E" stroke-width="1"/>
-            <rect x="2" y="2" width="3" height="3" fill="#2C1A0E"/>
-            <!-- finder top-right -->
-            <rect x="14" y="0" width="7" height="7" fill="none" stroke="#2C1A0E" stroke-width="1"/>
-            <rect x="16" y="2" width="3" height="3" fill="#2C1A0E"/>
-            <!-- finder bottom-left -->
-            <rect x="0" y="14" width="7" height="7" fill="none" stroke="#2C1A0E" stroke-width="1"/>
-            <rect x="2" y="16" width="3" height="3" fill="#2C1A0E"/>
-            <!-- data dots -->
-            <rect x="8" y="0" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="0" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="0" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="2" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="3" width="1" height="1" fill="#2C1A0E"/><rect x="11" y="2" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="4" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="4" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="3" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="6" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="5" width="1" height="1" fill="#2C1A0E"/><rect x="11" y="6" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="0" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="2" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="4" y="8" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="6" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="8" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="8" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="12" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="14" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="16" y="8" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="18" y="8" width="1" height="1" fill="#2C1A0E"/><rect x="20" y="8" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="0" y="10" width="1" height="1" fill="#2C1A0E"/><rect x="2" y="10" width="1" height="1" fill="#2C1A0E"/><rect x="5" y="10" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="7" y="10" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="9" width="1" height="1" fill="#2C1A0E"/><rect x="11" y="10" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="13" y="9" width="1" height="1" fill="#2C1A0E"/><rect x="15" y="10" width="1" height="1" fill="#2C1A0E"/><rect x="17" y="9" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="19" y="10" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="1" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="3" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="6" y="12" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="11" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="14" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="16" y="12" width="1" height="1" fill="#2C1A0E"/><rect x="18" y="11" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="20" y="12" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="14" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="14" width="1" height="1" fill="#2C1A0E"/><rect x="12" y="14" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="13" y="15" width="1" height="1" fill="#2C1A0E"/><rect x="15" y="14" width="1" height="1" fill="#2C1A0E"/><rect x="17" y="15" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="16" width="1" height="1" fill="#2C1A0E"/><rect x="9" y="17" width="1" height="1" fill="#2C1A0E"/><rect x="11" y="16" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="12" y="17" width="1" height="1" fill="#2C1A0E"/><rect x="14" y="16" width="1" height="1" fill="#2C1A0E"/><rect x="16" y="17" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="18" y="16" width="1" height="1" fill="#2C1A0E"/><rect x="20" y="16" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="18" width="1" height="1" fill="#2C1A0E"/><rect x="10" y="18" width="1" height="1" fill="#2C1A0E"/><rect x="13" y="19" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="15" y="18" width="1" height="1" fill="#2C1A0E"/><rect x="17" y="19" width="1" height="1" fill="#2C1A0E"/><rect x="19" y="18" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="8" y="20" width="1" height="1" fill="#2C1A0E"/><rect x="11" y="20" width="1" height="1" fill="#2C1A0E"/><rect x="14" y="20" width="1" height="1" fill="#2C1A0E"/>
-            <rect x="16" y="20" width="1" height="1" fill="#2C1A0E"/><rect x="20" y="20" width="1" height="1" fill="#2C1A0E"/>
-            <!-- center logo overlay -->
-            <rect x="9" y="9" width="3" height="3" fill="#FAF8F4" rx="0.5"/>
-          </svg>
-          <!-- Center logo in QR -->
-          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#FAF8F4;border-radius:6px;padding:4px 6px;box-shadow:0 2px 8px rgba(0,0,0,0.15);">
-            <div style="font-family:'Cormorant Garamond',serif;font-size:10px;font-weight:600;color:#2C1A0E;letter-spacing:0.06em;">FL<span style="color:var(--sage);">ove</span></div>
-          </div>
-        </div>
-        <!-- Bottom info -->
-        <div style="margin-top:28px;text-align:center;">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;color:#F5F0E8;letter-spacing:0.04em;margin-bottom:6px;">Отсканируй и получи бонусы</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:rgba(245,240,232,0.4);">flove.by/join</div>
-        </div>
-        <!-- Bottom decorative line -->
-        <div style="margin-top:24px;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(98,124,65,0.4),transparent);"></div>
-        <div style="margin-top:16px;display:flex;gap:20px;align-items:center;">
-          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--caramel);">2%</div><div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,240,232,0.35);margin-top:2px;">старт</div></div>
-          <div style="width:1px;height:30px;background:rgba(255,255,255,0.08);"></div>
-          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sage-l);">до 10%</div><div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,240,232,0.35);margin-top:2px;">кэшбэк</div></div>
-          <div style="width:1px;height:30px;background:rgba(255,255,255,0.08);"></div>
-          <div style="text-align:center;"><div style="font-family:'Cormorant Garamond',serif;font-size:20px;color:#C8C8D8;">3</div><div style="font-family:'DM Mono',monospace;font-size:7px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,240,232,0.35);margin-top:2px;">уровня</div></div>
-        </div>
-      </div>
-      <!-- Right side instructions -->
-      <div style="flex:1;min-width:260px;display:flex;flex-direction:column;gap:14px;">
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;margin-bottom:14px;">Как это работает</div>
-          <div style="display:flex;flex-direction:column;gap:14px;">
-            <div style="display:flex;gap:14px;align-items:flex-start;">
-              <div style="width:30px;height:30px;border-radius:8px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--sage);flex-shrink:0;">1</div>
-              <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Клиент сканирует QR-код камерой телефона и переходит на страницу регистрации</div>
-            </div>
-            <div style="display:flex;gap:14px;align-items:flex-start;">
-              <div style="width:30px;height:30px;border-radius:8px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--sage);flex-shrink:0;">2</div>
-              <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Вводит имя и номер телефона — регистрация займёт 30 секунд</div>
-            </div>
-            <div style="display:flex;gap:14px;align-items:flex-start;">
-              <div style="width:30px;height:30px;border-radius:8px;background:var(--sage-light);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--sage);flex-shrink:0;">3</div>
-              <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Получает персональный QR-код для накопления и списания бонусов при каждом визите</div>
-            </div>
-          </div>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:20px;box-shadow:var(--shadow);">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:16px;margin-bottom:14px;">Ссылка для регистрации</div>
-          <div style="display:flex;gap:8px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:10px 14px;">
-            <div style="flex:1;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;color:var(--coffee);">flove.by/join</div>
-            <button class="tbl-btn tbl-btn-add" style="padding:5px 14px;white-space:nowrap;">Копировать</button>
-          </div>
-        </div>
-        <div style="background:linear-gradient(135deg,rgba(98,124,65,0.08),rgba(196,149,90,0.06));border:1px solid rgba(98,124,65,0.15);border-radius:18px;padding:20px;">
-          <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--sage);margin-bottom:8px;">Подсказка</div>
-          <div style="font-size:12px;color:var(--text-muted);line-height:1.6;">Распечатайте QR-код в формате A5 или A4 и разместите на кассе, столике или входной двери — на уровне глаз.</div>
-        </div>
-      </div>
-    </div>
-  </div><!-- /pageQR -->
+  </div>
 
   </main>
 </div>
 
 <script>
+const API = window.location.origin;
+const params = new URLSearchParams(window.location.search);
+const USER_ID = params.get('user_id') || '0';
 const PAGES = {
   dashboard: document.getElementById('pageDashboard'),
   clients: document.getElementById('pageClients'),
+  broadcasts: document.getElementById('pageBroadcasts'),
   bonuses: document.getElementById('pageBonuses'),
-  analytics: document.getElementById('pageAnalytics'),
   settings: document.getElementById('pageSettings'),
 };
+
 function sbNav(btn, section) {
-  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   showPage(section);
 }
 function mobNav(section, btn) {
-  document.querySelectorAll('.mob-nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.mob-nav-item').forEach(function(b){b.classList.remove('active');});
   btn.classList.add('active');
   showPage(section);
 }
 function showPage(section) {
-  Object.values(PAGES).forEach(p=>{ if(p) p.style.display='none'; });
+  Object.values(PAGES).forEach(function(p){ if(p) p.style.display='none'; });
   if (PAGES[section]) PAGES[section].style.display='block';
+  if (section === 'dashboard') loadDashboard();
+  if (section === 'clients') loadClients();
+  if (section === 'broadcasts') loadBroadcasts();
+  if (section === 'bonuses') loadAllTxn();
 }
+
+function fmtDate(dt) {
+  if (!dt) return '';
+  var d = new Date(dt.replace(' ','T'));
+  return String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear()+' '+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+function levelClass(level) {
+  if (level==='Золото') return 'level-gold';
+  if (level==='Серебро') return 'level-silver';
+  return 'level-bronze';
+}
+function levelIcon(level) {
+  if (level==='Золото') return '✦';
+  if (level==='Серебро') return '◈';
+  return '◆';
+}
+
+// ─── Dashboard ──────────────────────────────
+async function loadDashboard() {
+  var now = new Date();
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  var days = ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'];
+  document.getElementById('dashDate').textContent = String(now.getDate()).padStart(2,'0')+' '+months[now.getMonth()]+' '+now.getFullYear()+' · '+days[now.getDay()];
+
+  try {
+    var res = await fetch(API+'/api/admin/stats');
+    var s = await res.json();
+
+    document.getElementById('kpiUsers').textContent = s.total_users;
+    document.getElementById('kpiBonuses').innerHTML = s.total_bonuses+'<sup style="font-size:18px"> р.</sup>';
+    document.getElementById('kpiTxn').textContent = s.txn_today;
+    document.getElementById('kpiRef').textContent = s.ref_total;
+    document.getElementById('kpiNewMonth').textContent = '↑ +'+s.new_this_month+' за месяц';
+    document.getElementById('txnBadge').textContent = s.recent_transactions.length+' записей';
+
+    // Level stats
+    var levels = s.levels || {};
+    var total = s.total_users || 1;
+    var statsHtml = '';
+    [['Бронза','var(--bronze)'],['Серебро','#888'],['Золото','#B8962A']].forEach(function(l) {
+      var cnt = levels[l[0]] || 0;
+      var pct = Math.round(cnt/total*100);
+      statsHtml += '<div class="mini-stat"><div class="mini-stat-label">'+l[0]+'</div><div class="mini-stat-bar"><div class="mini-stat-fill" style="width:'+pct+'%;background:'+l[1]+';"></div></div><div class="mini-stat-val">'+cnt+'</div></div>';
+    });
+    document.getElementById('levelStats').innerHTML = statsHtml;
+
+    // Top clients
+    var topHtml = '';
+    (s.top_clients || []).slice(0,5).forEach(function(u) {
+      topHtml += '<tr><td class="td-name">'+u.first_name+' '+(u.last_name||'')+'</td><td class="td-bonus">'+u.total_purchases+' р.</td><td><span class="level-chip '+levelClass(u.level)+'">'+levelIcon(u.level)+' '+u.level+'</span></td></tr>';
+    });
+    document.getElementById('topClients').innerHTML = topHtml || '<tr><td colspan="3" style="text-align:center;color:var(--text-muted);padding:20px;">Нет данных</td></tr>';
+
+    // Recent transactions
+    var txnHtml = '';
+    (s.recent_transactions || []).slice(0,10).forEach(function(t) {
+      txnHtml += '<tr><td class="td-name">'+(t.first_name||'')+' '+(t.last_name||'')+'</td><td>'+t.type+'</td><td>'+t.amount+' р.</td><td style="color:'+(t.bonuses_change>=0?'var(--sage)':'var(--copper)')+';">'+(t.bonuses_change>=0?'+':'')+t.bonuses_change+' р.</td><td class="td-date">'+fmtDate(t.created_at)+'</td></tr>';
+    });
+    document.getElementById('recentTxn').innerHTML = txnHtml || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Нет транзакций</td></tr>';
+  } catch(e) {
+    document.getElementById('kpiUsers').textContent = '—';
+  }
+}
+
+// ─── Clients ────────────────────────────────
+async function loadClients() {
+  var search = (document.getElementById('clientSearch')||{}).value || '';
+  try {
+    var res = await fetch(API+'/api/users?search='+encodeURIComponent(search)+'&limit=100');
+    var data = await res.json();
+    document.getElementById('clientsCount').textContent = data.total+' клиентов';
+    var html = '';
+    data.users.forEach(function(u) {
+      html += '<tr><td class="td-name">'+u.first_name+' '+(u.last_name||'')+'</td><td class="td-phone">'+(u.phone||'—')+'</td><td><span class="level-chip '+levelClass(u.level)+'">'+levelIcon(u.level)+' '+u.level+'</span></td><td class="td-bonus">'+u.bonuses+' р.</td><td>'+u.total_purchases+' р.</td><td class="td-date">'+fmtDate(u.created_at)+'</td></tr>';
+    });
+    document.getElementById('clientsTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Нет клиентов</td></tr>';
+  } catch(e) {
+    document.getElementById('clientsTable').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';
+  }
+}
+
+// ─── Broadcasts ─────────────────────────────
+function updatePreview() {
+  var text = document.getElementById('bcText').value;
+  document.getElementById('bcPreview').innerHTML = text || 'Введите текст выше...';
+}
+
+async function saveBroadcast() {
+  var text = document.getElementById('bcText').value;
+  if (!text.trim()) { alert('Введите текст рассылки'); return; }
+  var filterVal = document.getElementById('bcFilter').value;
+  var filterType = 'all', filterValue = null;
+  if (filterVal.startsWith('level:')) { filterType='level'; filterValue=filterVal.split(':')[1]; }
+  else if (filterVal==='active') { filterType='active'; }
+
+  var buttons = [];
+  try { buttons = JSON.parse(document.getElementById('bcButtons').value || '[]'); } catch(e) {}
+
+  try {
+    var res = await fetch(API+'/api/broadcast', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({admin_telegram_id:parseInt(USER_ID)||0, text:text, buttons:buttons, filter_type:filterType, filter_value:filterValue})
+    });
+    var data = await res.json();
+    if (data.ok) {
+      alert('Рассылка сохранена (ID: '+data.broadcast.id+').\nДля отправки используйте команду /broadcast в боте.');
+      document.getElementById('bcText').value = '';
+      loadBroadcasts();
+    }
+  } catch(e) { alert('Ошибка сохранения'); }
+}
+
+async function loadBroadcasts() {
+  try {
+    var res = await fetch(API+'/api/broadcasts');
+    var list = await res.json();
+    var html = '';
+    if (!list.length) {
+      html = '<div style="padding:24px;text-align:center;color:var(--text-muted);">Нет рассылок</div>';
+    } else {
+      list.forEach(function(b) {
+        var statusClass = b.status==='sent'?'sent':(b.status==='queued'?'queued':'draft');
+        var statusLabel = b.status==='sent'?'Отправлено':(b.status==='queued'?'В очереди':'Черновик');
+        html += '<div class="bc-history-item"><div style="flex:1;"><div style="font-size:13px;font-weight:400;margin-bottom:4px;">'+b.text.substring(0,60)+(b.text.length>60?'...':'')+'</div><div class="td-date">'+fmtDate(b.created_at)+'</div></div><div style="text-align:right;"><span class="bc-status '+statusClass+'">'+statusLabel+'</span>'+(b.status==='sent'?'<div class="td-date" style="margin-top:4px;">'+b.successful+'/'+b.total_recipients+'</div>':'')+'</div></div>';
+      });
+    }
+    document.getElementById('bcHistory').innerHTML = html;
+  } catch(e) {
+    document.getElementById('bcHistory').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);">Ошибка загрузки</div>';
+  }
+}
+
+// ─── All Transactions ───────────────────────
+async function loadAllTxn() {
+  try {
+    var res = await fetch(API+'/api/admin/transactions?limit=100');
+    var data = await res.json();
+    var html = '';
+    data.transactions.forEach(function(t) {
+      html += '<tr><td class="td-name">'+(t.first_name||'')+' '+(t.last_name||'')+'</td><td>'+t.type+'</td><td>'+t.amount+' р.</td><td style="color:'+(t.bonuses_change>=0?'var(--sage)':'var(--copper)')+';">'+(t.bonuses_change>=0?'+':'')+t.bonuses_change+' р.</td><td>'+(t.description||'—')+'</td><td class="td-date">'+fmtDate(t.created_at)+'</td></tr>';
+    });
+    document.getElementById('allTxnTable').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Нет транзакций</td></tr>';
+  } catch(e) {
+    document.getElementById('allTxnTable').innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';
+  }
+}
+
+// Preview auto-update
+document.getElementById('bcText').addEventListener('input', updatePreview);
+
+// Init
+loadDashboard();
 </script>
 </body>
 </html>
