@@ -113,15 +113,63 @@
   .bc-form-group { margin-bottom:16px; }
   .bc-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:8px; display:block; }
   .bc-input, .bc-textarea { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-family:'Jost',sans-serif; font-size:13px; color:var(--espresso); background:var(--bg); resize:vertical; }
-  .bc-textarea { min-height:120px; font-family:'DM Mono',monospace; font-size:12px; }
+  .bc-textarea { min-height:120px; }
   .bc-select { padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:12px; background:var(--bg); color:var(--espresso); }
-  .bc-preview { background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-top:16px; min-height:80px; }
-  .bc-btn-row { display:flex; gap:10px; margin-top:16px; }
+  .bc-preview { background:var(--bg); border:1px solid var(--border); border-radius:16px; padding:20px; margin-top:16px; min-height:80px; font-size:14px; line-height:1.6; }
+  .bc-preview img { max-width:100%; border-radius:10px; margin-bottom:10px; }
+  .bc-preview .prev-btn { display:inline-block; padding:8px 16px; background:var(--sage); color:white; border-radius:8px; font-size:12px; text-decoration:none; margin:4px 4px 4px 0; }
+  .bc-btn-row { display:flex; gap:10px; margin-top:16px; flex-wrap:wrap; }
   .bc-history-item { padding:16px 24px; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:16px; }
   .bc-status { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; text-transform:uppercase; padding:4px 10px; border-radius:20px; }
   .bc-status.sent { background:rgba(98,124,65,0.12); color:var(--sage); }
   .bc-status.draft { background:rgba(196,149,90,0.12); color:var(--caramel); }
   .bc-status.queued { background:rgba(205,127,50,0.1); color:var(--bronze); }
+
+  .fmt-toolbar { display:flex; gap:2px; padding:6px 8px; background:var(--surface); border:1px solid var(--border); border-bottom:none; border-radius:12px 12px 0 0; flex-wrap:wrap; }
+  .fmt-btn { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border:none; background:transparent; border-radius:8px; cursor:pointer; color:var(--espresso); font-size:14px; transition:background 0.15s; }
+  .fmt-btn:hover { background:var(--caramel-light); }
+  .fmt-btn svg { width:16px; height:16px; stroke:var(--espresso); fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+  .bc-textarea.with-toolbar { border-radius:0 0 12px 12px; border-top:1px solid var(--border); }
+
+  .btn-list { display:flex; flex-direction:column; gap:10px; }
+  .btn-row { display:flex; gap:8px; align-items:center; }
+  .btn-row input { flex:1; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:12px; background:var(--bg); color:var(--espresso); }
+  .btn-row input::placeholder { color:var(--text-muted); }
+  .btn-remove { width:32px; height:32px; display:flex; align-items:center; justify-content:center; border:none; background:rgba(224,76,64,0.08); border-radius:8px; cursor:pointer; color:#D04848; font-size:16px; flex-shrink:0; }
+  .btn-remove:hover { background:rgba(224,76,64,0.15); }
+  .btn-add { display:flex; align-items:center; gap:6px; padding:8px 14px; border:1px dashed var(--border); border-radius:10px; background:transparent; cursor:pointer; font-family:'Jost',sans-serif; font-size:12px; color:var(--text-muted); transition:border-color 0.2s,color 0.2s; }
+  .btn-add:hover { border-color:var(--sage); color:var(--sage); }
+
+  .img-upload-area { border:2px dashed var(--border); border-radius:12px; padding:20px; text-align:center; cursor:pointer; transition:border-color 0.2s,background 0.2s; position:relative; }
+  .img-upload-area:hover { border-color:var(--sage); background:var(--sage-light); }
+  .img-upload-area.has-image { border-style:solid; padding:8px; }
+  .img-upload-area img { max-width:100%; max-height:200px; border-radius:8px; display:block; margin:0 auto; }
+  .img-upload-label { display:flex; flex-direction:column; align-items:center; gap:6px; color:var(--text-muted); font-size:12px; }
+  .img-upload-label svg { width:28px; height:28px; stroke:var(--text-muted); }
+  .img-remove { position:absolute; top:4px; right:4px; width:24px; height:24px; border-radius:50%; background:rgba(0,0,0,0.5); color:white; border:none; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; }
+
+  .link-modal-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; z-index:1000; }
+  .link-modal { background:var(--surface); border-radius:16px; padding:24px; width:360px; max-width:90%; box-shadow:0 8px 40px rgba(0,0,0,0.2); }
+  .link-modal h3 { font-family:'Cormorant Garamond',serif; font-size:18px; margin-bottom:16px; font-weight:400; }
+  .link-modal input { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:10px; font-family:'Jost',sans-serif; font-size:13px; margin-bottom:10px; background:var(--bg); }
+  .link-modal-btns { display:flex; gap:8px; justify-content:flex-end; margin-top:12px; }
+
+  .bc-editor:empty:before { content:attr(data-placeholder); color:var(--text-muted); pointer-events:none; }
+
+  .toggle-switch { position:relative; display:inline-block; width:40px; height:22px; flex-shrink:0; }
+  .toggle-switch input { opacity:0; width:0; height:0; }
+  .toggle-slider { position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0; background:rgba(44,26,14,0.15); border-radius:22px; transition:0.3s; }
+  .toggle-slider:before { content:""; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:white; border-radius:50%; transition:0.3s; }
+  .toggle-switch input:checked + .toggle-slider { background:var(--sage); }
+  .toggle-switch input:checked + .toggle-slider:before { transform:translateX(18px); }
+  .setting-row { padding:12px 0; border-bottom:1px solid var(--border); }
+  .setting-row:last-child { border-bottom:none; }
+
+  .bc-history-actions { display:flex; gap:4px; margin-top:6px; }
+  .bc-hist-btn { padding:4px 10px; border:1px solid var(--border); border-radius:8px; background:var(--surface); cursor:pointer; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); transition:all 0.2s; }
+  .bc-hist-btn:hover { border-color:var(--sage); color:var(--sage); }
+  .bc-hist-btn.send { background:var(--sage); color:white; border-color:var(--sage); }
+  .bc-hist-btn.send:hover { opacity:0.85; }
 
   @media (max-width:900px) { .kpi-grid { grid-template-columns:1fr 1fr; } .two-col { grid-template-columns:1fr; } }
   @media (max-width:640px) {
@@ -212,11 +260,40 @@
     </div>
     <div class="two-col">
       <div class="card" style="padding:24px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Создать рассылку</div>
-        <div class="bc-form-group">
-          <label class="bc-label">Текст сообщения (HTML)</label>
-          <textarea class="bc-textarea" id="bcText" placeholder="Введите текст рассылки...&#10;&#10;Поддерживается HTML:&#10;<b>жирный</b>&#10;<i>курсив</i>&#10;<u>подчёркнутый</u>&#10;<a href='url'>ссылка</a>"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;" id="bcFormTitle">Создать рассылку</div>
+          <span id="bcEditingId" style="display:none"></span>
         </div>
+
+        <!-- Image upload -->
+        <div class="bc-form-group">
+          <label class="bc-label">Изображение</label>
+          <div class="img-upload-area" id="imgUploadArea" onclick="document.getElementById('imgFileInput').click()">
+            <div class="img-upload-label" id="imgUploadLabel">
+              <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              <span>Нажмите для загрузки картинки</span>
+            </div>
+          </div>
+          <input type="file" id="imgFileInput" accept="image/*" style="display:none" onchange="handleImageUpload(this)">
+        </div>
+
+        <!-- Text with WYSIWYG editor -->
+        <div class="bc-form-group">
+          <label class="bc-label">Текст сообщения</label>
+          <div class="fmt-toolbar">
+            <button class="fmt-btn" title="Жирный" onmousedown="event.preventDefault();execFmt('bold')"><b>B</b></button>
+            <button class="fmt-btn" title="Курсив" onmousedown="event.preventDefault();execFmt('italic')"><i>I</i></button>
+            <button class="fmt-btn" title="Подчёркнутый" onmousedown="event.preventDefault();execFmt('underline')"><u>U</u></button>
+            <button class="fmt-btn" title="Зачёркнутый" onmousedown="event.preventDefault();execFmt('strikeThrough')"><s>S</s></button>
+            <button class="fmt-btn" title="Вставить ссылку" onmousedown="event.preventDefault();showLinkModal()"><svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg></button>
+            <div style="flex:1"></div>
+            <button class="fmt-btn" id="codeToggleBtn" title="Показать HTML-код" onmousedown="event.preventDefault();toggleCodeView()" style="font-family:'DM Mono',monospace;font-size:11px;">&lt;/&gt;</button>
+          </div>
+          <div class="bc-editor with-toolbar" id="bcEditor" contenteditable="true" style="min-height:120px;padding:12px 16px;border:1px solid var(--border);border-radius:0 0 12px 12px;font-family:'Jost',sans-serif;font-size:13px;color:var(--espresso);background:var(--bg);outline:none;line-height:1.6;white-space:pre-wrap;" data-placeholder="Введите текст рассылки..."></div>
+          <textarea class="bc-textarea with-toolbar" id="bcTextCode" style="display:none;min-height:120px;font-family:'DM Mono',monospace;font-size:12px;" placeholder="HTML-код рассылки..."></textarea>
+        </div>
+
+        <!-- Audience -->
         <div class="bc-form-group">
           <label class="bc-label">Аудитория</label>
           <select class="bc-select" id="bcFilter">
@@ -227,20 +304,51 @@
             <option value="active">Активные за 30 дней</option>
           </select>
         </div>
+
+        <!-- Schedule -->
         <div class="bc-form-group">
-          <label class="bc-label">Кнопки (JSON, необязательно)</label>
-          <input class="bc-input" id="bcButtons" placeholder='[{"text":"Открыть","url":"https://..."}]'>
+          <label class="bc-label">Когда отправить</label>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <select class="bc-select" id="bcScheduleType" onchange="toggleScheduleDate()">
+              <option value="now">Сейчас</option>
+              <option value="scheduled">Запланировать</option>
+            </select>
+            <input type="datetime-local" id="bcScheduleDate" class="bc-input" style="display:none;width:auto;">
+          </div>
         </div>
-        <div class="bc-label">Превью</div>
-        <div class="bc-preview" id="bcPreview">Введите текст выше...</div>
+
+        <!-- Buttons -->
+        <div class="bc-form-group">
+          <label class="bc-label">Кнопки</label>
+          <div class="btn-list" id="bcButtonsList"></div>
+          <button class="btn-add" onclick="addButtonRow()" style="margin-top:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Добавить кнопку
+          </button>
+        </div>
+
         <div class="bc-btn-row">
-          <button class="btn-primary" onclick="saveBroadcast()">Сохранить черновик</button>
-          <button class="btn-secondary" onclick="updatePreview()">Обновить превью</button>
+          <button class="btn-primary" onclick="sendBroadcastNow()">Отправить</button>
+          <button class="btn-secondary" onclick="saveBroadcast()">Сохранить черновик</button>
+          <button class="btn-secondary" onclick="resetBroadcastForm()" style="margin-left:auto;">Очистить</button>
         </div>
       </div>
       <div class="card">
         <div class="card-head"><div class="card-title">История рассылок</div></div>
         <div id="bcHistory" style="padding:0;"></div>
+      </div>
+    </div>
+
+    <!-- Link insert modal -->
+    <div class="link-modal-overlay" id="linkModal" style="display:none" onclick="if(event.target===this)closeLinkModal()">
+      <div class="link-modal">
+        <h3>Вставить ссылку</h3>
+        <input type="text" id="linkText" placeholder="Текст ссылки">
+        <input type="url" id="linkUrl" placeholder="https://...">
+        <div class="link-modal-btns">
+          <button class="btn-secondary" onclick="closeLinkModal()">Отмена</button>
+          <button class="btn-primary" onclick="insertLink()">Вставить</button>
+        </div>
       </div>
     </div>
   </div>
@@ -261,19 +369,92 @@
     <div class="two-col">
       <div class="card" style="padding:24px;">
         <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Параметры кэшбэка</div>
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div><div class="bc-label">Бронза — % кэшбэка</div><div style="display:flex;align-items:center;gap:12px;"><input type="number" value="2" disabled style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--bronze);background:var(--bg);text-align:center;"/><div style="font-size:12px;color:var(--text-muted);">до 399 р. покупок</div></div></div>
-          <div><div class="bc-label">Серебро — % кэшбэка</div><div style="display:flex;align-items:center;gap:12px;"><input type="number" value="5" disabled style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#888;background:var(--bg);text-align:center;"/><div style="font-size:12px;color:var(--text-muted);">400 — 5999 р.</div></div></div>
-          <div><div class="bc-label">Золото — % кэшбэка</div><div style="display:flex;align-items:center;gap:12px;"><input type="number" value="10" disabled style="width:80px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#B8962A;background:var(--bg);text-align:center;"/><div style="font-size:12px;color:var(--text-muted);">от 6000 р.</div></div></div>
+        <div style="display:flex;flex-direction:column;gap:20px;" id="cashbackSettings">
+          <!-- Bronze -->
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="bc-label" style="margin-bottom:0">Бронза</div>
+              <label class="toggle-switch"><input type="checkbox" id="set_cashback_bronze_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <input type="number" id="set_cashback_bronze_pct" value="2" min="0" max="100" style="width:70px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--bronze);background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">% от</span>
+              <input type="number" id="set_cashback_bronze_min" value="0" min="0" style="width:80px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">до</span>
+              <input type="number" id="set_cashback_bronze_max" value="399" min="0" style="width:80px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">р.</span>
+            </div>
+          </div>
+          <!-- Silver -->
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="bc-label" style="margin-bottom:0">Серебро</div>
+              <label class="toggle-switch"><input type="checkbox" id="set_cashback_silver_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <input type="number" id="set_cashback_silver_pct" value="5" min="0" max="100" style="width:70px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#888;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">% от</span>
+              <input type="number" id="set_cashback_silver_min" value="400" min="0" style="width:80px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">до</span>
+              <input type="number" id="set_cashback_silver_max" value="5999" min="0" style="width:80px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">р.</span>
+            </div>
+          </div>
+          <!-- Gold -->
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="bc-label" style="margin-bottom:0">Золото</div>
+              <label class="toggle-switch"><input type="checkbox" id="set_cashback_gold_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+              <input type="number" id="set_cashback_gold_pct" value="10" min="0" max="100" style="width:70px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:#B8962A;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">% от</span>
+              <input type="number" id="set_cashback_gold_min" value="6000" min="0" style="width:80px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">до</span>
+              <input type="number" id="set_cashback_gold_max" value="999999" min="0" style="width:80px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;font-size:13px;background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">р.</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="card" style="padding:24px;">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Реферальная программа</div>
-        <div style="display:flex;flex-direction:column;gap:16px;">
-          <div><div class="bc-label">Бонус рефереру</div><div style="font-size:14px;color:var(--sage);font-weight:400;">5 р. за каждого приглашённого</div></div>
-          <div><div class="bc-label">Бонус новому клиенту</div><div style="font-size:14px;color:var(--caramel);font-weight:400;">3 р. при регистрации по ссылке</div></div>
-          <div><div class="bc-label">Приветственный бонус</div><div style="font-size:14px;color:var(--coffee);font-weight:400;">3 р. всем новым клиентам</div></div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Бонусная программа</div>
+        <div style="display:flex;flex-direction:column;gap:20px;">
+          <!-- Referrer bonus -->
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="bc-label" style="margin-bottom:0">Бонус рефереру</div>
+              <label class="toggle-switch"><input type="checkbox" id="set_bonus_referrer_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="number" id="set_bonus_referrer" value="5" min="0" style="width:80px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--sage);background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">р. за каждого приглашённого</span>
+            </div>
+          </div>
+          <!-- New client bonus -->
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="bc-label" style="margin-bottom:0">Бонус новому клиенту</div>
+              <label class="toggle-switch"><input type="checkbox" id="set_bonus_new_client_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="number" id="set_bonus_new_client" value="3" min="0" style="width:80px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--caramel);background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">р. при регистрации по ссылке</span>
+            </div>
+          </div>
+          <!-- Welcome bonus -->
+          <div class="setting-row">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+              <div class="bc-label" style="margin-bottom:0">Приветственный бонус</div>
+              <label class="toggle-switch"><input type="checkbox" id="set_bonus_welcome_enabled" checked onchange="saveSettings()"><span class="toggle-slider"></span></label>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <input type="number" id="set_bonus_welcome" value="3" min="0" style="width:80px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-family:'Cormorant Garamond',serif;font-size:20px;color:var(--coffee);background:var(--bg);text-align:center;" onchange="saveSettings()">
+              <span style="font-size:12px;color:var(--text-muted);">р. всем новым клиентам</span>
+            </div>
+          </div>
         </div>
+        <div id="settingsSaveStatus" style="margin-top:16px;font-size:12px;color:var(--sage);display:none;">Сохранено</div>
       </div>
     </div>
   </div>
@@ -310,6 +491,7 @@ function showPage(section) {
   if (section === 'clients') loadClients();
   if (section === 'broadcasts') loadBroadcasts();
   if (section === 'bonuses') loadAllTxn();
+  if (section === 'settings') loadSettings();
 }
 
 function fmtDate(dt) {
@@ -393,35 +575,252 @@ async function loadClients() {
 }
 
 // ─── Broadcasts ─────────────────────────────
-function updatePreview() {
-  var text = document.getElementById('bcText').value;
-  document.getElementById('bcPreview').innerHTML = text || 'Введите текст выше...';
+var bcUploadedImageUrl = null;
+var bcCodeMode = false;
+
+function execFmt(command) {
+  document.execCommand(command, false, null);
+  document.getElementById('bcEditor').focus();
 }
 
-async function saveBroadcast() {
-  var text = document.getElementById('bcText').value;
-  if (!text.trim()) { alert('Введите текст рассылки'); return; }
+function toggleCodeView() {
+  var editor = document.getElementById('bcEditor');
+  var codeTA = document.getElementById('bcTextCode');
+  var btn = document.getElementById('codeToggleBtn');
+  bcCodeMode = !bcCodeMode;
+  if (bcCodeMode) {
+    codeTA.value = editor.innerHTML;
+    editor.style.display = 'none';
+    codeTA.style.display = 'block';
+    btn.style.background = 'var(--caramel-light)';
+  } else {
+    editor.innerHTML = codeTA.value;
+    codeTA.style.display = 'none';
+    editor.style.display = 'block';
+    btn.style.background = '';
+  }
+}
+
+function getEditorHtml() {
+  if (bcCodeMode) return document.getElementById('bcTextCode').value;
+  return document.getElementById('bcEditor').innerHTML;
+}
+
+function setEditorHtml(html) {
+  document.getElementById('bcEditor').innerHTML = html || '';
+  document.getElementById('bcTextCode').value = html || '';
+}
+
+function toggleScheduleDate() {
+  var type = document.getElementById('bcScheduleType').value;
+  document.getElementById('bcScheduleDate').style.display = type === 'scheduled' ? 'block' : 'none';
+}
+
+function showLinkModal() {
+  var sel = window.getSelection();
+  var selected = sel ? sel.toString() : '';
+  document.getElementById('linkText').value = selected || '';
+  document.getElementById('linkUrl').value = '';
+  document.getElementById('linkModal').style.display = 'flex';
+  document.getElementById('linkUrl').focus();
+}
+function closeLinkModal() { document.getElementById('linkModal').style.display = 'none'; }
+function insertLink() {
+  var text = document.getElementById('linkText').value;
+  var url = document.getElementById('linkUrl').value;
+  if (!url) { closeLinkModal(); return; }
+  if (bcCodeMode) {
+    var ta = document.getElementById('bcTextCode');
+    var start = ta.selectionStart, end = ta.selectionEnd;
+    var linkHtml = '<a href="' + url + '">' + (text || url) + '</a>';
+    ta.value = ta.value.substring(0, start) + linkHtml + ta.value.substring(end);
+  } else {
+    document.execCommand('createLink', false, url);
+  }
+  closeLinkModal();
+}
+
+async function handleImageUpload(input) {
+  if (!input.files || !input.files[0]) return;
+  var file = input.files[0];
+  var area = document.getElementById('imgUploadArea');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    area.classList.add('has-image');
+    area.innerHTML = '<img src="' + e.target.result + '"><button class="img-remove" onclick="event.stopPropagation();removeImage()">×</button>';
+  };
+  reader.readAsDataURL(file);
+  var formData = new FormData();
+  formData.append('file', file);
+  try {
+    var res = await fetch(API + '/api/upload', { method: 'POST', body: formData });
+    var data = await res.json();
+    if (data.ok) bcUploadedImageUrl = data.url;
+  } catch(e) { console.error('Upload error', e); }
+}
+
+function removeImage() {
+  bcUploadedImageUrl = null;
+  var area = document.getElementById('imgUploadArea');
+  area.classList.remove('has-image');
+  area.innerHTML = '<div class="img-upload-label" id="imgUploadLabel"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg><span>Нажмите для загрузки картинки</span></div>';
+  document.getElementById('imgFileInput').value = '';
+}
+
+function addButtonRow(text, url) {
+  var list = document.getElementById('bcButtonsList');
+  var row = document.createElement('div');
+  row.className = 'btn-row';
+  row.innerHTML = '<input type="text" placeholder="Название кнопки" value="' + (text || '') + '">' +
+    '<input type="url" placeholder="https://..." value="' + (url || '') + '">' +
+    '<button class="btn-remove" onclick="this.parentElement.remove()">×</button>';
+  list.appendChild(row);
+}
+
+function getButtons() {
+  var rows = document.querySelectorAll('#bcButtonsList .btn-row');
+  var buttons = [];
+  rows.forEach(function(row) {
+    var inputs = row.querySelectorAll('input');
+    var t = inputs[0].value.trim();
+    var u = inputs[1].value.trim();
+    if (t && u) buttons.push({ text: t, url: u });
+  });
+  return buttons;
+}
+
+function getBroadcastData() {
+  var text = getEditorHtml();
   var filterVal = document.getElementById('bcFilter').value;
   var filterType = 'all', filterValue = null;
   if (filterVal.startsWith('level:')) { filterType='level'; filterValue=filterVal.split(':')[1]; }
   else if (filterVal==='active') { filterType='active'; }
+  var buttons = getButtons();
+  var scheduledAt = null;
+  if (document.getElementById('bcScheduleType').value === 'scheduled') {
+    scheduledAt = document.getElementById('bcScheduleDate').value || null;
+  }
+  return {
+    admin_telegram_id: parseInt(USER_ID)||0,
+    text: text,
+    buttons: buttons,
+    filter_type: filterType,
+    filter_value: filterValue,
+    photo_url: bcUploadedImageUrl,
+    scheduled_at: scheduledAt
+  };
+}
 
-  var buttons = [];
-  try { buttons = JSON.parse(document.getElementById('bcButtons').value || '[]'); } catch(e) {}
+function resetBroadcastForm() {
+  setEditorHtml('');
+  removeImage();
+  document.getElementById('bcButtonsList').innerHTML = '';
+  document.getElementById('bcFilter').value = 'all';
+  document.getElementById('bcScheduleType').value = 'now';
+  toggleScheduleDate();
+  document.getElementById('bcEditingId').textContent = '';
+  document.getElementById('bcFormTitle').textContent = 'Создать рассылку';
+}
 
+async function saveBroadcast() {
+  var data = getBroadcastData();
+  if (!data.text.trim() || data.text === '<br>') { alert('Введите текст рассылки'); return; }
   try {
     var res = await fetch(API+'/api/broadcast', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({admin_telegram_id:parseInt(USER_ID)||0, text:text, buttons:buttons, filter_type:filterType, filter_value:filterValue})
+      body:JSON.stringify(data)
     });
-    var data = await res.json();
-    if (data.ok) {
-      alert('Рассылка сохранена (ID: '+data.broadcast.id+').\nДля отправки используйте команду /broadcast в боте.');
-      document.getElementById('bcText').value = '';
+    var result = await res.json();
+    if (result.ok) {
+      alert('Черновик сохранён!');
+      resetBroadcastForm();
       loadBroadcasts();
     }
   } catch(e) { alert('Ошибка сохранения'); }
+}
+
+async function sendBroadcastNow() {
+  var data = getBroadcastData();
+  if (!data.text.trim() || data.text === '<br>') { alert('Введите текст рассылки'); return; }
+  if (!confirm('Отправить рассылку сейчас?')) return;
+  try {
+    var res = await fetch(API+'/api/broadcast', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify(data)
+    });
+    var result = await res.json();
+    if (result.ok) {
+      var sendRes = await fetch(API+'/api/broadcast/'+result.broadcast.id+'/send', {method:'POST'});
+      var sendData = await sendRes.json();
+      if (sendData.ok) {
+        alert('Рассылка отправлена! Получателей: ' + sendData.recipients_count);
+      } else {
+        alert('Рассылка сохранена, но отправка не удалась.');
+      }
+      resetBroadcastForm();
+      loadBroadcasts();
+    }
+  } catch(e) { alert('Ошибка отправки'); }
+}
+
+async function editBroadcast(id) {
+  try {
+    var res = await fetch(API+'/api/broadcast/'+id);
+    var b = await res.json();
+    setEditorHtml(b.text || '');
+    bcUploadedImageUrl = b.photo_url || null;
+    if (bcUploadedImageUrl) {
+      var area = document.getElementById('imgUploadArea');
+      area.classList.add('has-image');
+      area.innerHTML = '<img src="' + bcUploadedImageUrl + '"><button class="img-remove" onclick="event.stopPropagation();removeImage()">×</button>';
+    }
+    document.getElementById('bcButtonsList').innerHTML = '';
+    var buttons = [];
+    try { buttons = typeof b.buttons === 'string' ? JSON.parse(b.buttons) : (b.buttons || []); } catch(e) {}
+    buttons.forEach(function(btn) { addButtonRow(btn.text, btn.url); });
+    var fv = b.filter_type === 'level' ? 'level:'+b.filter_value : (b.filter_type || 'all');
+    document.getElementById('bcFilter').value = fv;
+    document.getElementById('bcFormTitle').textContent = 'Редактировать рассылку #' + id;
+    document.getElementById('bcEditingId').textContent = id;
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(e) { alert('Ошибка загрузки рассылки'); }
+}
+
+async function copyBroadcast(id) {
+  try {
+    var res = await fetch(API+'/api/broadcast/'+id);
+    var b = await res.json();
+    setEditorHtml(b.text || '');
+    bcUploadedImageUrl = b.photo_url || null;
+    if (bcUploadedImageUrl) {
+      var area = document.getElementById('imgUploadArea');
+      area.classList.add('has-image');
+      area.innerHTML = '<img src="' + bcUploadedImageUrl + '"><button class="img-remove" onclick="event.stopPropagation();removeImage()">×</button>';
+    }
+    document.getElementById('bcButtonsList').innerHTML = '';
+    var buttons = [];
+    try { buttons = typeof b.buttons === 'string' ? JSON.parse(b.buttons) : (b.buttons || []); } catch(e) {}
+    buttons.forEach(function(btn) { addButtonRow(btn.text, btn.url); });
+    var fv = b.filter_type === 'level' ? 'level:'+b.filter_value : (b.filter_type || 'all');
+    document.getElementById('bcFilter').value = fv;
+    document.getElementById('bcFormTitle').textContent = 'Копия рассылки';
+    document.getElementById('bcEditingId').textContent = '';
+    window.scrollTo({top:0, behavior:'smooth'});
+  } catch(e) { alert('Ошибка копирования'); }
+}
+
+async function sendExistingBroadcast(id) {
+  if (!confirm('Отправить эту рассылку?')) return;
+  try {
+    var res = await fetch(API+'/api/broadcast/'+id+'/send', {method:'POST'});
+    var data = await res.json();
+    if (data.ok) {
+      alert('Рассылка отправлена! Получателей: ' + data.recipients_count);
+      loadBroadcasts();
+    }
+  } catch(e) { alert('Ошибка отправки'); }
 }
 
 async function loadBroadcasts() {
@@ -435,7 +834,19 @@ async function loadBroadcasts() {
       list.forEach(function(b) {
         var statusClass = b.status==='sent'?'sent':(b.status==='queued'?'queued':'draft');
         var statusLabel = b.status==='sent'?'Отправлено':(b.status==='queued'?'В очереди':'Черновик');
-        html += '<div class="bc-history-item"><div style="flex:1;"><div style="font-size:13px;font-weight:400;margin-bottom:4px;">'+b.text.substring(0,60)+(b.text.length>60?'...':'')+'</div><div class="td-date">'+fmtDate(b.created_at)+'</div></div><div style="text-align:right;"><span class="bc-status '+statusClass+'">'+statusLabel+'</span>'+(b.status==='sent'?'<div class="td-date" style="margin-top:4px;">'+b.successful+'/'+b.total_recipients+'</div>':'')+'</div></div>';
+        var textPreview = (b.text||'').replace(/<[^>]*>/g,'').substring(0,60);
+        if ((b.text||'').replace(/<[^>]*>/g,'').length > 60) textPreview += '...';
+        html += '<div class="bc-history-item" style="flex-wrap:wrap;"><div style="flex:1;min-width:150px;"><div style="font-size:13px;font-weight:400;margin-bottom:4px;">'+textPreview+'</div><div class="td-date">'+fmtDate(b.created_at)+'</div>';
+        html += '<div class="bc-history-actions">';
+        if (b.status === 'draft') {
+          html += '<button class="bc-hist-btn" onclick="editBroadcast('+b.id+')">Редактировать</button>';
+          html += '<button class="bc-hist-btn send" onclick="sendExistingBroadcast('+b.id+')">Отправить</button>';
+        }
+        html += '<button class="bc-hist-btn" onclick="copyBroadcast('+b.id+')">Копировать</button>';
+        html += '</div></div>';
+        html += '<div style="text-align:right;"><span class="bc-status '+statusClass+'">'+statusLabel+'</span>';
+        if (b.status==='sent') html += '<div class="td-date" style="margin-top:4px;">'+b.successful+'/'+b.total_recipients+'</div>';
+        html += '</div></div>';
       });
     }
     document.getElementById('bcHistory').innerHTML = html;
@@ -459,8 +870,56 @@ async function loadAllTxn() {
   }
 }
 
-// Preview auto-update
-document.getElementById('bcText').addEventListener('input', updatePreview);
+// ─── Settings ───────────────────────────────
+var settingsSaveTimer = null;
+
+async function loadSettings() {
+  try {
+    var res = await fetch(API+'/api/settings');
+    var s = await res.json();
+    var keys = ['cashback_bronze_pct','cashback_bronze_min','cashback_bronze_max','cashback_bronze_enabled',
+      'cashback_silver_pct','cashback_silver_min','cashback_silver_max','cashback_silver_enabled',
+      'cashback_gold_pct','cashback_gold_min','cashback_gold_max','cashback_gold_enabled',
+      'bonus_referrer','bonus_referrer_enabled','bonus_new_client','bonus_new_client_enabled',
+      'bonus_welcome','bonus_welcome_enabled'];
+    keys.forEach(function(k) {
+      var el = document.getElementById('set_'+k);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = s[k] === '1' || s[k] === 'true';
+      else el.value = s[k] || '';
+    });
+  } catch(e) { console.error('Settings load error', e); }
+}
+
+function saveSettings() {
+  clearTimeout(settingsSaveTimer);
+  settingsSaveTimer = setTimeout(doSaveSettings, 500);
+}
+
+async function doSaveSettings() {
+  var keys = ['cashback_bronze_pct','cashback_bronze_min','cashback_bronze_max','cashback_bronze_enabled',
+    'cashback_silver_pct','cashback_silver_min','cashback_silver_max','cashback_silver_enabled',
+    'cashback_gold_pct','cashback_gold_min','cashback_gold_max','cashback_gold_enabled',
+    'bonus_referrer','bonus_referrer_enabled','bonus_new_client','bonus_new_client_enabled',
+    'bonus_welcome','bonus_welcome_enabled'];
+  var settings = {};
+  keys.forEach(function(k) {
+    var el = document.getElementById('set_'+k);
+    if (!el) return;
+    if (el.type === 'checkbox') settings[k] = el.checked ? '1' : '0';
+    else settings[k] = el.value;
+  });
+  try {
+    await fetch(API+'/api/settings', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({settings:settings})
+    });
+    var status = document.getElementById('settingsSaveStatus');
+    status.style.display = 'block';
+    setTimeout(function(){ status.style.display='none'; }, 2000);
+  } catch(e) { alert('Ошибка сохранения настроек'); }
+}
 
 // Init
 loadDashboard();

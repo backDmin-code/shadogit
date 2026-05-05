@@ -8,10 +8,13 @@ import logging
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
+import uuid
+import shutil
 
 import database
 
@@ -68,6 +71,7 @@ class BroadcastCreateRequest(BaseModel):
     text: str
     parse_mode: str = "HTML"
     photo_file_id: Optional[str] = None
+    photo_url: Optional[str] = None
     buttons: list = []
     filter_type: str = "all"
     filter_value: Optional[str] = None
@@ -209,17 +213,20 @@ def api_admin_transactions(
 
 @app.post("/api/broadcast")
 def api_create_broadcast(req: BroadcastCreateRequest):
+    photo = req.photo_file_id or req.photo_url
     broadcast = database.create_broadcast(
         admin_telegram_id=req.admin_telegram_id,
         text=req.text,
         parse_mode=req.parse_mode,
-        photo_file_id=req.photo_file_id,
+        photo_file_id=photo,
         buttons=req.buttons,
         filter_type=req.filter_type,
         filter_value=req.filter_value,
         scheduled_at=req.scheduled_at,
     )
-    return {"ok": True, "broadcast": broadcast}
+    result = dict(broadcast)
+    result["photo_url"] = result.get("photo_file_id")
+    return {"ok": True, "broadcast": result}
 
 
 @app.get("/api/broadcasts")
@@ -232,7 +239,21 @@ def api_get_broadcast(broadcast_id: int):
     b = database.get_broadcast(broadcast_id)
     if not b:
         raise HTTPException(status_code=404, detail="Broadcast not found")
-    return b
+    result = dict(b)
+    result["photo_url"] = result.get("photo_file_id")
+    return result
+
+
+@app.post("/api/broadcast/{broadcast_id}/preview")
+async def api_preview_broadcast(broadcast_id: int):
+    b = database.get_broadcast(broadcast_id)
+    if not b:
+        raise HTTPException(status_code=404, detail="Broadcast not found")
+    return {
+        "ok": True,
+        "message": "Preview saved. Use /preview command in bot to send to admin chat.",
+        "broadcast_id": broadcast_id,
+    }
 
 
 @app.post("/api/broadcast/{broadcast_id}/send")
@@ -256,16 +277,80 @@ def api_send_broadcast(broadcast_id: int):
 
 # ─── Settings API ───────────────────────────────────────────
 
+SETTINGS_DEFAULTS = {
+    "cashback_bronze_pct": "2",
+    "cashback_bronze_min": "0",
+    "cashback_bronze_max": "399",
+    "cashback_bronze_enabled": "1",
+    "cashback_silver_pct": "5",
+    "cashback_silver_min": "400",
+    "cashback_silver_max": "5999",
+    "cashback_silver_enabled": "1",
+    "cashback_gold_pct": "10",
+    "cashback_gold_min": "6000",
+    "cashback_gold_max": "999999",
+    "cashback_gold_enabled": "1",
+    "bonus_referrer": "5",
+    "bonus_referrer_enabled": "1",
+    "bonus_new_client": "3",
+    "bonus_new_client_enabled": "1",
+    "bonus_welcome": "3",
+    "bonus_welcome_enabled": "1",
+}
+
 
 @app.get("/api/settings/{key}")
 def api_get_setting(key: str):
     return {"key": key, "value": database.get_setting(key)}
 
 
+@app.get("/api/settings")
+def api_get_all_settings():
+    result = {}
+    for key, default in SETTINGS_DEFAULTS.items():
+        result[key] = database.get_setting(key, default)
+    return result
+
+
+class SettingsUpdateRequest(BaseModel):
+    settings: dict
+
+
+@app.post("/api/settings")
+def api_set_settings(req: SettingsUpdateRequest):
+    for key, value in req.settings.items():
+        database.set_setting(key, str(value))
+    return {"ok": True}
+
+
 @app.post("/api/settings/{key}")
 def api_set_setting(key: str, value: str = ""):
     database.set_setting(key, value)
     return {"ok": True}
+
+
+# ─── Upload API ─────────────────────────────────────────────
+
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+
+@app.post("/api/upload")
+async def api_upload_image(file: UploadFile = File(...)):
+    ext = os.path.splitext(file.filename or "")[1] or ".jpg"
+    name = f"{uuid.uuid4().hex}{ext}"
+    path = os.path.join(UPLOAD_DIR, name)
+    with open(path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+    return {"ok": True, "url": f"/uploads/{name}", "filename": name}
+
+
+@app.get("/uploads/{filename}")
+def serve_upload(filename: str):
+    path = os.path.join(UPLOAD_DIR, filename)
+    if not os.path.isfile(path):
+        raise HTTPException(status_code=404, detail="File not found")
+    return FileResponse(path)
 
 
 # ─── Static files (must be last) ───────────────────────────
