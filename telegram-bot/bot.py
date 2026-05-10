@@ -44,6 +44,14 @@ logger = logging.getLogger(__name__)
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
 WEBAPP_URL = os.getenv("WEBAPP_URL", "").rstrip("/")
 
+# Parse admin IDs from env
+_admin_ids_raw = os.getenv("ADMIN_IDS", "")
+ADMIN_IDS: set[int] = set()
+for _aid in _admin_ids_raw.split(","):
+    _aid = _aid.strip()
+    if _aid.isdigit():
+        ADMIN_IDS.add(int(_aid))
+
 # Registration states
 PHONE, FIRST_NAME, LAST_NAME, BIRTHDAY = range(4)
 
@@ -55,33 +63,46 @@ PHONE, FIRST_NAME, LAST_NAME, BIRTHDAY = range(4)
 # ─── Keyboards ──────────────────────────────────────────────
 
 
+def _get_user_role(telegram_id: int) -> str:
+    """Determine effective role: env admins always get 'admin'."""
+    if telegram_id in ADMIN_IDS:
+        user = database.get_user(telegram_id)
+        if user and user.get("role") != "admin":
+            database.update_user_role(telegram_id, "admin")
+        return "admin"
+    user = database.get_user(telegram_id)
+    return user.get("role", "client") if user else "client"
+
+
 def _make_menu_keyboard(telegram_id: int) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
+    role = _get_user_role(telegram_id)
+    buttons = [
         [
-            [
-                InlineKeyboardButton(
-                    "🌸 Открыть карту лояльности",
-                    web_app=WebAppInfo(
-                        url=f"{WEBAPP_URL}/client.html?user_id={telegram_id}"
-                    ),
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "⚙️ Панель управления",
-                    web_app=WebAppInfo(
-                        url=f"{WEBAPP_URL}/admin.html?user_id={telegram_id}"
-                    ),
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    "📷 Сканировать QR",
-                    web_app=WebAppInfo(url=f"{WEBAPP_URL}/scanner.html"),
-                )
-            ],
-        ]
-    )
+            InlineKeyboardButton(
+                "🌸 Открыть карту лояльности",
+                web_app=WebAppInfo(
+                    url=f"{WEBAPP_URL}/client.html?user_id={telegram_id}"
+                ),
+            )
+        ],
+    ]
+    if role in ("admin", "cashier"):
+        buttons.append([
+            InlineKeyboardButton(
+                "📷 Сканировать QR",
+                web_app=WebAppInfo(url=f"{WEBAPP_URL}/scanner.html"),
+            )
+        ])
+    if role == "admin":
+        buttons.append([
+            InlineKeyboardButton(
+                "⚙️ Панель управления",
+                web_app=WebAppInfo(
+                    url=f"{WEBAPP_URL}/admin.html?user_id={telegram_id}"
+                ),
+            )
+        ])
+    return InlineKeyboardMarkup(buttons)
 
 
 def _referral_menu() -> InlineKeyboardMarkup:

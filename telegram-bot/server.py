@@ -21,6 +21,14 @@ import database
 
 load_dotenv()
 
+# Parse admin IDs from env
+_admin_ids_raw = os.getenv("ADMIN_IDS", "")
+ADMIN_IDS: set[int] = set()
+for _aid in _admin_ids_raw.split(","):
+    _aid = _aid.strip()
+    if _aid.isdigit():
+        ADMIN_IDS.add(int(_aid))
+
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
     level=logging.INFO,
@@ -65,6 +73,11 @@ class ManualBonusRequest(BaseModel):
 class RoleUpdateRequest(BaseModel):
     telegram_id: int
     role: str
+
+
+class StaffAddRequest(BaseModel):
+    telegram_id: int
+    role: str = "cashier"
 
 
 class BroadcastCreateRequest(BaseModel):
@@ -150,6 +163,59 @@ def api_update_role(req: RoleUpdateRequest):
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return {"ok": True, "user": user}
+
+
+# ─── Auth / Role Check API ─────────────────────────────────
+
+
+@app.get("/api/auth/check/{telegram_id}")
+def api_auth_check(telegram_id: int):
+    user = database.get_user(telegram_id)
+    if not user:
+        return {"authorized": False, "role": None}
+    role = user.get("role", "client")
+    if telegram_id in ADMIN_IDS and role != "admin":
+        database.update_user_role(telegram_id, "admin")
+        role = "admin"
+    return {
+        "authorized": role in ("admin", "cashier"),
+        "is_admin": role == "admin",
+        "is_cashier": role == "cashier",
+        "role": role,
+        "first_name": user.get("first_name", ""),
+        "last_name": user.get("last_name", ""),
+    }
+
+
+# ─── Staff Management API ──────────────────────────────────
+
+
+@app.get("/api/staff")
+def api_get_staff():
+    return database.get_staff()
+
+
+@app.post("/api/staff/add")
+def api_add_staff(req: StaffAddRequest):
+    if req.role not in ("admin", "cashier"):
+        raise HTTPException(status_code=400, detail="Role must be admin or cashier")
+    user = database.get_user(req.telegram_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found. User must register in bot first.")
+    database.update_user_role(req.telegram_id, req.role)
+    updated = database.get_user(req.telegram_id)
+    return {"ok": True, "user": updated}
+
+
+@app.post("/api/staff/remove")
+def api_remove_staff(req: StaffAddRequest):
+    user = database.get_user(req.telegram_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    if req.telegram_id in ADMIN_IDS:
+        raise HTTPException(status_code=403, detail="Cannot remove env-level admin")
+    database.update_user_role(req.telegram_id, "client")
+    return {"ok": True}
 
 
 @app.post("/api/user/update")

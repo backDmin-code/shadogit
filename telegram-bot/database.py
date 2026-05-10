@@ -300,6 +300,25 @@ def update_user_role(telegram_id: int, role: str) -> dict | None:
     return user
 
 
+def get_staff() -> list[dict]:
+    conn = get_db()
+    rows = conn.execute(
+        "SELECT * FROM users WHERE role IN ('admin', 'cashier') ORDER BY role, id"
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def is_admin(telegram_id: int) -> bool:
+    user = get_user(telegram_id)
+    return user is not None and user.get("role") == "admin"
+
+
+def is_staff(telegram_id: int) -> bool:
+    user = get_user(telegram_id)
+    return user is not None and user.get("role") in ("admin", "cashier")
+
+
 def add_manual_bonus(telegram_id: int, amount: float, description: str = "") -> dict:
     conn = get_db()
     user = get_user(telegram_id, conn)

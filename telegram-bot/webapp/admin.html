@@ -201,6 +201,19 @@
   .td-actions button { padding:4px 8px; border-radius:6px; border:1px solid var(--border); background:var(--surface); cursor:pointer; font-size:11px; }
   .td-actions button:hover { border-color:var(--sage); }
 
+  .staff-card { background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+  .staff-info { flex:1; }
+  .staff-name { font-size:15px; font-weight:400; }
+  .staff-meta { font-family:'DM Mono',monospace; font-size:10px; color:var(--text-muted); margin-top:2px; letter-spacing:0.06em; }
+  .role-badge { display:inline-flex; align-items:center; gap:4px; border-radius:20px; padding:4px 12px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; text-transform:uppercase; }
+  .role-admin { background:rgba(98,124,65,0.15); color:var(--sage); }
+  .role-cashier { background:rgba(196,149,90,0.15); color:var(--caramel); }
+  .role-client { background:rgba(180,180,200,0.15); color:#888; }
+  .auth-overlay { position:fixed; top:0; left:0; right:0; bottom:0; background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:9999; }
+  .auth-box { text-align:center; padding:40px; }
+  .auth-box .sb-logo { font-size:48px; margin-bottom:16px; }
+  .auth-msg { font-size:14px; color:var(--text-muted); margin-top:12px; }
+
   @media (max-width:900px) { .kpi-grid { grid-template-columns:1fr 1fr; } .two-col { grid-template-columns:1fr; } }
   @media (max-width:640px) {
     .sidebar { display:none; }
@@ -220,6 +233,15 @@
 </head>
 <body>
 
+<!-- Auth overlay — shown until role is verified -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <div class="sb-logo" style="color:var(--espresso);">FL<span style="color:var(--sage);font-style:italic;">ove</span></div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-muted);">Admin Panel</div>
+    <div class="auth-msg" id="authMsg">Проверка доступа...</div>
+  </div>
+</div>
+
 <div class="mobile-header">
   <div><div class="mobile-logo">FL<span>ove</span></div><div class="mobile-admin">Admin Panel</div></div>
   <div class="mob-admin-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.58-7 8-7s8 3 8 7"/></svg></div>
@@ -232,6 +254,7 @@
     <button class="mob-nav-item" onclick="mobNav('analytics',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg><span class="mob-nav-label">Аналитика</span></button>
     <button class="mob-nav-item" onclick="mobNav('promotions',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg><span class="mob-nav-label">Акции</span></button>
     <button class="mob-nav-item" onclick="mobNav('broadcasts',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg><span class="mob-nav-label">Рассылки</span></button>
+    <button class="mob-nav-item" onclick="mobNav('staff',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg><span class="mob-nav-label">Персонал</span></button>
     <button class="mob-nav-item" onclick="mobNav('settings',this)"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00-.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82 1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span class="mob-nav-label">Настройки</span></button>
   </div>
 </nav>
@@ -246,6 +269,7 @@
       <button class="sb-item" onclick="sbNav(this,'promotions')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg></span><span class="sb-label">Акции</span></button>
       <button class="sb-item" onclick="sbNav(this,'broadcasts')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></span><span class="sb-label">Рассылки</span></button>
       <button class="sb-item" onclick="sbNav(this,'bonuses')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M12 12v4M10 14h4"/></svg></span><span class="sb-label">Бонусы</span></button>
+      <button class="sb-item" onclick="sbNav(this,'staff')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></span><span class="sb-label">Персонал</span></button>
       <button class="sb-item" onclick="sbNav(this,'settings')"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83"/></svg></span><span class="sb-label">Настройки</span></button>
     </nav>
     <div class="sb-footer"><div class="sb-user"><div class="sb-avatar">A</div><div><div class="sb-user-name">Администратор</div><div class="sb-user-role">Owner</div></div></div></div>
@@ -429,6 +453,50 @@
     </div>
     <div class="card"><div class="card-head"><div class="card-title">Транзакции</div></div>
       <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>Тип</th><th>Сумма</th><th>Бонусы</th><th>Описание</th><th>Дата</th></tr></thead><tbody id="allTxnTable"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- STAFF -->
+  <div id="pageStaff" style="display:none">
+    <div class="page-header">
+      <div><div class="page-title">Персонал</div><div class="page-date">Управление доступом сотрудников</div></div>
+    </div>
+    <div class="two-col">
+      <div>
+        <div class="card" style="padding:24px;margin-bottom:16px;">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:18px;margin-bottom:20px;">Добавить сотрудника</div>
+          <div class="bc-form-group">
+            <label class="bc-label">Выберите из списка клиентов или введите Telegram ID</label>
+            <div style="display:flex;gap:10px;flex-wrap:wrap;">
+              <select class="bc-select" id="staffClientSelect" style="flex:1;min-width:180px;">
+                <option value="">— Выберите клиента —</option>
+              </select>
+              <span style="font-size:12px;color:var(--text-muted);display:flex;align-items:center;">или</span>
+              <input type="text" id="staffTelegramId" placeholder="Telegram ID" style="width:140px;padding:10px 14px;border:1px solid var(--border);border-radius:10px;font-family:'DM Mono',monospace;font-size:12px;background:var(--bg);">
+            </div>
+          </div>
+          <div class="bc-form-group">
+            <label class="bc-label">Роль</label>
+            <select class="bc-select" id="staffRole" style="width:auto;">
+              <option value="cashier">Продавец (Сканер QR)</option>
+              <option value="admin">Администратор (Полный доступ)</option>
+            </select>
+          </div>
+          <button class="btn-primary" onclick="addStaff()">Добавить сотрудника</button>
+        </div>
+        <div class="card" style="padding:18px 24px;">
+          <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;">Роли в системе</div>
+          <div style="font-size:12px;color:var(--espresso);line-height:1.8;">
+            <div><span class="role-badge role-admin">Админ</span> — Полный доступ: админ-панель, сканер, рассылки, настройки</div>
+            <div style="margin-top:4px;"><span class="role-badge role-cashier">Продавец</span> — Доступ к сканеру QR для проведения покупок и списания бонусов</div>
+            <div style="margin-top:4px;"><span class="role-badge role-client">Клиент</span> — Только карта лояльности (по умолчанию)</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div class="card-title">Текущий персонал</div><div class="card-badge" id="staffBadge">—</div></div>
+        <div id="staffList" style="padding:16px 24px;"></div>
+      </div>
     </div>
   </div>
 
@@ -660,6 +728,7 @@ var PAGES = {
   promotions: document.getElementById('pagePromotions'),
   broadcasts: document.getElementById('pageBroadcasts'),
   bonuses: document.getElementById('pageBonuses'),
+  staff: document.getElementById('pageStaff'),
   settings: document.getElementById('pageSettings'),
 };
 
@@ -682,6 +751,7 @@ function showPage(section) {
   if (section === 'promotions') loadPromotions();
   if (section === 'broadcasts') loadBroadcasts();
   if (section === 'bonuses') loadAllTxn();
+  if (section === 'staff') loadStaff();
   if (section === 'settings') { loadSettings(); loadNotifTargets(); }
 }
 
@@ -1109,8 +1179,120 @@ async function loadNotifTargets() {
 
 function downloadBackup() { window.open(API+'/api/backup','_blank'); }
 
+// ─── Auth Check ─────────────────────────────
+async function checkAuth() {
+  var overlay = document.getElementById('authOverlay');
+  var msg = document.getElementById('authMsg');
+  if (!USER_ID || USER_ID === '0') {
+    msg.textContent = 'Доступ запрещён. Откройте панель через бота.';
+    return;
+  }
+  try {
+    var res = await fetch(API+'/api/auth/check/'+USER_ID);
+    var data = await res.json();
+    if (!data.is_admin) {
+      msg.textContent = 'У вас нет прав администратора.';
+      return;
+    }
+    // Update sidebar footer with admin name
+    var sbName = document.querySelector('.sb-user-name');
+    if (sbName && data.first_name) sbName.textContent = data.first_name + ' ' + (data.last_name || '');
+    var sbAvatar = document.querySelector('.sb-avatar');
+    if (sbAvatar && data.first_name) sbAvatar.textContent = data.first_name.charAt(0).toUpperCase();
+    overlay.style.display = 'none';
+    loadDashboard();
+  } catch(e) {
+    msg.textContent = 'Ошибка проверки доступа. Попробуйте позже.';
+  }
+}
+
+// ─── Staff Management ───────────────────────
+async function loadStaff() {
+  // Load staff list
+  try {
+    var res = await fetch(API+'/api/staff');
+    var staff = await res.json();
+    document.getElementById('staffBadge').textContent = staff.length+' сотрудников';
+    var html = '';
+    if (!staff.length) {
+      html = '<div style="text-align:center;color:var(--text-muted);padding:20px;">Нет сотрудников. Добавьте первого.</div>';
+    } else {
+      staff.forEach(function(s) {
+        var roleLabel = s.role === 'admin' ? 'Администратор' : 'Продавец';
+        var roleClass = s.role === 'admin' ? 'role-admin' : 'role-cashier';
+        html += '<div class="staff-card">';
+        html += '<div class="staff-info"><div class="staff-name">'+s.first_name+' '+(s.last_name||'')+'</div>';
+        html += '<div class="staff-meta">ID: '+s.telegram_id+(s.phone?' · '+s.phone:'')+'</div></div>';
+        html += '<span class="role-badge '+roleClass+'">'+roleLabel+'</span>';
+        html += '<button class="btn-danger" style="padding:6px 12px;font-size:11px;" onclick="removeStaff('+s.telegram_id+',\''+s.first_name+'\')">Убрать</button>';
+        html += '</div>';
+      });
+    }
+    document.getElementById('staffList').innerHTML = html;
+  } catch(e) {
+    document.getElementById('staffList').innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</div>';
+  }
+  // Load client list for select
+  try {
+    var cRes = await fetch(API+'/api/users?limit=500');
+    var cData = await cRes.json();
+    var select = document.getElementById('staffClientSelect');
+    var currentVal = select.value;
+    select.innerHTML = '<option value="">— Выберите клиента —</option>';
+    cData.users.forEach(function(u) {
+      if (u.role === 'client') {
+        var opt = document.createElement('option');
+        opt.value = u.telegram_id;
+        opt.textContent = u.first_name+' '+(u.last_name||'')+' (ID: '+u.telegram_id+')';
+        select.appendChild(opt);
+      }
+    });
+    if (currentVal) select.value = currentVal;
+  } catch(e) {}
+}
+
+async function addStaff() {
+  var selectVal = document.getElementById('staffClientSelect').value;
+  var inputVal = document.getElementById('staffTelegramId').value.trim();
+  var tid = selectVal || inputVal;
+  if (!tid) { alert('Выберите клиента или введите Telegram ID'); return; }
+  var role = document.getElementById('staffRole').value;
+  try {
+    var res = await fetch(API+'/api/staff/add', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({telegram_id: parseInt(tid), role: role})
+    });
+    var data = await res.json();
+    if (data.ok) {
+      document.getElementById('staffClientSelect').value = '';
+      document.getElementById('staffTelegramId').value = '';
+      loadStaff();
+    } else {
+      alert('Ошибка: '+(data.detail || 'Пользователь не найден'));
+    }
+  } catch(e) { alert('Ошибка добавления сотрудника'); }
+}
+
+async function removeStaff(tid, name) {
+  if (!confirm('Убрать '+name+' из персонала? Роль будет сброшена на «Клиент».')) return;
+  try {
+    var res = await fetch(API+'/api/staff/remove', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({telegram_id: tid})
+    });
+    var data = await res.json();
+    if (data.ok) {
+      loadStaff();
+    } else {
+      alert('Ошибка: '+(data.detail || ''));
+    }
+  } catch(e) { alert('Ошибка удаления'); }
+}
+
 // Init
-loadDashboard();
+checkAuth();
 </script>
 </body>
 </html>
