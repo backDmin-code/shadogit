@@ -9,7 +9,7 @@ import logging
 from typing import Optional
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Query, UploadFile, File
+from fastapi import FastAPI, HTTPException, Query, UploadFile, File, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse, StreamingResponse
@@ -588,6 +588,40 @@ def serve_upload(filename: str):
     if not os.path.isfile(path):
         raise HTTPException(status_code=404, detail="File not found")
     return FileResponse(path)
+
+
+# ─── Bonus Expiry API ──────────────────────────────────────
+
+
+@app.get("/api/bonus/expiry-settings")
+def api_bonus_expiry_settings():
+    return database.get_bonus_expiry_settings()
+
+
+@app.post("/api/bonus/expiry-settings")
+async def api_save_bonus_expiry_settings(request: Request):
+    data = await request.json()
+    for key in ("bonus_expiry_welcome", "bonus_expiry_referral",
+                "bonus_expiry_purchase", "bonus_expiry_enabled"):
+        if key in data:
+            database.set_setting(key, str(data[key]))
+    return {"ok": True}
+
+
+@app.post("/api/bonus/burn-expired")
+def api_burn_expired():
+    result = database.burn_expired_bonuses()
+    return result
+
+
+@app.get("/api/bonus/entries/{telegram_id}")
+def api_bonus_entries(telegram_id: int):
+    return database.get_bonus_entries(telegram_id)
+
+
+@app.get("/api/bonus/expiring-soon")
+def api_expiring_soon(days: int = 7):
+    return database.get_expiring_soon(days)
 
 
 # ─── Static files (must be last) ───────────────────────────

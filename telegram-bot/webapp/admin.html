@@ -449,9 +449,52 @@
   <!-- BONUSES -->
   <div id="pageBonuses" style="display:none">
     <div class="page-header">
-      <div><div class="page-title">Бонусы</div><div class="page-date">Все транзакции системы</div></div>
+      <div><div class="page-title">Бонусы</div><div class="page-date">Управление бонусами и сроками сгорания</div></div>
     </div>
-    <div class="card"><div class="card-head"><div class="card-title">Транзакции</div></div>
+
+    <!-- Expiry Settings Card -->
+    <div class="card" style="padding:24px;margin-bottom:16px;">
+      <div class="card-head"><div class="card-title">Сроки сгорания бонусов</div></div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;">
+        <label class="toggle-switch"><input type="checkbox" id="set_expiry_enabled" onchange="saveExpirySettings()"><span class="toggle-slider"></span></label>
+        <div><div class="bc-label" style="margin-bottom:2px">Сгорание бонусов</div><div style="font-size:11px;color:var(--text-muted);">Автоматическое сгорание неиспользованных бонусов</div></div>
+      </div>
+      <div id="expirySettingsBody" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;">
+        <div style="background:var(--bg);border-radius:12px;padding:16px;">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">🎁 Приветственный бонус</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" id="set_expiry_welcome" min="1" max="365" style="width:70px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--coffee);background:var(--bg);text-align:center;" onchange="saveExpirySettings()">
+            <span style="font-size:13px;color:var(--text-muted);">дней</span>
+          </div>
+        </div>
+        <div style="background:var(--bg);border-radius:12px;padding:16px;">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">👥 Реферальный бонус</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" id="set_expiry_referral" min="1" max="365" style="width:70px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--sage);background:var(--bg);text-align:center;" onchange="saveExpirySettings()">
+            <span style="font-size:13px;color:var(--text-muted);">дней</span>
+          </div>
+        </div>
+        <div style="background:var(--bg);border-radius:12px;padding:16px;">
+          <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">💰 Бонусы за покупки</div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <input type="number" id="set_expiry_purchase" min="1" max="365" style="width:70px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--caramel);background:var(--bg);text-align:center;" onchange="saveExpirySettings()">
+            <span style="font-size:13px;color:var(--text-muted);">дней</span>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:16px;display:flex;gap:12px;">
+        <button class="bc-btn bc-btn-outline" onclick="burnExpiredNow()" style="font-size:12px;">🔥 Сжечь просроченные сейчас</button>
+      </div>
+      <div id="burnResult" style="margin-top:12px;font-size:12px;color:var(--text-muted);display:none;"></div>
+    </div>
+
+    <!-- Expiring Soon Card -->
+    <div class="card" style="padding:24px;margin-bottom:16px;">
+      <div class="card-head"><div class="card-title">Скоро сгорят (7 дней)</div></div>
+      <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>Тип</th><th>Остаток</th><th>Начислен</th><th>Сгорает</th></tr></thead><tbody id="expiringSoonTable"></tbody></table></div>
+    </div>
+
+    <div class="card"><div class="card-head"><div class="card-title">Все транзакции</div></div>
       <div class="table-wrap"><table><thead><tr><th>Клиент</th><th>Тип</th><th>Сумма</th><th>Бонусы</th><th>Описание</th><th>Дата</th></tr></thead><tbody id="allTxnTable"></tbody></table></div>
     </div>
   </div>
@@ -750,7 +793,7 @@ function showPage(section) {
   if (section === 'analytics') loadAnalytics(30);
   if (section === 'promotions') loadPromotions();
   if (section === 'broadcasts') loadBroadcasts();
-  if (section === 'bonuses') loadAllTxn();
+  if (section === 'bonuses') { loadAllTxn(); loadExpirySettings(); loadExpiringSoon(); }
   if (section === 'staff') loadStaff();
   if (section === 'settings') { loadSettings(); loadNotifTargets(); }
 }
@@ -1159,6 +1202,73 @@ async function loadBroadcasts() {
 // ─── All Transactions ───────────────────────
 async function loadAllTxn() {
   try{var res=await fetch(API+'/api/admin/transactions?limit=100');var data=await res.json();var html='';data.transactions.forEach(function(t){html+='<tr><td class="td-name">'+(t.first_name||'')+' '+(t.last_name||'')+'</td><td>'+t.type+'</td><td>'+t.amount+' р.</td><td style="color:'+(t.bonuses_change>=0?'var(--sage)':'var(--copper)')+';">'+(t.bonuses_change>=0?'+':'')+t.bonuses_change+' р.</td><td>'+(t.description||'\u2014')+'</td><td class="td-date">'+fmtDate(t.created_at)+'</td></tr>';});document.getElementById('allTxnTable').innerHTML=html||'<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Нет транзакций</td></tr>';}catch(e){document.getElementById('allTxnTable').innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>';}
+}
+
+// ─── Bonus Expiry ───────────────────────────
+async function loadExpirySettings() {
+  try {
+    var res = await fetch(API+'/api/bonus/expiry-settings');
+    var s = await res.json();
+    document.getElementById('set_expiry_enabled').checked = s.bonus_expiry_enabled === '1';
+    document.getElementById('set_expiry_welcome').value = s.bonus_expiry_welcome || '14';
+    document.getElementById('set_expiry_referral').value = s.bonus_expiry_referral || '30';
+    document.getElementById('set_expiry_purchase').value = s.bonus_expiry_purchase || '90';
+    document.getElementById('expirySettingsBody').style.opacity = s.bonus_expiry_enabled === '1' ? '1' : '0.4';
+  } catch(e) { console.error('Expiry settings load error', e); }
+}
+
+var expirySaveTimer = null;
+function saveExpirySettings() {
+  var enabled = document.getElementById('set_expiry_enabled').checked;
+  document.getElementById('expirySettingsBody').style.opacity = enabled ? '1' : '0.4';
+  clearTimeout(expirySaveTimer);
+  expirySaveTimer = setTimeout(doSaveExpirySettings, 500);
+}
+
+async function doSaveExpirySettings() {
+  var data = {
+    bonus_expiry_enabled: document.getElementById('set_expiry_enabled').checked ? '1' : '0',
+    bonus_expiry_welcome: document.getElementById('set_expiry_welcome').value,
+    bonus_expiry_referral: document.getElementById('set_expiry_referral').value,
+    bonus_expiry_purchase: document.getElementById('set_expiry_purchase').value
+  };
+  try {
+    await fetch(API+'/api/bonus/expiry-settings', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
+  } catch(e) { alert('Ошибка сохранения настроек сгорания'); }
+}
+
+async function burnExpiredNow() {
+  try {
+    var res = await fetch(API+'/api/bonus/burn-expired', {method:'POST'});
+    var r = await res.json();
+    var el = document.getElementById('burnResult');
+    el.style.display = 'block';
+    if (r.burned_entries > 0) {
+      el.innerHTML = '🔥 Сожжено: <b>'+r.total_burned+' р.</b> ('+r.burned_entries+' записей, '+r.users_affected+' клиентов)';
+      el.style.color = 'var(--copper)';
+      loadExpiringSoon();
+      loadAllTxn();
+    } else {
+      el.innerHTML = '✓ Просроченных бонусов не найдено';
+      el.style.color = 'var(--sage)';
+    }
+    setTimeout(function(){ el.style.display='none'; }, 5000);
+  } catch(e) { alert('Ошибка сжигания бонусов'); }
+}
+
+var typeLabels = {welcome:'Приветственный',referral:'Реферальный',purchase:'За покупку',manual:'Ручной'};
+
+async function loadExpiringSoon() {
+  try {
+    var res = await fetch(API+'/api/bonus/expiring-soon?days=7');
+    var data = await res.json();
+    var html = '';
+    data.forEach(function(e) {
+      var typeLbl = typeLabels[e.type] || e.type;
+      html += '<tr><td class="td-name">'+e.first_name+' '+(e.last_name||'')+'</td><td>'+typeLbl+'</td><td class="td-bonus">'+e.remaining+' р.</td><td class="td-date">'+fmtDate(e.awarded_at)+'</td><td class="td-date" style="color:var(--copper);">'+fmtDate(e.expires_at)+'</td></tr>';
+    });
+    document.getElementById('expiringSoonTable').innerHTML = html || '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Нет бонусов, сгорающих в ближайшие 7 дней</td></tr>';
+  } catch(e) { document.getElementById('expiringSoonTable').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-muted);padding:20px;">Ошибка загрузки</td></tr>'; }
 }
 
 // ─── Settings ───────────────────────────────

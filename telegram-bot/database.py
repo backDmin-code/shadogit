@@ -5,7 +5,7 @@ import json
 import sqlite3
 import secrets
 import string
-from datetime import datetime
+from datetime import datetime, timedelta
 
 DB_PATH = os.getenv("DB_PATH", os.path.join(os.path.dirname(__file__), "flove.db"))
 
@@ -107,6 +107,19 @@ def init_db() -> None:
             is_active       INTEGER DEFAULT 1,
             created_at      TEXT    DEFAULT (datetime('now','localtime'))
         );
+
+        CREATE TABLE IF NOT EXISTS bonus_entries (
+            id                INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_telegram_id  INTEGER NOT NULL,
+            type              TEXT    NOT NULL,
+            amount            REAL    NOT NULL DEFAULT 0,
+            remaining         REAL    NOT NULL DEFAULT 0,
+            awarded_at        TEXT    DEFAULT (datetime('now','localtime')),
+            expires_at        TEXT,
+            burned            INTEGER DEFAULT 0,
+            burned_at         TEXT,
+            FOREIGN KEY (user_telegram_id) REFERENCES users(telegram_id)
+        );
         """
     )
     # Migrate: add new columns if they don't exist yet (for upgrades from MVP)
@@ -148,6 +161,138 @@ def _recalc_level(conn: sqlite3.Connection, telegram_id: int) -> None:
     )
 
 
+# Default expiration periods (days)
+_EXPIRY_DEFAULTS = {
+    "bonus_expiry_welcome": "14",
+    "bonus_expiry_referral": "30",
+    "bonus_expiry_purchase": "90",
+    "bonus_expiry_enabled": "1",
+}
+
+
+def _get_expiry_days(conn: sqlite3.Connection, bonus_type: str) -> int | None:
+    enabled = conn.execute(
+        "SELECT value FROM settings WHERE key='bonus_expiry_enabled'"
+    ).fetchone()
+    if enabled and enabled["value"] == "0":
+        return None
+    key = f"bonus_expiry_{bonus_type}"
+    row = conn.execute("SELECT value FROM settings WHERE key=?", (key,)).fetchone()
+    if row:
+        return int(row["value"])
+    return int(_EXPIRY_DEFAULTS.get(key, "90"))
+
+
+def _create_bonus_entry(
+    conn: sqlite3.Connection,
+    telegram_id: int,
+    bonus_type: str,
+    amount: float,
+) -> None:
+    if amount <= 0:
+        return
+    expiry_days = _get_expiry_days(conn, bonus_type)
+    now = datetime.now()
+    expires_at = None
+    if expiry_days is not None:
+        expires_at = (now + timedelta(days=expiry_days)).strftime("%Y-%m-%d %H:%M:%S")
+    conn.execute(
+        """INSERT INTO bonus_entries
+           (user_telegram_id, type, amount, remaining, awarded_at, expires_at)
+           VALUES (?, ?, ?, ?, ?, ?)""",
+        (telegram_id, bonus_type, amount, amount,
+         now.strftime("%Y-%m-%d %H:%M:%S"), expires_at),
+    )
+
+
+def burn_expired_bonuses() -> dict:
+    conn = get_db()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    expired = conn.execute(
+        """SELECT id, user_telegram_id, remaining
+           FROM bonus_entries
+           WHERE burned = 0
+             AND expires_at IS NOT NULL
+             AND expires_at <= ?
+             AND remaining > 0""",
+        (now,),
+    ).fetchall()
+
+    total_burned = 0
+    users_affected = set()
+    for entry in expired:
+        amount = entry["remaining"]
+        tid = entry["user_telegram_id"]
+        conn.execute(
+            "UPDATE bonus_entries SET remaining=0, burned=1, burned_at=? WHERE id=?",
+            (now, entry["id"]),
+        )
+        conn.execute(
+            "UPDATE users SET bonuses = MAX(0, bonuses - ?) WHERE telegram_id=?",
+            (amount, tid),
+        )
+        conn.execute(
+            """INSERT INTO transactions
+               (user_telegram_id, type, amount, bonuses_change, description)
+               VALUES (?, 'burn', 0, ?, ?)""",
+            (tid, -amount, f"Сгорание бонуса ({amount} р.)"),
+        )
+        total_burned += amount
+        users_affected.add(tid)
+
+    conn.commit()
+    conn.close()
+    return {
+        "burned_entries": len(expired),
+        "total_burned": round(total_burned, 2),
+        "users_affected": len(users_affected),
+    }
+
+
+def get_bonus_entries(telegram_id: int) -> list[dict]:
+    conn = get_db()
+    rows = conn.execute(
+        """SELECT * FROM bonus_entries
+           WHERE user_telegram_id = ?
+           ORDER BY awarded_at DESC""",
+        (telegram_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_expiring_soon(days: int = 7) -> list[dict]:
+    conn = get_db()
+    future = (datetime.now() + timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = conn.execute(
+        """SELECT be.*, u.first_name, u.last_name
+           FROM bonus_entries be
+           JOIN users u ON u.telegram_id = be.user_telegram_id
+           WHERE be.burned = 0
+             AND be.remaining > 0
+             AND be.expires_at IS NOT NULL
+             AND be.expires_at > ?
+             AND be.expires_at <= ?
+           ORDER BY be.expires_at ASC""",
+        (now, future),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_bonus_expiry_settings() -> dict:
+    conn = get_db()
+    result = {}
+    for key, default in _EXPIRY_DEFAULTS.items():
+        row = conn.execute(
+            "SELECT value FROM settings WHERE key=?", (key,)
+        ).fetchone()
+        result[key] = row["value"] if row else default
+    conn.close()
+    return result
+
+
 # ─── Users ──────────────────────────────────────────────────
 
 
@@ -183,6 +328,7 @@ def create_user(
                VALUES (?, 'welcome', 0, ?, 'Приветственный бонус')""",
             (telegram_id, welcome_bonus),
         )
+        _create_bonus_entry(conn, telegram_id, 'welcome', welcome_bonus)
 
     # Process referral bonus
     if referred_by:
@@ -199,12 +345,14 @@ def create_user(
             (referred_by, referrer_bonus,
              f"Реферальный бонус за {first_name} {last_name}"),
         )
+        _create_bonus_entry(conn, referred_by, 'referral', referrer_bonus)
         conn.execute(
             """INSERT INTO transactions
                (user_telegram_id, type, amount, bonuses_change, description)
                VALUES (?, 'referral', 0, ?, 'Бонус за регистрацию по приглашению')""",
             (telegram_id, referred_bonus),
         )
+        _create_bonus_entry(conn, telegram_id, 'referral', referred_bonus)
         conn.execute(
             "UPDATE users SET bonuses=bonuses+? WHERE telegram_id=?",
             (referred_bonus, telegram_id),
@@ -362,6 +510,7 @@ def add_purchase(telegram_id: int, amount: float) -> dict:
            VALUES (?, 'purchase', ?, ?, ?)""",
         (telegram_id, amount, cashback, f"Покупка на {amount} р."),
     )
+    _create_bonus_entry(conn, telegram_id, 'purchase', cashback)
     _recalc_level(conn, telegram_id)
     conn.commit()
     user = get_user(telegram_id, conn)
@@ -389,10 +538,34 @@ def redeem_bonuses(telegram_id: int, amount: float) -> dict:
            VALUES (?, 'redeem', ?, ?, ?)""",
         (telegram_id, 0, -amount, f"Списание {amount} р."),
     )
+    # FIFO: deduct from oldest bonus entries first
+    _deduct_bonus_entries(conn, telegram_id, amount)
     conn.commit()
     user = get_user(telegram_id, conn)
     conn.close()
     return user
+
+
+def _deduct_bonus_entries(
+    conn: sqlite3.Connection, telegram_id: int, amount: float
+) -> None:
+    entries = conn.execute(
+        """SELECT id, remaining FROM bonus_entries
+           WHERE user_telegram_id = ? AND burned = 0 AND remaining > 0
+           ORDER BY awarded_at ASC""",
+        (telegram_id,),
+    ).fetchall()
+    left = amount
+    for entry in entries:
+        if left <= 0:
+            break
+        deduct = min(entry["remaining"], left)
+        new_remaining = round(entry["remaining"] - deduct, 2)
+        conn.execute(
+            "UPDATE bonus_entries SET remaining=? WHERE id=?",
+            (new_remaining, entry["id"]),
+        )
+        left = round(left - deduct, 2)
 
 
 def get_history(telegram_id: int, limit: int = 20) -> list[dict]:
