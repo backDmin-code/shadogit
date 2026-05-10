@@ -60,6 +60,15 @@ PHONE, FIRST_NAME, LAST_NAME, BIRTHDAY = range(4)
  BC_BUTTON_URL, BC_FILTER, BC_PREVIEW) = range(10, 18)
 
 
+# ─── Typing Effect ──────────────────────────────────────────
+
+
+async def _typing(chat_id: int, bot, seconds: float = 1.5):
+    """Send 'typing...' action and wait for a natural delay."""
+    await bot.send_chat_action(chat_id=chat_id, action="typing")
+    await asyncio.sleep(seconds)
+
+
 # ─── Keyboards ──────────────────────────────────────────────
 
 
@@ -134,8 +143,11 @@ async def start(update: Update, context) -> int:
 
     existing = database.get_user(telegram_id)
     if existing:
+        await _typing(update.effective_chat.id, context.bot, 1.0)
         await update.message.reply_text(
-            f"С возвращением, {existing['first_name']}! 🌸",
+            f"🌸 <b>С возвращением, {existing['first_name']}!</b>\n\n"
+            "Рады видеть вас снова в <i>FLove</i> 💐",
+            parse_mode=ParseMode.HTML,
             reply_markup=_make_menu_keyboard(telegram_id),
         )
         return ConversationHandler.END
@@ -143,11 +155,13 @@ async def start(update: Update, context) -> int:
     keyboard = [
         [KeyboardButton("📱 Поделиться номером", request_contact=True)]
     ]
+    await _typing(update.effective_chat.id, context.bot, 1.5)
     await update.message.reply_text(
-        "🌸 *Добро пожаловать в FLove\\!*\n\n"
-        "Мы рады видеть вас\\. Для создания вашей персональной "
-        "карты лояльности, пожалуйста, поделитесь номером телефона\\.",
-        parse_mode="MarkdownV2",
+        "🌸 <b>Добро пожаловать в FLove!</b>\n\n"
+        "Мы рады видеть вас ✨\n"
+        "Для создания вашей <b>персональной карты лояльности</b>, "
+        "пожалуйста, поделитесь номером телефона 👇",
+        parse_mode=ParseMode.HTML,
         reply_markup=ReplyKeyboardMarkup(
             keyboard, resize_keyboard=True, one_time_keyboard=True
         ),
@@ -158,17 +172,21 @@ async def start(update: Update, context) -> int:
 async def phone_received(update: Update, context) -> int:
     contact = update.message.contact
     if contact is None:
+        await _typing(update.effective_chat.id, context.bot, 1.0)
         await update.message.reply_text(
-            "Пожалуйста, используйте кнопку ниже, чтобы поделиться номером."
+            "☝️ Пожалуйста, используйте <b>кнопку ниже</b>, чтобы поделиться номером.",
+            parse_mode=ParseMode.HTML,
         )
         return PHONE
 
     context.user_data["phone"] = contact.phone_number
     logger.info("Получен телефон: %s", contact.phone_number)
 
+    await _typing(update.effective_chat.id, context.bot, 1.5)
     await update.message.reply_text(
-        "Отлично! Теперь введите ваше *имя*:",
-        parse_mode="Markdown",
+        "✅ <b>Отлично!</b>\n\n"
+        "Теперь введите ваше <b>имя</b> ✍️",
+        parse_mode=ParseMode.HTML,
         reply_markup=ReplyKeyboardRemove(),
     )
     return FIRST_NAME
@@ -176,17 +194,24 @@ async def phone_received(update: Update, context) -> int:
 
 async def first_name_received(update: Update, context) -> int:
     context.user_data["first_name"] = update.message.text.strip()
+    await _typing(update.effective_chat.id, context.bot, 1.2)
     await update.message.reply_text(
-        "Введите вашу *фамилию*:", parse_mode="Markdown"
+        f"👋 Приятно познакомиться, <b>{context.user_data['first_name']}</b>!\n\n"
+        "Теперь введите вашу <b>фамилию</b> ✍️",
+        parse_mode=ParseMode.HTML,
     )
     return LAST_NAME
 
 
 async def last_name_received(update: Update, context) -> int:
     context.user_data["last_name"] = update.message.text.strip()
+    await _typing(update.effective_chat.id, context.bot, 1.2)
     await update.message.reply_text(
-        "Введите вашу *дату рождения* (ДД\\.ММ\\.ГГГГ):",
-        parse_mode="MarkdownV2",
+        "🎂 <b>Последний шаг!</b>\n\n"
+        "Введите вашу <b>дату рождения</b>\n"
+        "<i>в формате ДД.ММ.ГГГГ</i>\n\n"
+        "💡 <i>Мы подготовим для вас особый подарок!</i>",
+        parse_mode=ParseMode.HTML,
     )
     return BIRTHDAY
 
@@ -227,29 +252,42 @@ async def birthday_received(update: Update, context) -> int:
     if referred_by:
         referrer = database.get_user(referred_by)
         ref_text = (
-            "\n🎁 Вы получили дополнительные 3 бонуса за регистрацию по приглашению!"
+            "\n\n🎁 <i>Вы получили дополнительные </i><b>3 бонуса</b>"
+            "<i> за регистрацию по приглашению!</i>"
         )
         # Notify referrer
         try:
+            await _typing(referred_by, context.bot, 1.0)
             await context.bot.send_message(
                 referred_by,
-                f"🎉 {name} {surname} зарегистрировался по вашей ссылке!\n"
-                f"Вам начислено 5 бонусных рублей.",
+                f"🎉 <b>{name} {surname}</b> зарегистрировался по вашей ссылке!\n"
+                f"💰 Вам начислено <b>5 бонусных рублей</b>.",
+                parse_mode=ParseMode.HTML,
             )
         except Exception:
             pass
 
+    await _typing(update.effective_chat.id, context.bot, 2.0)
     await update.message.reply_text(
-        f"✨ {name}, ваша карта лояльности готова!{ref_text}\n\n"
-        "Для открытия перейдите по кнопке ниже 👇",
+        f"🎉 <b>{name}, ваша карта лояльности готова!</b>{ref_text}\n\n"
+        "━━━━━━━━━━━━━━━━━━━━\n"
+        "💳 <b>Карта:</b> активирована\n"
+        "🌟 <b>Уровень:</b> Бронза\n"
+        "💰 <b>Бонусы:</b> 3 р.\n"
+        "━━━━━━━━━━━━━━━━━━━━\n\n"
+        "Для открытия нажмите кнопку ниже 👇",
+        parse_mode=ParseMode.HTML,
         reply_markup=_make_menu_keyboard(telegram_id),
     )
     return ConversationHandler.END
 
 
 async def cancel(update: Update, context) -> int:
+    await _typing(update.effective_chat.id, context.bot, 1.0)
     await update.message.reply_text(
-        "Регистрация отменена. Введите /start, чтобы начать заново.",
+        "❌ <b>Регистрация отменена.</b>\n\n"
+        "Введите /start, чтобы начать заново 🔄",
+        parse_mode=ParseMode.HTML,
         reply_markup=ReplyKeyboardRemove(),
     )
     return ConversationHandler.END
@@ -257,8 +295,11 @@ async def cancel(update: Update, context) -> int:
 
 async def menu(update: Update, context) -> None:
     telegram_id = update.effective_user.id
+    await _typing(update.effective_chat.id, context.bot, 1.0)
     await update.message.reply_text(
+        "🌸 <b>Меню FLove</b>\n\n"
         "Выберите действие 👇",
+        parse_mode=ParseMode.HTML,
         reply_markup=_make_menu_keyboard(telegram_id),
     )
 
@@ -270,8 +311,10 @@ async def referral_cmd(update: Update, context) -> None:
     telegram_id = update.effective_user.id
     user = database.get_user(telegram_id)
     if not user:
+        await _typing(update.effective_chat.id, context.bot, 1.0)
         await update.message.reply_text(
-            "Сначала зарегистрируйтесь: /start"
+            "☝️ Сначала зарегистрируйтесь: /start",
+            parse_mode=ParseMode.HTML,
         )
         return
 
@@ -279,14 +322,18 @@ async def referral_cmd(update: Update, context) -> None:
     ref_link = f"https://t.me/{bot_info.username}?start=ref_{user['referral_code']}"
     stats = database.get_referral_stats(telegram_id)
 
+    await _typing(update.effective_chat.id, context.bot, 1.5)
     await update.message.reply_text(
-        f"👥 *Реферальная программа FLove*\n\n"
-        f"Ваша ссылка для приглашения:\n`{ref_link}`\n\n"
-        f"📊 Приглашено друзей: *{stats['total']}*\n"
-        f"💰 Заработано бонусов: *{stats['total_bonus']} р\\.*\n\n"
-        f"За каждого друга вы получаете *5 р\\.*,\n"
-        f"а ваш друг — *3 р\\.* при регистрации\\!",
-        parse_mode="MarkdownV2",
+        f"👥 <b>Реферальная программа FLove</b>\n\n"
+        f"🔗 Ваша ссылка для приглашения:\n"
+        f"<code>{ref_link}</code>\n\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"📊 Приглашено друзей: <b>{stats['total']}</b>\n"
+        f"💰 Заработано бонусов: <b>{stats['total_bonus']} р.</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"💡 За каждого друга вы получаете <b>5 р.</b>,\n"
+        f"а ваш друг — <b>3 р.</b> при регистрации!",
+        parse_mode=ParseMode.HTML,
         reply_markup=_referral_menu(),
     )
 
@@ -302,29 +349,35 @@ async def referral_callback(update: Update, context) -> None:
     if query.data == "my_referrals":
         referrals = database.get_referrals(telegram_id)
         if not referrals:
+            await _typing(query.message.chat_id, context.bot, 1.0)
             await query.message.reply_text(
-                "У вас пока нет приглашённых друзей. "
-                "Поделитесь своей ссылкой! 👥"
+                "🤷 У вас пока нет приглашённых друзей.\n\n"
+                "<i>Поделитесь своей ссылкой и получайте бонусы!</i> 👥",
+                parse_mode=ParseMode.HTML,
             )
             return
 
-        text = "👥 *Ваши рефералы:*\n\n"
+        await _typing(query.message.chat_id, context.bot, 1.5)
+        text = "👥 <b>Ваши рефералы:</b>\n\n"
         for i, ref in enumerate(referrals[:15], 1):
             text += (
-                f"{i}\\. {_escape_md(ref['first_name'])} "
-                f"{_escape_md(ref['last_name'])} — "
-                f"\\+{ref['referrer_bonus']} р\\.\n"
+                f"{i}. {ref['first_name']} "
+                f"{ref['last_name']} — "
+                f"<b>+{ref['referrer_bonus']} р.</b>\n"
             )
-        await query.message.reply_text(text, parse_mode="MarkdownV2")
+        await query.message.reply_text(text, parse_mode=ParseMode.HTML)
 
     elif query.data == "share_referral":
         bot_info = await context.bot.get_me()
         ref_link = (
             f"https://t.me/{bot_info.username}?start=ref_{user['referral_code']}"
         )
+        await _typing(query.message.chat_id, context.bot, 1.0)
         await query.message.reply_text(
-            f"📤 Отправьте эту ссылку друзьям:\n\n{ref_link}\n\n"
-            "За каждого зарегистрированного друга вы получите 5 бонусных рублей!",
+            f"📤 <b>Отправьте эту ссылку друзьям:</b>\n\n"
+            f"<code>{ref_link}</code>\n\n"
+            f"💰 За каждого друга — <b>5 бонусных рублей!</b>",
+            parse_mode=ParseMode.HTML,
         )
 
 
@@ -336,9 +389,12 @@ async def broadcast_start(update: Update, context) -> int:
     user = database.get_user(telegram_id)
 
     if not user or user.get("role") not in ("admin",):
+        await _typing(update.effective_chat.id, context.bot, 1.0)
         await update.message.reply_text(
-            "⛔ Доступ к рассылкам только для администраторов.\n"
-            "Обратитесь к администратору для получения прав."
+            "⛔ <b>Доступ запрещён</b>\n\n"
+            "<i>Рассылки доступны только администраторам.\n"
+            "Обратитесь к администратору для получения прав.</i>",
+            parse_mode=ParseMode.HTML,
         )
         return ConversationHandler.END
 
@@ -351,17 +407,16 @@ async def broadcast_start(update: Update, context) -> int:
         "filter_value": None,
     }
 
+    await _typing(update.effective_chat.id, context.bot, 1.5)
     await update.message.reply_text(
-        "📨 *Создание рассылки*\n\n"
-        "Введите текст сообщения\\. Поддерживается HTML\\-разметка:\n\n"
-        "`<b>жирный</b>`\n"
-        "`<i>курсив</i>`\n"
-        "`<u>подчёркнутый</u>`\n"
-        "`<s>зачёркнутый</s>`\n"
-        "`<a href=\"url\">ссылка</a>`\n"
-        "`<code>моноширинный</code>`\n\n"
-        "Отправьте /cancel для отмены\\.",
-        parse_mode="MarkdownV2",
+        "📨 <b>Создание рассылки</b>\n\n"
+        "Введите текст сообщения. Поддерживается HTML-разметка:\n\n"
+        "<code>&lt;b&gt;жирный&lt;/b&gt;</code>\n"
+        "<code>&lt;i&gt;курсив&lt;/i&gt;</code>\n"
+        "<code>&lt;u&gt;подчёркнутый&lt;/u&gt;</code>\n"
+        "<code>&lt;s&gt;зачёркнутый&lt;/s&gt;</code>\n\n"
+        "Отправьте /cancel для отмены.",
+        parse_mode=ParseMode.HTML,
     )
     return BC_TEXT
 
@@ -388,8 +443,10 @@ async def bc_text_received(update: Update, context) -> int:
         ],
     ])
 
+    await _typing(update.effective_chat.id, context.bot, 1.0)
     await update.message.reply_text(
-        "✏️ Текст сохранён. Что дальше?",
+        "✏️ <b>Текст сохранён.</b> Что дальше?",
+        parse_mode=ParseMode.HTML,
         reply_markup=keyboard,
     )
     return BC_FORMATTING
@@ -400,16 +457,21 @@ async def bc_formatting_callback(update: Update, context) -> int:
     await query.answer()
 
     if query.data == "bc_add_photo":
+        await _typing(query.message.chat_id, context.bot, 1.0)
         await query.message.reply_text(
-            "📷 Отправьте фото для рассылки.\n"
-            "Или /skip чтобы пропустить."
+            "📷 <b>Отправьте фото</b> для рассылки.\n"
+            "<i>Или /skip чтобы пропустить.</i>",
+            parse_mode=ParseMode.HTML,
         )
         return BC_PHOTO
 
     elif query.data == "bc_add_buttons":
+        await _typing(query.message.chat_id, context.bot, 1.0)
         await query.message.reply_text(
-            "🔘 Введите текст кнопки (например: «Перейти на сайт»).\n"
-            "Или /skip чтобы пропустить."
+            "🔘 Введите <b>текст кнопки</b>\n"
+            "<i>Например: «Перейти на сайт»</i>\n\n"
+            "Или /skip чтобы пропустить.",
+            parse_mode=ParseMode.HTML,
         )
         return BC_BUTTON_TEXT
 
@@ -421,8 +483,10 @@ async def bc_formatting_callback(update: Update, context) -> int:
             [InlineKeyboardButton("✦ Золото", callback_data="filter_Золото")],
             [InlineKeyboardButton("📊 Активные за 30 дней", callback_data="filter_active")],
         ])
+        await _typing(query.message.chat_id, context.bot, 1.0)
         await query.message.reply_text(
-            "🎯 Выберите аудиторию рассылки:",
+            "🎯 <b>Выберите аудиторию рассылки:</b>",
+            parse_mode=ParseMode.HTML,
             reply_markup=keyboard,
         )
         return BC_FILTER
@@ -434,7 +498,10 @@ async def bc_formatting_callback(update: Update, context) -> int:
         return await _execute_broadcast(query.message, context)
 
     elif query.data == "bc_cancel":
-        await query.message.reply_text("❌ Рассылка отменена.")
+        await query.message.reply_text(
+            "❌ <b>Рассылка отменена.</b>",
+            parse_mode=ParseMode.HTML,
+        )
         return ConversationHandler.END
 
     return BC_FORMATTING
@@ -446,7 +513,10 @@ async def bc_photo_received(update: Update, context) -> int:
     elif update.message.photo:
         context.user_data["bc"]["photo_file_id"] = update.message.photo[-1].file_id
     else:
-        await update.message.reply_text("Отправьте фото или /skip.")
+        await update.message.reply_text(
+            "☝️ Отправьте <b>фото</b> или /skip.",
+            parse_mode=ParseMode.HTML,
+        )
         return BC_PHOTO
 
     return await _show_bc_menu(update.message, context)
@@ -457,8 +527,10 @@ async def bc_button_text_received(update: Update, context) -> int:
         return await _show_bc_menu(update.message, context)
 
     context.user_data["bc"]["_pending_button_text"] = update.message.text
+    await _typing(update.effective_chat.id, context.bot, 1.0)
     await update.message.reply_text(
-        "🔗 Теперь введите URL для этой кнопки:"
+        "🔗 Теперь введите <b>URL</b> для этой кнопки:",
+        parse_mode=ParseMode.HTML,
     )
     return BC_BUTTON_URL
 
@@ -476,9 +548,11 @@ async def bc_button_url_received(update: Update, context) -> int:
         [InlineKeyboardButton("➕ Ещё кнопку", callback_data="bc_more_btn")],
         [InlineKeyboardButton("✅ Готово", callback_data="bc_btn_done")],
     ])
+    await _typing(update.effective_chat.id, context.bot, 1.0)
     await update.message.reply_text(
-        f"Кнопка «{btn_text}» → {url} добавлена.\n"
-        f"Всего кнопок: {len(context.user_data['bc']['buttons'])}",
+        f"✅ Кнопка <b>«{btn_text}»</b> добавлена\n"
+        f"<i>Всего кнопок: {len(context.user_data['bc']['buttons'])}</i>",
+        parse_mode=ParseMode.HTML,
         reply_markup=keyboard,
     )
     return BC_BUTTONS
@@ -489,8 +563,10 @@ async def bc_buttons_callback(update: Update, context) -> int:
     await query.answer()
 
     if query.data == "bc_more_btn":
+        await _typing(query.message.chat_id, context.bot, 1.0)
         await query.message.reply_text(
-            "🔘 Введите текст следующей кнопки:"
+            "🔘 Введите <b>текст следующей кнопки</b>:",
+            parse_mode=ParseMode.HTML,
         )
         return BC_BUTTON_TEXT
     else:
@@ -515,16 +591,22 @@ async def bc_filter_callback(update: Update, context) -> int:
         context.user_data["bc"]["filter_value"] = level
         label = f"Уровень: {level}"
 
-    await query.message.reply_text(f"🎯 Аудитория: {label}")
+    await query.message.reply_text(
+        f"🎯 Аудитория: <b>{label}</b>",
+        parse_mode=ParseMode.HTML,
+    )
     return await _show_bc_menu(query.message, context)
 
 
 async def _show_bc_menu(message, context) -> int:
     bc = context.user_data.get("bc", {})
-    summary = f"📝 Текст: {bc['text'][:80]}{'...' if len(bc['text']) > 80 else ''}\n"
-    summary += f"📷 Фото: {'Да' if bc['photo_file_id'] else 'Нет'}\n"
-    summary += f"🔘 Кнопок: {len(bc['buttons'])}\n"
-    summary += f"🎯 Аудитория: {bc['filter_type']}"
+    text_preview = bc['text'].replace('<', '&lt;').replace('>', '&gt;')[:80]
+    if len(bc['text']) > 80:
+        text_preview += '...'
+    summary = f"📝 <b>Текст:</b> {text_preview}\n"
+    summary += f"📷 <b>Фото:</b> {'Да' if bc['photo_file_id'] else 'Нет'}\n"
+    summary += f"🔘 <b>Кнопок:</b> {len(bc['buttons'])}\n"
+    summary += f"🎯 <b>Аудитория:</b> {bc['filter_type']}"
     if bc.get("filter_value"):
         summary += f" ({bc['filter_value']})"
 
@@ -545,7 +627,7 @@ async def _show_bc_menu(message, context) -> int:
         ],
     ])
 
-    await message.reply_text(summary, reply_markup=keyboard)
+    await message.reply_text(summary, parse_mode=ParseMode.HTML, reply_markup=keyboard)
     return BC_FORMATTING
 
 
@@ -573,7 +655,7 @@ async def _send_preview(message, context) -> int:
             )
         else:
             await message.reply_text(
-                f"👁 *Превью рассылки:*\n\n{text}",
+                f"👁 <b>Превью рассылки:</b>\n\n{text}",
                 parse_mode=ParseMode.HTML,
                 reply_markup=reply_markup,
             )
@@ -615,12 +697,16 @@ async def _execute_broadcast(message, context) -> int:
     )
 
     if not recipients:
-        await message.reply_text("⚠️ Нет получателей для данного фильтра.")
+        await message.reply_text(
+            "⚠️ <b>Нет получателей</b> для данного фильтра.",
+            parse_mode=ParseMode.HTML,
+        )
         return ConversationHandler.END
 
     await message.reply_text(
-        f"📤 Начинаю рассылку...\n"
-        f"Получателей: {len(recipients)}"
+        f"📤 <b>Начинаю рассылку...</b>\n"
+        f"<i>Получателей: {len(recipients)}</i>",
+        parse_mode=ParseMode.HTML,
     )
 
     # Build inline keyboard
@@ -664,18 +750,24 @@ async def _execute_broadcast(message, context) -> int:
         failed=failed,
     )
 
+    await _typing(message.chat_id, context.bot, 1.5)
     await message.reply_text(
-        f"✅ Рассылка завершена!\n\n"
-        f"📤 Отправлено: {successful}\n"
-        f"❌ Ошибок: {failed}\n"
-        f"📊 Всего: {len(recipients)}"
+        f"🎉 <b>Рассылка завершена!</b>\n\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"📤 Отправлено: <b>{successful}</b>\n"
+        f"❌ Ошибок: <b>{failed}</b>\n"
+        f"📊 Всего: <b>{len(recipients)}</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━",
+        parse_mode=ParseMode.HTML,
     )
     return ConversationHandler.END
 
 
 async def bc_cancel(update: Update, context) -> int:
+    await _typing(update.effective_chat.id, context.bot, 1.0)
     await update.message.reply_text(
-        "❌ Рассылка отменена.",
+        "❌ <b>Рассылка отменена.</b>",
+        parse_mode=ParseMode.HTML,
         reply_markup=ReplyKeyboardRemove(),
     )
     return ConversationHandler.END
@@ -688,18 +780,25 @@ async def admin_cmd(update: Update, context) -> None:
     telegram_id = update.effective_user.id
     user = database.get_user(telegram_id)
     if not user:
-        await update.message.reply_text("Сначала зарегистрируйтесь: /start")
+        await _typing(update.effective_chat.id, context.bot, 1.0)
+        await update.message.reply_text(
+            "☝️ Сначала зарегистрируйтесь: /start",
+            parse_mode=ParseMode.HTML,
+        )
         return
 
     stats = database.get_admin_stats()
+    await _typing(update.effective_chat.id, context.bot, 1.5)
     await update.message.reply_text(
-        f"📊 *Статистика FLove*\n\n"
-        f"👥 Клиентов: *{stats['total_users']}*\n"
-        f"💰 Активных бонусов: *{stats['total_bonuses']} р\\.*\n"
-        f"🧾 Транзакций сегодня: *{stats['txn_today']}*\n"
-        f"👥 Рефералов всего: *{stats['ref_total']}*\n"
-        f"📈 Новых за месяц: *{stats['new_this_month']}*",
-        parse_mode="MarkdownV2",
+        f"📊 <b>Статистика FLove</b>\n\n"
+        f"━━━━━━━━━━━━━━━━━━━━\n"
+        f"👥 Клиентов: <b>{stats['total_users']}</b>\n"
+        f"💰 Активных бонусов: <b>{stats['total_bonuses']} р.</b>\n"
+        f"🧾 Транзакций сегодня: <b>{stats['txn_today']}</b>\n"
+        f"👥 Рефералов всего: <b>{stats['ref_total']}</b>\n"
+        f"📈 Новых за месяц: <b>{stats['new_this_month']}</b>\n"
+        f"━━━━━━━━━━━━━━━━━━━━",
+        parse_mode=ParseMode.HTML,
         reply_markup=InlineKeyboardMarkup([
             [InlineKeyboardButton(
                 "📊 Открыть панель",
