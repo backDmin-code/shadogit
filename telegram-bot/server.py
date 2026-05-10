@@ -602,7 +602,8 @@ def api_bonus_expiry_settings():
 async def api_save_bonus_expiry_settings(request: Request):
     data = await request.json()
     for key in ("bonus_expiry_welcome", "bonus_expiry_referral",
-                "bonus_expiry_purchase", "bonus_expiry_enabled"):
+                "bonus_expiry_purchase", "bonus_expiry_enabled",
+                "bonus_expiry_warn_days", "bonus_expiry_notify_enabled"):
         if key in data:
             database.set_setting(key, str(data[key]))
     return {"ok": True}

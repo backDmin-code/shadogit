@@ -818,6 +818,111 @@ def _escape_md(text: str) -> str:
     return "".join(f"\\{c}" if c in special else c for c in str(text))
 
 
+# ─── Smart Bonus Expiry Notifications ───────────────────────
+
+
+_TYPE_NAMES = {
+    "welcome": "приветственный",
+    "referral": "реферальный",
+    "purchase": "за покупку",
+    "manual": "ручной",
+}
+
+
+async def _send_expiry_notification(bot, user_data: dict) -> bool:
+    tid = user_data["telegram_id"]
+    name = user_data["first_name"]
+    total = user_data["total_expiring"]
+    entries = user_data["expiring_entries"]
+
+    if database.was_notified(tid, "bonus_expiry", within_hours=24):
+        return False
+
+    details = ""
+    for e in entries:
+        tname = _TYPE_NAMES.get(e["type"], e["type"])
+        details += f"  • {tname}: <b>{e['remaining']} р.</b> — через {e['days_left']} дн.\n"
+
+    try:
+        await bot.send_chat_action(chat_id=tid, action="typing")
+        await asyncio.sleep(1.0)
+        await bot.send_message(
+            chat_id=tid,
+            text=(
+                f"⏳ <b>{name}, ваши бонусы скоро сгорят!</b>\n\n"
+                f"━━━━━━━━━━━━━━━━━━━━\n"
+                f"{details}"
+                f"━━━━━━━━━━━━━━━━━━━━\n\n"
+                f"💸 Всего сгорит: <b>{total} р.</b>\n\n"
+                f"🛍 <i>Успейте использовать бонусы при следующей покупке!\n"
+                f"Каждый бонус = 1 рубль скидки.</i>\n\n"
+                f"💡 Загляните к нам — побалуйте себя букетом "
+                f"и не дайте бонусам пропасть 🌸"
+            ),
+            parse_mode=ParseMode.HTML,
+        )
+        database.log_notification(tid, "bonus_expiry")
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to send expiry notification to {tid}: {e}")
+        return False
+
+
+async def _check_and_notify_expiring(context) -> None:
+    settings = database.get_bonus_expiry_settings()
+    if settings.get("bonus_expiry_enabled") != "1":
+        return
+    if settings.get("bonus_expiry_notify_enabled") != "1":
+        return
+
+    warn_days = int(settings.get("bonus_expiry_warn_days", "3"))
+    users = database.get_users_with_expiring_bonuses(warn_days)
+
+    sent = 0
+    for u in users:
+        if await _send_expiry_notification(context.bot, u):
+            sent += 1
+            await asyncio.sleep(0.5)
+
+    if sent:
+        logger.info(f"Expiry notifications sent: {sent}")
+
+
+async def _auto_burn_expired(context) -> None:
+    settings = database.get_bonus_expiry_settings()
+    if settings.get("bonus_expiry_enabled") != "1":
+        return
+
+    result = database.burn_expired_bonuses()
+    if result["burned_entries"] > 0:
+        logger.info(
+            f"Auto-burned {result['burned_entries']} entries, "
+            f"total {result['total_burned']} р., "
+            f"{result['users_affected']} users affected"
+        )
+
+        admin_ids = os.getenv("ADMIN_IDS", "")
+        if admin_ids:
+            for aid in admin_ids.split(","):
+                aid = aid.strip()
+                if aid:
+                    try:
+                        await context.bot.send_message(
+                            chat_id=int(aid),
+                            text=(
+                                f"🔥 <b>Автосжигание бонусов</b>\n\n"
+                                f"━━━━━━━━━━━━━━━━━━━━\n"
+                                f"📊 Записей: <b>{result['burned_entries']}</b>\n"
+                                f"💸 Сожжено: <b>{result['total_burned']} р.</b>\n"
+                                f"👥 Клиентов: <b>{result['users_affected']}</b>\n"
+                                f"━━━━━━━━━━━━━━━━━━━━"
+                            ),
+                            parse_mode=ParseMode.HTML,
+                        )
+                    except Exception:
+                        pass
+
+
 # ─── Main ───────────────────────────────────────────────────
 
 
@@ -907,6 +1012,22 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(
         referral_callback, pattern=r"^(my_referrals|share_referral)$"
     ))
+
+    # Scheduled jobs: expiry notifications every 6 hours, auto-burn every hour
+    if app.job_queue:
+        app.job_queue.run_repeating(
+            _check_and_notify_expiring,
+            interval=6 * 3600,
+            first=60,
+            name="expiry_notifications",
+        )
+        app.job_queue.run_repeating(
+            _auto_burn_expired,
+            interval=3600,
+            first=120,
+            name="auto_burn",
+        )
+        logger.info("Scheduled jobs: expiry_notifications (6h), auto_burn (1h)")
 
     logger.info("FLove бот запущен! (production)")
     app.run_polling(allowed_updates=Update.ALL_TYPES)

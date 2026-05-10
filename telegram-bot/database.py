@@ -167,6 +167,8 @@ _EXPIRY_DEFAULTS = {
     "bonus_expiry_referral": "30",
     "bonus_expiry_purchase": "90",
     "bonus_expiry_enabled": "1",
+    "bonus_expiry_warn_days": "3",
+    "bonus_expiry_notify_enabled": "1",
 }
 
 
@@ -291,6 +293,53 @@ def get_bonus_expiry_settings() -> dict:
         result[key] = row["value"] if row else default
     conn.close()
     return result
+
+
+def get_users_with_expiring_bonuses(warn_days: int = 3) -> list[dict]:
+    conn = get_db()
+    now = datetime.now()
+    future = (now + timedelta(days=warn_days)).strftime("%Y-%m-%d %H:%M:%S")
+    now_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    rows = conn.execute(
+        """SELECT be.user_telegram_id, be.type, be.remaining, be.expires_at,
+                  u.first_name, u.last_name, u.bonuses
+           FROM bonus_entries be
+           JOIN users u ON u.telegram_id = be.user_telegram_id
+           WHERE be.burned = 0
+             AND be.remaining > 0
+             AND be.expires_at IS NOT NULL
+             AND be.expires_at > ?
+             AND be.expires_at <= ?
+           ORDER BY be.expires_at ASC""",
+        (now_str, future),
+    ).fetchall()
+    conn.close()
+
+    user_map = {}
+    for r in rows:
+        tid = r["user_telegram_id"]
+        if tid not in user_map:
+            user_map[tid] = {
+                "telegram_id": tid,
+                "first_name": r["first_name"],
+                "last_name": r["last_name"],
+                "total_bonuses": r["bonuses"],
+                "expiring_entries": [],
+                "total_expiring": 0,
+            }
+        days_left = max(0, (datetime.strptime(r["expires_at"], "%Y-%m-%d %H:%M:%S") - now).days)
+        user_map[tid]["expiring_entries"].append({
+            "type": r["type"],
+            "remaining": r["remaining"],
+            "expires_at": r["expires_at"],
+            "days_left": days_left,
+        })
+        user_map[tid]["total_expiring"] += r["remaining"]
+
+    for u in user_map.values():
+        u["total_expiring"] = round(u["total_expiring"], 2)
+
+    return list(user_map.values())
 
 
 # ─── Users ──────────────────────────────────────────────────

@@ -482,6 +482,17 @@
           </div>
         </div>
       </div>
+      <div style="margin-top:20px;border-top:1px solid var(--border);padding-top:16px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <label class="toggle-switch"><input type="checkbox" id="set_expiry_notify_enabled" onchange="saveExpirySettings()"><span class="toggle-slider"></span></label>
+          <div><div class="bc-label" style="margin-bottom:2px">Уведомления о сгорании</div><div style="font-size:11px;color:var(--text-muted);">Отправлять напоминания клиентам в Telegram перед сгоранием бонусов</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+          <span style="font-size:13px;color:var(--text-muted);">Предупреждать за</span>
+          <input type="number" id="set_expiry_warn_days" min="1" max="30" style="width:60px;padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-family:'Cormorant Garamond',serif;font-size:18px;color:var(--coffee);background:var(--bg);text-align:center;" onchange="saveExpirySettings()">
+          <span style="font-size:13px;color:var(--text-muted);">дней до сгорания</span>
+        </div>
+      </div>
       <div style="margin-top:16px;display:flex;gap:12px;">
         <button class="bc-btn bc-btn-outline" onclick="burnExpiredNow()" style="font-size:12px;">🔥 Сжечь просроченные сейчас</button>
       </div>
@@ -1213,6 +1224,8 @@ async function loadExpirySettings() {
     document.getElementById('set_expiry_welcome').value = s.bonus_expiry_welcome || '14';
     document.getElementById('set_expiry_referral').value = s.bonus_expiry_referral || '30';
     document.getElementById('set_expiry_purchase').value = s.bonus_expiry_purchase || '90';
+    document.getElementById('set_expiry_notify_enabled').checked = s.bonus_expiry_notify_enabled === '1';
+    document.getElementById('set_expiry_warn_days').value = s.bonus_expiry_warn_days || '3';
     document.getElementById('expirySettingsBody').style.opacity = s.bonus_expiry_enabled === '1' ? '1' : '0.4';
   } catch(e) { console.error('Expiry settings load error', e); }
 }
@@ -1230,7 +1243,9 @@ async function doSaveExpirySettings() {
     bonus_expiry_enabled: document.getElementById('set_expiry_enabled').checked ? '1' : '0',
     bonus_expiry_welcome: document.getElementById('set_expiry_welcome').value,
     bonus_expiry_referral: document.getElementById('set_expiry_referral').value,
-    bonus_expiry_purchase: document.getElementById('set_expiry_purchase').value
+    bonus_expiry_purchase: document.getElementById('set_expiry_purchase').value,
+    bonus_expiry_notify_enabled: document.getElementById('set_expiry_notify_enabled').checked ? '1' : '0',
+    bonus_expiry_warn_days: document.getElementById('set_expiry_warn_days').value
   };
   try {
     await fetch(API+'/api/bonus/expiry-settings', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(data)});
