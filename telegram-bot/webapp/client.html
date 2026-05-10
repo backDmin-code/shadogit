@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>FLove — Карта лояльности</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FAF8F4;
+    --espresso: #2C1A0E;
+    --coffee: #5C3D2E;
+    --caramel: #C4955A;
+    --sage: #627c41;
+    --sage-light: rgba(98,124,65,0.12);
+    --bronze: #CD7F32;
+    --text-muted: #8C7B6B;
+    --border: rgba(92,61,46,0.12);
+    --nav-h: 86px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width:3px; height:3px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(92,61,46,0.18); border-radius:10px; }
+  ::-webkit-scrollbar-thumb:hover { background:rgba(92,61,46,0.32); }
+  * { scrollbar-width:thin; scrollbar-color:rgba(92,61,46,0.18) transparent; }
+
+  /* ── NO FOCUS OUTLINES / BLUE HIGHLIGHTS ── */
+  *, *:focus, *:focus-visible, *:active {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none;
+  }
+  button, a, [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+  }
+  button:focus, button:focus-visible { box-shadow: none; outline: none; }
+
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--cream);
+    color: var(--espresso);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    padding-bottom: calc(var(--nav-h) + 20px);
+    overflow-x: hidden;
+  }
+
+  .header {
+    background: var(--espresso);
+    padding: 18px 24px 16px;
+    position: sticky; top:0; z-index:100;
+    display: flex; align-items:center; justify-content:space-between;
+  }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:600; letter-spacing:0.08em; color:var(--cream); }
+  .logo span { color:var(--sage); font-style:italic; }
+  .h-btn { width:40px; height:40px; border-radius:12px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; cursor:pointer; position:relative; }
+
+  .card-wrap { padding:14px 16px 6px; }
+  .loyalty-card {
+    background:linear-gradient(135deg,var(--espresso) 0%,#3D2314 50%,#1E0F06 100%);
+    border-radius:24px; padding:20px 22px 18px;
+    position:relative; overflow:hidden;
+    box-shadow:0 20px 60px rgba(44,26,14,0.35),0 4px 12px rgba(44,26,14,0.2);
+  }
+  .card-grain { position:absolute; inset:0; border-radius:24px; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); opacity:0.4; pointer-events:none; }
+  .card-deco { position:absolute; right:-30px; top:-30px; width:180px; height:180px; border-radius:50%; border:1px solid rgba(98,124,65,0.2); pointer-events:none; }
+  .card-deco::after { content:''; position:absolute; inset:20px; border-radius:50%; border:1px solid rgba(98,124,65,0.1); }
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px; }
+  .card-brand { font-family:'Cormorant Garamond',serif; color:var(--cream); font-size:28px; font-weight:400; letter-spacing:0.06em; }
+  .card-brand small { display:block; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.22em; color:rgba(245,240,232,0.4); margin-top:3px; text-transform:uppercase; }
+  .level-badge { background:linear-gradient(135deg,var(--bronze),#E8A84C); border-radius:20px; padding:6px 14px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.15em; color:var(--espresso); text-transform:uppercase; display:flex; align-items:center; gap:5px; flex-shrink:0; }
+
+  .card-qr-area { display:flex; flex-direction:column; gap:14px; }
+  .card-bonuses {
+    background: rgba(196,149,90,0.1);
+    border: 1px solid rgba(196,149,90,0.22);
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .bonus-left { display:flex; flex-direction:column; gap:4px; }
+  .bonus-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.22em; color:rgba(245,240,232,0.45); text-transform:uppercase; }
+  .bonus-amount {
+    font-family:'Cormorant Garamond',serif;
+    font-size:46px; line-height:1;
+    color:#F5E5C8;
+    font-weight:400;
+    text-shadow: 0 0 40px rgba(196,149,90,0.5);
+  }
+  .bonus-amount sup { font-size:22px; vertical-align:super; color:var(--caramel); }
+  .bonus-expire { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.12em; color:rgba(245,240,232,0.28); margin-top:2px; }
+
+  .bonus-qr { cursor:pointer; transition:opacity 0.2s, transform 0.2s; flex-shrink:0; }
+  .bonus-qr:active { opacity:0.7; transform:scale(0.95); }
+
+  .card-client-strip {
+    display:flex; gap:0; border-radius:14px;
+    overflow:hidden;
+    border:1px solid rgba(255,255,255,0.07);
+  }
+  .card-client-field {
+    flex:1; padding:10px 14px;
+    background:rgba(255,255,255,0.04);
+    border-right:1px solid rgba(255,255,255,0.06);
+  }
+  .card-client-field:last-child { border-right:none; }
+  .card-client-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.28); margin-bottom:4px; }
+  .card-client-val { font-family:'Cormorant Garamond',serif; font-size:14px; color:rgba(245,240,232,0.8); letter-spacing:0.03em; }
+  .card-client-val.accent { color:var(--sage); font-family:'DM Mono',monospace; font-size:12px; letter-spacing:0.08em; }
+
+  .card-progress { margin-top:16px; border-top:1px solid rgba(255,255,255,0.07); padding-top:12px; }
+  .progress-meta { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; }
+  .progress-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.18em; color:rgba(245,240,232,0.4); text-transform:uppercase; }
+  .progress-next { font-size:13px; color:var(--caramel); font-family:'Cormorant Garamond',serif; font-style:italic; }
+  .progress-bar { height:4px; background:rgba(255,255,255,0.1); border-radius:2px; overflow:hidden; }
+  .progress-fill { height:100%; width:0%; border-radius:2px; background:linear-gradient(90deg,var(--sage),#8aaa5a); transition:width 1.2s ease-out; }
+  .cashback-row { display:flex; justify-content:space-between; align-items:center; margin-top:14px; }
+  .cashback-val { font-family:'Cormorant Garamond',serif; font-size:16px; color:var(--cream); font-style:italic; }
+  .cashback-pct { font-family:'DM Mono',monospace; font-size:12px; color:var(--sage); letter-spacing:0.1em; }
+
+  /* ── NOTIFICATION PANEL ── */
+  .notif-overlay { position:fixed; inset:0; z-index:400; background:rgba(14,8,3,0); pointer-events:none; transition:background 0.3s; }
+  .notif-overlay.open { background:rgba(14,8,3,0.55); pointer-events:all; backdrop-filter:blur(4px); }
+  .notif-panel {
+    position:fixed; top:0; right:-340px; width:320px; max-width:90vw; height:100%; z-index:401;
+    background:linear-gradient(160deg,#F5F0E8 0%,#FAF8F4 100%);
+    box-shadow:-8px 0 40px rgba(44,26,14,0.2);
+    transition:right 0.35s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column; overflow:hidden;
+  }
+  .notif-overlay.open .notif-panel { right:0; }
+  .notif-panel-head {
+    background:var(--espresso); padding:20px 20px 18px;
+    display:flex; align-items:center; justify-content:space-between; flex-shrink:0;
+  }
+  .notif-panel-title { font-family:'Cormorant Garamond',serif; font-size:20px; color:#F5F0E8; letter-spacing:0.04em; }
+  .notif-badge-count { background:var(--bronze); border-radius:20px; padding:2px 8px; font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; color:#fff; }
+  .notif-close-btn { width:34px; height:34px; border-radius:10px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.1); cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .notif-close-btn svg { stroke:rgba(245,240,232,0.6); }
+  .notif-list { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+  .notif-item {
+    background:var(--warm-white); border-radius:16px; padding:14px 16px;
+    border:1px solid var(--border); display:flex; gap:12px; align-items:flex-start;
+    animation:fadeUp 0.3s ease both;
+  }
+  .notif-item.unread { border-left:3px solid var(--sage); background:#fff; }
+  .notif-icon { width:36px; height:36px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .notif-icon.bonus { background:rgba(98,124,65,0.1); }
+  .notif-icon.promo { background:rgba(196,149,90,0.12); }
+  .notif-icon.level { background:rgba(205,127,50,0.1); }
+  .notif-content { flex:1; }
+  .notif-title { font-size:13px; font-weight:400; color:var(--espresso); margin-bottom:3px; }
+  .notif-text { font-size:11px; color:var(--text-muted); line-height:1.5; }
+  .notif-time { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; color:var(--text-muted); margin-top:6px; }
+
+  .spacer { height:12px; }
+  .section { padding:18px 16px 0; animation:fadeUp 0.5s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .section-title { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:400; color:var(--coffee); margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .history-list { display:flex; flex-direction:column; gap:10px; }
+  .history-item { background:var(--warm-white); border-radius:16px; padding:14px 18px; display:flex; align-items:center; gap:14px; border:1px solid var(--border); }
+  .h-icon { width:38px; height:38px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+  .h-icon.plus { background:rgba(98,124,65,0.1); }
+  .h-icon.minus { background:#F9F0E8; }
+  .h-info { flex:1; }
+  .h-name { font-size:13px; font-weight:400; color:var(--espresso); margin-bottom:2px; }
+  .h-date { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.1em; color:var(--text-muted); }
+  .h-bonus { font-family:'Cormorant Garamond',serif; font-size:18px; font-weight:600; }
+  .h-bonus.p { color:var(--sage); }
+  .h-bonus.m { color:#C46A3C; }
+
+  .referral-card { background:linear-gradient(135deg,var(--coffee) 0%,var(--espresso) 100%); border-radius:20px; padding:24px; margin:0 16px; position:relative; overflow:hidden; }
+  .ref-title { font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--cream); margin-bottom:6px; }
+  .ref-sub { font-size:12px; color:rgba(245,240,232,0.6); line-height:1.5; margin-bottom:18px; }
+  .ref-reward { display:flex; gap:10px; margin-bottom:18px; }
+  .ref-pill { background:rgba(98,124,65,0.2); border:1px solid rgba(98,124,65,0.35); border-radius:30px; padding:6px 14px; font-family:'DM Mono',monospace; font-size:10px; letter-spacing:0.1em; color:#a8c878; }
+  .ref-how { border-top:1px solid rgba(255,255,255,0.07); padding-top:16px; display:flex; flex-direction:column; gap:10px; }
+  .ref-step { display:flex; align-items:flex-start; gap:12px; }
+  .ref-num { width:22px; height:22px; border-radius:50%; flex-shrink:0; background:rgba(98,124,65,0.2); border:1px solid rgba(98,124,65,0.35); display:flex; align-items:center; justify-content:center; font-family:'DM Mono',monospace; font-size:9px; color:#a8c878; }
+  .ref-text { font-size:11px; color:rgba(245,240,232,0.7); line-height:1.5; padding-top:3px; }
+  .share-btn { width:100%; margin-top:16px; background:linear-gradient(135deg,var(--sage),#8aaa5a); border:none; border-radius:14px; padding:14px; font-family:'Jost',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.06em; color:var(--warm-white); cursor:pointer; display:flex; align-items:center; justify-content:center; gap:8px; }
+
+  .ref-history-list { display:flex; flex-direction:column; gap:8px; }
+  .ref-history-item { background:var(--warm-white); border-radius:14px; padding:12px 16px; display:flex; align-items:center; gap:12px; border:1px solid var(--border); }
+  .ref-h-avatar { width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg,var(--sage),#8aaa5a); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-family:'Cormorant Garamond',serif; font-size:15px; color:var(--warm-white); }
+  .ref-h-info { flex:1; }
+  .ref-h-name { font-size:12px; font-weight:400; color:var(--espresso); }
+  .ref-h-date { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.08em; color:var(--text-muted); margin-top:2px; }
+  .ref-h-bonus { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:600; color:var(--sage); }
+  .ref-h-status { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.1em; text-transform:uppercase; padding:3px 8px; border-radius:20px; margin-top:3px; text-align:center; }
+  .ref-h-status.done { background:rgba(98,124,65,0.12); color:var(--sage); }
+
+  /* ── MAP BLOCK ── */
+  .map-block {
+    margin: 0 16px 16px;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(44,26,14,0.12);
+    border: 1px solid var(--border);
+    height:180px; background:linear-gradient(135deg,rgba(98,124,65,0.15),rgba(196,149,90,0.1));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .map-block:active { opacity:0.9; transform:scale(0.99); }
+  .map-overlay-badge {
+    position:absolute; bottom:12px; left:12px;
+    background:var(--espresso); color:var(--cream);
+    border-radius:30px; padding:7px 14px;
+    font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; text-transform:uppercase;
+    display:flex; align-items:center; gap:6px;
+    box-shadow: 0 2px 12px rgba(44,26,14,0.3);
+  }
+  .map-overlay-badge svg { stroke:var(--sage); flex-shrink:0; }
+  .map-open-hint {
+    position:absolute; top:10px; right:10px;
+    background:rgba(245,240,232,0.92); backdrop-filter:blur(6px);
+    border-radius:20px; padding:5px 10px;
+    font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--coffee); display:flex; align-items:center; gap:4px;
+  }
+
+  .contacts-card { background:var(--warm-white); border-radius:20px; padding:20px; margin:0 16px; border:1px solid var(--border); }
+  .contact-item { display:flex; align-items:center; gap:14px; padding:12px 0; border-bottom:1px solid var(--border); }
+  .contact-item:last-child { border-bottom:none; padding-bottom:0; }
+  .contact-item:first-child { padding-top:0; }
+  .contact-icon { width:38px; height:38px; border-radius:12px; background:var(--cream); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .contact-label { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-muted); margin-bottom:2px; }
+  .contact-val { font-size:13px; color:var(--espresso); font-weight:400; }
+  .contact-item a { color:var(--espresso); text-decoration:none; }
+  .contact-item a:hover { color:var(--sage); }
+
+  /* ── BOTTOM NAV ── */
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:200; padding:0 14px 14px; }
+  .bottom-nav-inner {
+    background:var(--espresso);
+    border-radius:26px;
+    display:flex; align-items:center; justify-content:space-around;
+    padding:0 6px;
+    height:var(--nav-h);
+    box-shadow:0 8px 40px rgba(44,26,14,0.45),0 2px 8px rgba(44,26,14,0.2);
+  }
+  .nav-item {
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+    padding:8px 6px; border-radius:0; cursor:pointer;
+    border:none; background:transparent; flex:1;
+  }
+  .nav-item.active { background:transparent; }
+  .nav-item svg { width:22px; height:22px; stroke:rgba(245,240,232,0.38); transition:stroke 0.2s; }
+  .nav-item.active svg { stroke:var(--sage); }
+  .nav-label { font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.10em; text-transform:uppercase; color:rgba(245,240,232,0.38); transition:color 0.2s; }
+  .nav-item.active .nav-label { color:var(--sage); }
+
+  .nav-qr {
+    width:58px; height:58px; border-radius:17px; flex-shrink:0;
+    background:linear-gradient(135deg,var(--sage),#8aaa5a);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px;
+    cursor:pointer; border:none;
+    box-shadow:0 4px 18px rgba(98,124,65,0.5);
+    transition:transform 0.15s,box-shadow 0.15s;
+    margin:0 6px;
+  }
+  .nav-qr:active { transform:scale(0.93); box-shadow:0 2px 10px rgba(98,124,65,0.35); }
+  .nav-qr svg { width:24px; height:24px; stroke:var(--warm-white); }
+  .nav-qr-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.14em; text-transform:uppercase; color:rgba(245,240,232,0.8); }
+
+  .page { display:none; }
+  .page.active { display:block; animation:fadeUp 0.3s ease; }
+
+  /* ── QR FULLSCREEN MODAL ── */
+  .qr-modal {
+    position:fixed; inset:0; z-index:500;
+    background:rgba(8,4,2,0.98); backdrop-filter:blur(28px);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:20px 20px 32px; opacity:0; pointer-events:none;
+    transition:opacity 0.4s; overflow:hidden;
+  }
+  .qr-modal.open { opacity:1; pointer-events:all; }
+
+  .qr-modal-bg { position:absolute; inset:0; pointer-events:none; }
+  .qr-orb { position:absolute; border-radius:50%; filter:blur(60px); opacity:0; transition:opacity 0.8s ease 0.2s; }
+  .qr-modal.open .qr-orb { opacity:1; }
+  .qr-orb-1 { width:260px; height:260px; background:radial-gradient(circle,rgba(98,124,65,0.18),transparent 70%); top:-60px; right:-60px; }
+  .qr-orb-2 { width:200px; height:200px; background:radial-gradient(circle,rgba(196,149,90,0.12),transparent 70%); bottom:-40px; left:-40px; }
+
+  .qr-modal-card {
+    width:100%; max-width:340px; z-index:1; position:relative;
+    transform:translateY(28px) scale(0.96); opacity:0;
+    transition:transform 0.5s cubic-bezier(.22,1,.36,1), opacity 0.4s ease;
+  }
+  .qr-modal.open .qr-modal-card { transform:translateY(0) scale(1); opacity:1; }
+
+  .qr-identity {
+    background:linear-gradient(135deg,#2C1A0E,#1a0d05);
+    border-radius:24px 24px 0 0;
+    padding:20px 22px 18px;
+    border:1px solid rgba(98,124,65,0.18);
+    border-bottom:none;
+    display:flex; align-items:center; justify-content:space-between;
+  }
+  .qr-id-name { font-family:'Cormorant Garamond',serif; font-size:22px; font-weight:400; color:#F5F0E8; letter-spacing:0.02em; }
+  .qr-id-sub { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.28); margin-top:3px; }
+  .qr-id-badge { background:linear-gradient(135deg,#CD7F32,#E8A84C); border-radius:14px; padding:5px 12px; font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.14em; color:#1a0d05; text-transform:uppercase; flex-shrink:0; }
+
+  .qr-code-wrap {
+    background:var(--warm-white);
+    padding:22px 22px 18px;
+    display:flex; flex-direction:column; align-items:center;
+    border-left:1px solid rgba(98,124,65,0.18);
+    border-right:1px solid rgba(98,124,65,0.18);
+    position:relative;
+  }
+  .qr-code-inner {
+    position:relative; display:inline-block;
+    padding:12px; background:#fff; border-radius:16px;
+    box-shadow:0 8px 32px rgba(44,26,14,0.12);
+  }
+  .qr-corner { position:absolute; width:22px; height:22px; }
+  .qr-corner.tl { top:-2px; left:-2px; border-top:2px solid #8aaa5a; border-left:2px solid #8aaa5a; border-radius:5px 0 0 0; }
+  .qr-corner.tr { top:-2px; right:-2px; border-top:2px solid #8aaa5a; border-right:2px solid #8aaa5a; border-radius:0 5px 0 0; }
+  .qr-corner.bl { bottom:-2px; left:-2px; border-bottom:2px solid #8aaa5a; border-left:2px solid #8aaa5a; border-radius:0 0 0 5px; }
+  .qr-corner.br { bottom:-2px; right:-2px; border-bottom:2px solid #8aaa5a; border-right:2px solid #8aaa5a; border-radius:0 0 5px 0; }
+  .qr-code-hint { font-family:'DM Mono',monospace; font-size:8px; letter-spacing:0.2em; text-transform:uppercase; color:rgba(44,26,14,0.28); margin-top:12px; }
+
+  .qr-info-strip {
+    background:linear-gradient(135deg,#1a0d05,#0e0806);
+    border:1px solid rgba(98,124,65,0.18);
+    border-top:1px solid rgba(255,255,255,0.04);
+    border-radius:0 0 24px 24px;
+    padding:16px 22px;
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:12px 8px;
+  }
+  .qr-info-label { font-family:'DM Mono',monospace; font-size:7px; letter-spacing:0.18em; text-transform:uppercase; color:rgba(245,240,232,0.25); margin-bottom:3px; }
+  .qr-info-val { font-family:'Jost',sans-serif; font-size:12px; font-weight:400; color:rgba(245,240,232,0.75); letter-spacing:0.01em; }
+  .qr-info-val.accent { color:#8aaa5a; font-family:'DM Mono',monospace; font-size:11px; letter-spacing:0.08em; }
+
+  .qr-close {
+    margin-top:20px; z-index:1; position:relative;
+    background:transparent; border:1px solid rgba(245,240,232,0.1);
+    border-radius:50px; padding:12px 40px;
+    font-family:'DM Mono',monospace; font-size:9px; letter-spacing:0.2em;
+    text-transform:uppercase; color:rgba(245,240,232,0.3);
+    cursor:pointer; transition:all 0.2s;
+  }
+  .qr-close:hover { border-color:rgba(245,240,232,0.25); color:rgba(245,240,232,0.55); }
+
+  /* ── CONFETTI ── */
+  .confetti-container { position:fixed; inset:0; pointer-events:none; z-index:600; overflow:hidden; }
+  .conf { position:absolute; top:-20px; width:8px; height:8px; border-radius:2px; animation:confettiFall linear forwards; }
+  @keyframes confettiFall {
+    0% { transform:translateY(0) rotate(0deg); opacity:1; }
+    80% { opacity:1; }
+    100% { transform:translateY(110vh) rotate(720deg); opacity:0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CONFETTI CONTAINER -->
+<div class="confetti-container" id="confettiContainer"></div>
+
+<!-- QR MODAL -->
+<div class="qr-modal" id="qrModal" onclick="closeQR(event)">
+  <div class="qr-modal-bg">
+    <div class="qr-orb qr-orb-1"></div>
+    <div class="qr-orb qr-orb-2"></div>
+  </div>
+  <div class="qr-modal-card">
+    <div class="qr-identity">
+      <div class="qr-id-left">
+        <div class="qr-id-name" id="qrName">—</div>
+        <div class="qr-id-sub">FLove · Карта лояльности</div>
+      </div>
+      <div class="qr-id-badge" id="qrBadge">◆ Бронза</div>
+    </div>
+    <div class="qr-code-wrap">
+      <div class="qr-code-inner" id="qrCodeBig">
+        <div class="qr-corner tl"></div>
+        <div class="qr-corner tr"></div>
+        <div class="qr-corner bl"></div>
+        <div class="qr-corner br"></div>
+      </div>
+      <div class="qr-code-hint">Покажите кассиру</div>
+    </div>
+    <div class="qr-info-strip">
+      <div class="qr-info-field">
+        <div class="qr-info-label">Телефон</div>
+        <div class="qr-info-val" id="qrPhone">—</div>
+      </div>
+      <div class="qr-info-field">
+        <div class="qr-info-label">ID клиента</div>
+        <div class="qr-info-val accent" id="qrClientId">—</div>
+      </div>
+      <div class="qr-info-field">
+        <div class="qr-info-label">Дата рождения</div>
+        <div class="qr-info-val" id="qrBirthday">—</div>
+      </div>
+      <div class="qr-info-field">
+        <div class="qr-info-label">Бонусов</div>
+        <div class="qr-info-val accent" id="qrBonuses">—</div>
+      </div>
+    </div>
+  </div>
+  <button class="qr-close" onclick="closeQRBtn()">Закрыть</button>
+</div>
+
+<!-- NOTIFICATION OVERLAY + PANEL -->
+<div class="notif-overlay" id="notifOverlay" onclick="closeNotif(event)">
+  <div class="notif-panel" id="notifPanel">
+    <div class="notif-panel-head">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="notif-panel-title">Уведомления</div>
+        <div class="notif-badge-count" id="notifCount">0</div>
+      </div>
+      <button class="notif-close-btn" onclick="closeNotifBtn()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="notif-list" id="notifList"></div>
+  </div>
+</div>
+
+<div class="header">
+  <div>
+    <div class="logo">FL<span>ove</span></div>
+  </div>
+  <div class="h-btn" onclick="openNotif()" style="position:relative;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(245,240,232,0.5)" stroke-width="1.5" stroke-linecap="round">
+      <path d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0"/>
+    </svg>
+    <span id="notifDot" style="position:absolute;top:8px;right:8px;width:7px;height:7px;border-radius:50%;background:var(--bronze);border:1.5px solid var(--espresso);display:none;"></span>
+  </div>
+</div>
+
+<!-- PAGE: CARD -->
+<div id="page-card" class="page active">
+  <div class="card-wrap">
+    <div class="loyalty-card">
+      <div class="card-grain"></div>
+      <div class="card-deco"></div>
+      <div class="card-top">
+        <div>
+          <div class="card-brand"><small style="font-size:10px; letter-spacing:0.25em;">LOYALTY CARD</small></div>
+        </div>
+        <div class="level-badge" id="levelBadge">◆ Бронза</div>
+      </div>
+      <div class="card-qr-area">
+        <div class="card-bonuses">
+          <div class="bonus-left">
+            <div class="bonus-label">Бонусный счёт</div>
+            <div class="bonus-amount" id="bonusAmount">0<sup>р.</sup></div>
+          </div>
+          <div class="bonus-qr" id="qrCodeSmall" onclick="openQR()"></div>
+        </div>
+        <div class="card-client-strip">
+          <div class="card-client-field">
+            <div class="card-client-label">Клиент</div>
+            <div class="card-client-val" id="clientName">—</div>
+          </div>
+          <div class="card-client-field">
+            <div class="card-client-label">ID</div>
+            <div class="card-client-val accent" id="clientId">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="card-progress">
+        <div class="progress-meta">
+          <span class="progress-label" id="progressLabel">Уровень: Бронза</span>
+          <span class="progress-next" id="progressNext">до Серебра — 400 р.</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="cashback-row">
+          <span class="cashback-val">Кэшбэк с покупок</span>
+          <span class="cashback-pct" id="cashbackPct">2%</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="padding-top:14px;">
+    <div class="section-title">История бонусов</div>
+    <div class="history-list" id="historyList">
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Загрузка...</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- PAGE: REFERRAL -->
+<div id="page-ref" class="page">
+  <div class="spacer"></div>
+  <div class="section"><div class="section-title">Бонус за друга</div></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 16px 0;">
+    <div style="background:linear-gradient(135deg,var(--coffee),var(--espresso)); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid rgba(98,124,65,0.2);">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(98,124,65,0.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8aaa5a" stroke-width="1.5" stroke-linecap="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--cream);line-height:1;" id="refCountStat">0</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-top:2px;">Приглашено</div>
+      </div>
+    </div>
+    <div style="background:linear-gradient(135deg,var(--coffee),var(--espresso)); border-radius:16px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid rgba(196,149,90,0.2);">
+      <div style="width:36px;height:36px;border-radius:10px;background:rgba(196,149,90,0.15);flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l2 2"/></svg>
+      </div>
+      <div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--cream);line-height:1;" id="refBonusStat">0 р.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.15em;text-transform:uppercase;color:rgba(245,240,232,0.45);margin-top:2px;">Получено всего</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="referral-card" style="margin-top:10px;">
+    <div class="ref-title">Пригласи — получи вместе</div>
+    <div class="ref-sub">Вы и ваш друг получите бонусы при регистрации</div>
+    <div class="ref-reward"><div class="ref-pill">+3 р. другу</div><div class="ref-pill">+5 р. вам</div></div>
+    <div class="ref-how">
+      <div class="ref-step"><div class="ref-num">1</div><div class="ref-text">Поделитесь реферальной ссылкой с другом</div></div>
+      <div class="ref-step"><div class="ref-num">2</div><div class="ref-text">Друг регистрируется и получает 3 приветственных бонуса</div></div>
+      <div class="ref-step"><div class="ref-num">3</div><div class="ref-text">Вам зачисляется 5 бонусных рублей автоматически</div></div>
+    </div>
+    <button class="share-btn" onclick="copyRefLink()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+      <span id="shareBtnTxt">Поделиться ссылкой</span>
+    </button>
+  </div>
+
+  <div class="spacer"></div>
+  <div class="section">
+    <div class="section-title">История рефералов</div>
+    <div class="ref-history-list" id="refHistoryList">
+      <div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Загрузка...</div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- PAGE: CONTACTS -->
+<div id="page-info" class="page">
+  <div class="spacer"></div>
+  <div class="section"><div class="section-title">Адрес</div></div>
+
+  <div class="map-block" onclick="window.open('https://yandex.com/maps/-/CPWA64YC','_blank')">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1" stroke-linecap="round" opacity="0.4"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+    <div class="map-overlay-badge">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      пр. Независимости, 91
+    </div>
+    <div class="map-open-hint">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--coffee)" stroke-width="2" stroke-linecap="round"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+      Открыть карту
+    </div>
+  </div>
+
+  <div class="contacts-card">
+    <div class="contact-item">
+      <div class="contact-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      </div>
+      <div><div class="contact-label">Адрес</div><div class="contact-val">пр. Независимости, 91</div></div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div><div class="contact-label">Режим работы</div><div class="contact-val">9:00 — 21:00, ежедневно</div></div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.01 1.18 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.72 6.72l1.28-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      </div>
+      <div><div class="contact-label">Телефон</div><div class="contact-val"><a href="tel:+375292299001">+375 29 229 90 01</a></div></div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+      </div>
+      <div><div class="contact-label">Сайт</div><div class="contact-val"><a href="https://flove.by" target="_blank">flove.by</a></div></div>
+    </div>
+    <div class="contact-item">
+      <div class="contact-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      </div>
+      <div><div class="contact-label">Instagram</div><div class="contact-val"><a href="https://instagram.com/flove_minsk" target="_blank">@flove_minsk</a></div></div>
+    </div>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <div class="bottom-nav-inner">
+    <button class="nav-item active" onclick="switchPage('card',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="3"/><path d="M2 10h20M6 15h4"/></svg>
+      <span class="nav-label">Карта</span>
+    </button>
+
+    <button class="nav-item" onclick="switchPage('ref',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+      <span class="nav-label">Друзья</span>
+    </button>
+
+    <button class="nav-item" onclick="switchPage('info',this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      <span class="nav-label">Адрес</span>
+    </button>
+
+    <button class="nav-qr" onclick="openQR()">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/>
+        <rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/>
+        <rect x="5" y="5" width="3" height="3" fill="var(--warm-white)" stroke="none"/>
+        <rect x="16" y="5" width="3" height="3" fill="var(--warm-white)" stroke="none"/>
+        <rect x="5" y="16" width="3" height="3" fill="var(--warm-white)" stroke="none"/>
+        <path d="M14 14h3v3M17 17v3h3M14 20h3"/>
+      </svg>
+      <span class="nav-qr-label">QR</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+const API_BASE = window.location.origin;
+const params = new URLSearchParams(window.location.search);
+const USER_ID = params.get('user_id') || (window.Telegram && Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user ? Telegram.WebApp.initDataUnsafe.user.id : '0');
+
+let userData = null;
+let refCode = '';
+let botUsername = '';
+
+function formatDate(dt) {
+  if (!dt) return '';
+  const d = new Date(dt.replace(' ', 'T'));
+  const day = String(d.getDate()).padStart(2,'0');
+  const mon = String(d.getMonth()+1).padStart(2,'0');
+  const year = d.getFullYear();
+  const h = String(d.getHours()).padStart(2,'0');
+  const m = String(d.getMinutes()).padStart(2,'0');
+  return day + '.' + mon + '.' + year + ' · ' + h + ':' + m;
+}
+
+function maskPhone(phone) {
+  if (!phone || phone.length < 6) return phone || '—';
+  return phone.slice(0, -4).replace(/./g, function(c, i) { return i > 5 ? '•' : c; }) + ' ' + phone.slice(-2);
+}
+
+function getLevelIcon(level) {
+  if (level === 'Золото') return '✦';
+  if (level === 'Серебро') return '◈';
+  return '◆';
+}
+
+async function loadUser() {
+  try {
+    const res = await fetch(API_BASE + '/api/user/' + USER_ID);
+    if (!res.ok) throw new Error('User not found');
+    userData = await res.json();
+
+    document.getElementById('bonusAmount').innerHTML = Math.floor(userData.bonuses) + '<sup>р.</sup>';
+    document.getElementById('levelBadge').textContent = getLevelIcon(userData.level) + ' ' + userData.level;
+    document.getElementById('clientName').textContent = userData.first_name + ' ' + (userData.last_name || '').charAt(0) + '.';
+    document.getElementById('clientId').textContent = 'FL-' + String(userData.id).padStart(5, '0');
+    document.getElementById('cashbackPct').textContent = userData.cashback_pct + '%';
+
+    // Progress bar
+    var total = userData.total_purchases || 0;
+    var level = userData.level;
+    var nextLevel, nextThreshold, currentThreshold;
+    if (level === 'Бронза') { nextLevel = 'Серебра'; nextThreshold = 400; currentThreshold = 0; }
+    else if (level === 'Серебро') { nextLevel = 'Золота'; nextThreshold = 6000; currentThreshold = 400; }
+    else { nextLevel = ''; nextThreshold = 6000; currentThreshold = 6000; }
+
+    document.getElementById('progressLabel').textContent = 'Уровень: ' + level;
+    if (nextLevel) {
+      var remaining = Math.max(0, nextThreshold - total);
+      document.getElementById('progressNext').textContent = 'до ' + nextLevel + ' — ' + remaining + ' р.';
+      var pct = Math.min(100, ((total - currentThreshold) / (nextThreshold - currentThreshold)) * 100);
+      document.getElementById('progressFill').style.width = Math.max(2, pct) + '%';
+    } else {
+      document.getElementById('progressNext').textContent = 'Максимальный уровень';
+      document.getElementById('progressFill').style.width = '100%';
+    }
+
+    // QR Modal info
+    document.getElementById('qrName').textContent = userData.first_name + ' ' + (userData.last_name || '');
+    document.getElementById('qrBadge').textContent = getLevelIcon(userData.level) + ' ' + userData.level;
+    document.getElementById('qrPhone').textContent = maskPhone(userData.phone);
+    document.getElementById('qrClientId').textContent = 'FL-' + String(userData.id).padStart(5, '0');
+    document.getElementById('qrBirthday').textContent = userData.birthday || '—';
+    document.getElementById('qrBonuses').textContent = Math.floor(userData.bonuses) + ' р. · ' + userData.cashback_pct + '%';
+
+    refCode = userData.referral_code || '';
+
+    generateQR();
+    loadHistory();
+    loadReferrals();
+    launchConfetti();
+  } catch(e) {
+    document.getElementById('bonusAmount').innerHTML = '0<sup>р.</sup>';
+    document.getElementById('historyList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить данные</div>';
+  }
+}
+
+function generateQR() {
+  var qrData = 'flove:' + USER_ID;
+
+  // Small QR on card
+  var small = document.getElementById('qrCodeSmall');
+  small.innerHTML = '';
+  new QRCode(small, { text:qrData, width:72, height:72, colorDark:'#2C1A0E', colorLight:'rgba(0,0,0,0)', correctLevel:QRCode.CorrectLevel.M });
+  // Make QR bg transparent
+  var canvas = small.querySelector('canvas');
+  if (canvas) { canvas.style.borderRadius = '8px'; }
+  var img = small.querySelector('img');
+  if (img) { img.style.borderRadius = '8px'; }
+
+  // Big QR in modal
+  var big = document.getElementById('qrCodeBig');
+  var corners = big.querySelectorAll('.qr-corner');
+  big.innerHTML = '';
+  corners.forEach(function(c) { big.appendChild(c); });
+  new QRCode(big, { text:qrData, width:220, height:220, colorDark:'#2C1A0E', colorLight:'#FFFFFF', correctLevel:QRCode.CorrectLevel.M });
+}
+
+async function loadHistory() {
+  try {
+    var res = await fetch(API_BASE + '/api/user/' + USER_ID + '/history');
+    var history = await res.json();
+    var list = document.getElementById('historyList');
+
+    if (!history.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Пока нет операций</div>';
+      return;
+    }
+
+    // Notifications
+    var notifList = document.getElementById('notifList');
+    notifList.innerHTML = '';
+    document.getElementById('notifCount').textContent = history.length;
+    if (history.length > 0) document.getElementById('notifDot').style.display = 'block';
+
+    list.innerHTML = history.map(function(tx) {
+      var isPlus = tx.bonuses_change >= 0;
+      var iconClass = isPlus ? 'plus' : 'minus';
+      var bonusClass = isPlus ? 'p' : 'm';
+      var sign = isPlus ? '+' : '';
+      var iconSvg = isPlus
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>'
+        : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#C4955A" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>';
+
+      return '<div class="history-item">' +
+        '<div class="h-icon ' + iconClass + '">' + iconSvg + '</div>' +
+        '<div class="h-info"><div class="h-name">' + (tx.description || tx.type) + '</div>' +
+        '<div class="h-date">' + formatDate(tx.created_at) + '</div></div>' +
+        '<div class="h-bonus ' + bonusClass + '">' + sign + tx.bonuses_change + ' р.</div></div>';
+    }).join('');
+
+    // Build notifications
+    history.slice(0, 10).forEach(function(tx, i) {
+      var isPlus = tx.bonuses_change >= 0;
+      var iconType = tx.type === 'welcome' ? 'level' : (isPlus ? 'bonus' : 'promo');
+      var iconSvg = tx.type === 'welcome'
+        ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--bronze)" stroke-width="1.5" stroke-linecap="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>'
+        : (isPlus
+          ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round"><path d="M12 8v8M8 12h8"/><rect x="3" y="3" width="18" height="18" rx="4"/></svg>'
+          : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--caramel)" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9 12h6"/></svg>');
+      var sign = isPlus ? '+' : '';
+
+      notifList.innerHTML += '<div class="notif-item' + (i < 3 ? ' unread' : '') + '" style="animation-delay:' + (i*0.05) + 's">' +
+        '<div class="notif-icon ' + iconType + '">' + iconSvg + '</div>' +
+        '<div class="notif-content"><div class="notif-title">' + (tx.description || tx.type) + '</div>' +
+        '<div class="notif-text">' + sign + tx.bonuses_change + ' р.</div>' +
+        '<div class="notif-time">' + formatDate(tx.created_at) + '</div></div></div>';
+    });
+  } catch(e) {
+    document.getElementById('historyList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить историю</div>';
+  }
+}
+
+async function loadReferrals() {
+  try {
+    var res = await fetch(API_BASE + '/api/user/' + USER_ID + '/referrals');
+    var data = await res.json();
+
+    document.getElementById('refCountStat').textContent = data.stats.total;
+    document.getElementById('refBonusStat').textContent = '+' + data.stats.total_bonus + ' р.';
+    refCode = data.referral_code || refCode;
+
+    var list = document.getElementById('refHistoryList');
+    if (!data.referrals || !data.referrals.length) {
+      list.innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Пока нет приглашённых друзей</div>';
+      return;
+    }
+
+    list.innerHTML = data.referrals.map(function(ref) {
+      var initial = (ref.first_name || '?').charAt(0);
+      return '<div class="ref-history-item">' +
+        '<div class="ref-h-avatar">' + initial + '</div>' +
+        '<div class="ref-h-info">' +
+        '<div class="ref-h-name">' + ref.first_name + ' ' + (ref.last_name || '').charAt(0) + '.</div>' +
+        '<div class="ref-h-date">' + formatDate(ref.created_at) + '</div></div>' +
+        '<div style="text-align:right;">' +
+        '<div class="ref-h-bonus">+' + ref.referrer_bonus + ' р.</div>' +
+        '<div class="ref-h-status done">Начислено</div></div></div>';
+    }).join('');
+  } catch(e) {
+    document.getElementById('refHistoryList').innerHTML = '<div style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px;">Не удалось загрузить данные</div>';
+  }
+}
+
+function copyRefLink() {
+  var link = 'https://t.me/FLoveBot?start=ref_' + refCode;
+  var btn = document.getElementById('shareBtnTxt');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(link);
+  }
+  btn.textContent = 'Ссылка скопирована!';
+  setTimeout(function() { btn.textContent = 'Поделиться ссылкой'; }, 2000);
+}
+
+// Navigation
+function switchPage(id, btn) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-item').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('page-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+function openNotif() {
+  document.getElementById('notifOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('notifDot').style.display = 'none';
+}
+function closeNotif(e) { if (e.target === document.getElementById('notifOverlay')) closeNotifBtn(); }
+function closeNotifBtn() { document.getElementById('notifOverlay').classList.remove('open'); document.body.style.overflow = ''; }
+function openQR() {
+  document.getElementById('qrModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeQR(e) { if (e.target === document.getElementById('qrModal')) closeQRBtn(); }
+function closeQRBtn() { document.getElementById('qrModal').classList.remove('open'); document.body.style.overflow = ''; }
+
+function launchConfetti() {
+  var container = document.getElementById('confettiContainer');
+  var colors = ['#627c41','#C4955A','#8aaa5a','#CD7F32','#FAF8F4','#2C1A0E'];
+  for (var i = 0; i < 60; i++) {
+    var el = document.createElement('div');
+    el.className = 'conf';
+    el.style.cssText = 'left:' + (Math.random()*100) + 'vw;background:' + colors[Math.floor(Math.random()*colors.length)] +
+      ';width:' + (6+Math.random()*8) + 'px;height:' + (6+Math.random()*8) + 'px;border-radius:' + (Math.random()>0.5?'50%':'2px') +
+      ';animation-duration:' + (1.5+Math.random()*2) + 's;animation-delay:' + (Math.random()*0.5) + 's;';
+    container.appendChild(el);
+    setTimeout(function(e) { e.remove(); }, 3500, el);
+  }
+}
+
+// Init
+loadUser();
+</script>
+</body>
+</html>
