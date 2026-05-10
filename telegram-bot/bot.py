@@ -9,6 +9,7 @@ import os
 import json
 import asyncio
 import logging
+from datetime import datetime, timezone, timedelta
 
 from dotenv import load_dotenv
 from telegram import (
@@ -868,7 +869,19 @@ async def _send_expiry_notification(bot, user_data: dict) -> bool:
         return False
 
 
+# Minsk timezone (UTC+3)
+_MINSK_TZ = timezone(timedelta(hours=3))
+
+
+def _is_working_hours() -> bool:
+    now = datetime.now(_MINSK_TZ)
+    return 9 <= now.hour < 20
+
+
 async def _check_and_notify_expiring(context) -> None:
+    if not _is_working_hours():
+        return
+
     settings = database.get_bonus_expiry_settings()
     if settings.get("bonus_expiry_enabled") != "1":
         return
