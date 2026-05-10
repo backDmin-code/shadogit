@@ -801,6 +801,20 @@ def update_broadcast_status(
     conn.close()
 
 
+def get_due_scheduled_broadcasts() -> list[dict]:
+    conn = get_db()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    rows = conn.execute(
+        """SELECT * FROM broadcasts
+           WHERE status = 'scheduled'
+             AND scheduled_at IS NOT NULL
+             AND scheduled_at <= ?""",
+        (now,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
 def get_broadcast_recipients(filter_type: str, filter_value: str | None) -> list[int]:
     conn = get_db()
     if filter_type == "level" and filter_value:

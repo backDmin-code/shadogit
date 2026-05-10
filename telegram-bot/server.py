@@ -5,6 +5,8 @@ Serves REST API + static webapp files.
 
 import os
 import io
+import json
+import asyncio
 import logging
 from typing import Optional
 
@@ -16,10 +18,15 @@ from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 import uuid
 import shutil
+import httpx
 
 import database
 
 load_dotenv()
+
+BOT_TOKEN = os.getenv("BOT_TOKEN", "")
+WEBAPP_URL = os.getenv("WEBAPP_URL", "").rstrip("/")
+TELEGRAM_API = f"https://api.telegram.org/bot{BOT_TOKEN}"
 
 # Parse admin IDs from env
 _admin_ids_raw = os.getenv("ADMIN_IDS", "")
@@ -45,10 +52,32 @@ app.add_middleware(
 )
 
 
+async def _scheduled_broadcast_worker():
+    while True:
+        await asyncio.sleep(60)
+        if not BOT_TOKEN:
+            continue
+        try:
+            due = database.get_due_scheduled_broadcasts()
+            for b in due:
+                bid = b["id"]
+                recipients = database.get_broadcast_recipients(
+                    b["filter_type"], b.get("filter_value")
+                )
+                database.update_broadcast_status(bid, "queued", total=len(recipients))
+                await _do_send_broadcast(bid, b, recipients)
+                logger.info(f"Scheduled broadcast {bid} sent to {len(recipients)} recipients")
+        except Exception as e:
+            logger.warning(f"Scheduled broadcast worker error: {e}")
+
+
 @app.on_event("startup")
-def startup():
+async def startup():
     database.init_db()
     logger.info("Database initialized (v2 — production)")
+    if BOT_TOKEN:
+        asyncio.create_task(_scheduled_broadcast_worker())
+        logger.info("Scheduled broadcast worker started")
 
 
 # ─── Request Models ─────────────────────────────────────────
@@ -358,19 +387,35 @@ def api_get_broadcast(broadcast_id: int):
 
 
 @app.post("/api/broadcast/{broadcast_id}/preview")
-async def api_preview_broadcast(broadcast_id: int):
+async def api_preview_broadcast(broadcast_id: int, request: Request):
+    if not BOT_TOKEN:
+        raise HTTPException(status_code=500, detail="BOT_TOKEN not configured")
     b = database.get_broadcast(broadcast_id)
     if not b:
         raise HTTPException(status_code=404, detail="Broadcast not found")
+
+    body = {}
+    try:
+        body = await request.json()
+    except Exception:
+        pass
+    admin_id = body.get("admin_id") or b.get("admin_telegram_id")
+    if not admin_id:
+        raise HTTPException(status_code=400, detail="admin_id required")
+
+    await _send_telegram_messages(b, [int(admin_id)])
+
     return {
         "ok": True,
-        "message": "Preview saved. Use /preview command in bot to send to admin chat.",
+        "message": "Preview sent to admin chat.",
         "broadcast_id": broadcast_id,
     }
 
 
 @app.post("/api/broadcast/{broadcast_id}/send")
-def api_send_broadcast(broadcast_id: int):
+async def api_send_broadcast(broadcast_id: int):
+    if not BOT_TOKEN:
+        raise HTTPException(status_code=500, detail="BOT_TOKEN not configured")
     b = database.get_broadcast(broadcast_id)
     if not b:
         raise HTTPException(status_code=404, detail="Broadcast not found")
@@ -380,12 +425,101 @@ def api_send_broadcast(broadcast_id: int):
     database.update_broadcast_status(
         broadcast_id, "queued", total=len(recipients)
     )
+
+    # Actually send messages via Telegram Bot API
+    asyncio.create_task(
+        _do_send_broadcast(broadcast_id, b, recipients)
+    )
+
     return {
         "ok": True,
         "broadcast_id": broadcast_id,
         "recipients_count": len(recipients),
-        "recipients": recipients,
     }
+
+
+async def _send_telegram_messages(
+    b: dict, recipients: list[int]
+) -> tuple[int, int]:
+    text = b.get("text", "")
+    parse_mode = b.get("parse_mode") or "HTML"
+    photo = b.get("photo_file_id")
+    buttons_raw = b.get("buttons")
+    buttons = None
+    if buttons_raw:
+        try:
+            buttons = json.loads(buttons_raw) if isinstance(buttons_raw, str) else buttons_raw
+        except Exception:
+            buttons = None
+
+    reply_markup = None
+    if buttons and isinstance(buttons, list) and len(buttons) > 0:
+        inline_keyboard = []
+        for btn in buttons:
+            if isinstance(btn, dict) and btn.get("text") and btn.get("url"):
+                inline_keyboard.append([{"text": btn["text"], "url": btn["url"]}])
+        if inline_keyboard:
+            reply_markup = json.dumps({"inline_keyboard": inline_keyboard})
+
+    successful = 0
+    failed = 0
+
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        for tid in recipients:
+            try:
+                if photo and (photo.startswith("http") or photo.startswith("/")):
+                    photo_url = photo
+                    if photo.startswith("/"):
+                        photo_url = f"{WEBAPP_URL}{photo}" if WEBAPP_URL else photo
+                    payload = {
+                        "chat_id": tid,
+                        "photo": photo_url,
+                        "caption": text,
+                        "parse_mode": parse_mode,
+                    }
+                    if reply_markup:
+                        payload["reply_markup"] = reply_markup
+                    resp = await client.post(
+                        f"{TELEGRAM_API}/sendPhoto", json=payload
+                    )
+                else:
+                    payload = {
+                        "chat_id": tid,
+                        "text": text,
+                        "parse_mode": parse_mode,
+                    }
+                    if reply_markup:
+                        payload["reply_markup"] = reply_markup
+                    resp = await client.post(
+                        f"{TELEGRAM_API}/sendMessage", json=payload
+                    )
+
+                if resp.status_code == 200 and resp.json().get("ok"):
+                    successful += 1
+                else:
+                    logger.warning(f"Send failed for {tid}: {resp.text}")
+                    failed += 1
+            except Exception as e:
+                logger.warning(f"Send error for {tid}: {e}")
+                failed += 1
+
+            await asyncio.sleep(0.05)
+
+    return successful, failed
+
+
+async def _do_send_broadcast(
+    broadcast_id: int, b: dict, recipients: list[int]
+) -> None:
+    successful, failed = await _send_telegram_messages(b, recipients)
+    database.update_broadcast_status(
+        broadcast_id, "sent", total=len(recipients),
+        successful=successful, failed=failed,
+    )
+    logger.info(
+        f"Broadcast {broadcast_id} done: {successful}/{len(recipients)} sent, "
+        f"{failed} failed"
+    )
 
 
 # ─── Settings API ───────────────────────────────────────────
