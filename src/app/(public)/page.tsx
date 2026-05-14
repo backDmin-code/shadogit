@@ -1,4 +1,5 @@
 import { SquadyHero } from "@/components/squady/hero";
+import { Marquee } from "@/components/squady/marquee";
 import { SquadyPrinciples } from "@/components/squady/principles";
 import { SquadyStack } from "@/components/squady/stack";
 import { BotFeaturesSection } from "@/components/squady/bot-features";
@@ -15,6 +16,7 @@ export default function HomePage() {
   return (
     <main className="app-main app-main--no-toc !ml-0 !mr-0 relative z-10 sq-page">
       <SquadyHero />
+      <Marquee />
       <SquadyPrinciples />
       <SquadyStack />
       <BotFeaturesSection />

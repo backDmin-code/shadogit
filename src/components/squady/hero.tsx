@@ -8,60 +8,81 @@ import { ArrowRight, Sparkles, Calendar, Network, Gift } from "lucide-react";
 export function SquadyHero() {
   return (
     <section className="sq-hero">
-      <div className="sq-hero-bg">
-        <div className="sq-orb sq-orb-1" />
-        <div className="sq-orb sq-orb-2" />
-        <div className="sq-orb sq-orb-3" />
-        <div className="sq-grid" />
-      </div>
+      <div className="sq-hero-dots" aria-hidden />
+      <div className="sq-hero-blob sq-hero-blob-1" aria-hidden />
+      <div className="sq-hero-blob sq-hero-blob-2" aria-hidden />
+      <div className="sq-hero-blob sq-hero-blob-3" aria-hidden />
 
-      <div className="sq-container relative z-10">
+      <div className="sq-container">
         <div className="sq-hero-grid">
-          <div className="sq-hero-copy">
+          <div>
             <motion.div
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
+              initial={{ opacity: 0, y: 12, rotate: -3 }}
+              animate={{ opacity: 1, y: 0, rotate: -1.5 }}
               transition={{ duration: 0.6 }}
               className="sq-eyebrow"
             >
               <Sparkles className="h-3 w-3" />
-              Сквады · v0.1 · концепция
+              Сквады · платформа для микро-бизнеса
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.05 }}
-              className="sq-h1"
+              transition={{ duration: 0.7, delay: 0.08 }}
+              className="sq-display"
+              style={{ marginTop: 20 }}
             >
-              Инфраструктура{" "}
-              <span className="sq-grad-text">сотрудничества</span>
+              Малый бизнес — это{" "}
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                не одиночество.
+              </span>
               <br />
-              для малого бизнеса.
+              Это{" "}
+              <span
+                style={{
+                  background: "var(--lime)",
+                  padding: "0 12px",
+                  borderRadius: 14,
+                  border: "3px solid var(--ink)",
+                  boxShadow: "5px 5px 0 var(--ink)",
+                  display: "inline-block",
+                  transform: "rotate(-2deg)",
+                }}
+              >
+                сквад.
+              </span>
             </motion.h1>
 
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, delay: 0.12 }}
+              transition={{ duration: 0.7, delay: 0.15 }}
               className="sq-lead"
+              style={{ marginTop: 24 }}
             >
-              Умный бот записи в Telegram, реферальная сеть мастеров и
-              встроенная программа лояльности — в одной платформе. Без разработки,
-              без BotFather, без хаоса.
+              Бот записи в Telegram, реферальная сеть мастеров и программа
+              лояльности — в одной платформе. Без разработки, без BotFather, без
+              хаоса. С первого дня.
             </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="sq-cta-row"
+              transition={{ duration: 0.6, delay: 0.25 }}
+              style={{
+                marginTop: 30,
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 14,
+                alignItems: "center",
+              }}
             >
-              <Link href="#pricing" className="sq-btn-primary">
-                Попробовать 30 дней бесплатно
+              <Link href="#pricing" className="sq-btn sq-btn-primary sq-btn-lg">
+                30 дней бесплатно
                 <ArrowRight className="h-4 w-4" />
               </Link>
-              <Link href="#stack" className="sq-btn-secondary">
+              <Link href="#stack" className="sq-btn sq-btn-secondary sq-btn-lg">
                 Как это работает
               </Link>
             </motion.div>
@@ -70,16 +91,54 @@ export function SquadyHero() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="sq-hero-chips"
+              className="sq-hero-stickers"
             >
-              <span className="sq-chip">
+              <span className="sq-pill sq-pill-lime">
                 <Calendar className="h-3 w-3" /> Бот записи
               </span>
-              <span className="sq-chip">
+              <span className="sq-pill sq-pill-sky">
                 <Network className="h-3 w-3" /> Squad Network
               </span>
-              <span className="sq-chip">
-                <Gift className="h-3 w-3" /> Программа лояльности
+              <span className="sq-pill sq-pill-pink">
+                <Gift className="h-3 w-3" /> Лояльность
+              </span>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.55 }}
+              className="sq-pile"
+              style={{ marginTop: 28 }}
+            >
+              <span
+                className="sq-pile-avatar"
+                style={{ background: "var(--lime)" }}
+              >
+                А
+              </span>
+              <span
+                className="sq-pile-avatar"
+                style={{ background: "var(--magenta)", color: "var(--cream)" }}
+              >
+                М
+              </span>
+              <span
+                className="sq-pile-avatar"
+                style={{ background: "var(--sky)" }}
+              >
+                К
+              </span>
+              <span
+                className="sq-pile-avatar"
+                style={{ background: "var(--yellow)" }}
+              >
+                Н
+              </span>
+              <span className="sq-pile-text">
+                <b>Уже работают</b>: барберы, психологи, репетиторы,
+                <br />
+                салоны, мастера ногтевого сервиса.
               </span>
             </motion.div>
           </div>
@@ -87,8 +146,8 @@ export function SquadyHero() {
           <motion.div
             initial={{ opacity: 0, scale: 0.92, y: 30 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="sq-hero-visual"
+            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="sq-phone-stage"
           >
             <PhoneMockup />
           </motion.div>
@@ -100,16 +159,15 @@ export function SquadyHero() {
 
 function PhoneMockup() {
   return (
-    <div className="sq-phone-wrap">
-      <div className="sq-phone-shadow" />
+    <>
       <div className="sq-phone">
         <div className="sq-phone-notch" />
         <div className="sq-phone-screen">
           <div className="sq-tg-header">
-            <div className="sq-tg-avatar">A</div>
-            <div className="sq-tg-name">
+            <div className="sq-tg-avatar">А</div>
+            <div>
               <div className="sq-tg-name-l1">Анна · Барбер</div>
-              <div className="sq-tg-name-l2">bot · онлайн</div>
+              <div className="sq-tg-name-l2">bot · online</div>
             </div>
           </div>
 
@@ -118,62 +176,64 @@ function PhoneMockup() {
               Привет! Я бот Анны. Запишу вас на стрижку — напишите или скажите
               голосом 🎙️
             </Bubble>
-            <Bubble side="out" delay={0.6}>
-              Хочу постричься в пятницу вечером
+            <Bubble side="out" delay={0.5}>
+              Хочу постричься в пятницу
             </Bubble>
-            <Bubble side="in" delay={1.2}>
-              Свободно пт, 18:30 или 19:00. Какое подходит?
+            <Bubble side="in" delay={1.0}>
+              Свободно пт, 18:30 или 19:00 — какое?
             </Bubble>
-            <Bubble side="out" delay={1.8}>
+            <Bubble side="out" delay={1.5}>
               19:00 👍
             </Bubble>
-            <Bubble side="in" delay={2.4} highlight>
-              Записал! Анна получит уведомление. Сохранил +50 бонусов 💎
+            <Bubble side="in" delay={2.0} highlight>
+              Записал! +50 бонусов 💎
             </Bubble>
           </div>
 
           <div className="sq-tg-input">
-            <span>Поделиться номером</span>
+            <span>Сообщение…</span>
             <span className="sq-tg-mic">🎙️</span>
           </div>
         </div>
       </div>
 
       <FloatingCard
-        className="sq-float-card-1"
+        className="sq-phone-float sq-phone-float-1"
         delay={0.4}
-        title="Реферал засчитан"
-        subtitle="Мастер А → Б · +8.5 BYN"
+        title="+8.5 BYN"
+        subtitle="реферал засчитан"
         emoji="🔗"
       />
       <FloatingCard
-        className="sq-float-card-2"
+        className="sq-phone-float sq-phone-float-2"
         delay={0.7}
-        title="Уровень: Золото"
-        subtitle="10 визитов · +20% бонусов"
-        emoji="🏆"
+        title="Silver"
+        subtitle="2 280 бонусов"
+        emoji="🥈"
       />
-    </div>
+    </>
   );
 }
 
 function Bubble({
   side,
-  children,
   delay,
   highlight,
+  children,
 }: {
   side: "in" | "out";
-  children: React.ReactNode;
   delay: number;
   highlight?: boolean;
+  children: React.ReactNode;
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.5, delay: 0.5 + delay }}
-      className={`sq-bubble sq-bubble-${side} ${highlight ? "sq-bubble-hl" : ""}`}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.6 + delay }}
+      className={`sq-bubble sq-bubble-${side} ${
+        highlight ? "sq-bubble-hl" : ""
+      }`}
     >
       {children}
     </motion.div>
@@ -187,7 +247,7 @@ function FloatingCard({
   subtitle,
   emoji,
 }: {
-  className?: string;
+  className: string;
   delay: number;
   title: string;
   subtitle: string;
@@ -195,10 +255,14 @@ function FloatingCard({
 }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20, scale: 0.9 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, delay: 1 + delay, ease: [0.16, 1, 0.3, 1] }}
-      className={`sq-float-card ${className ?? ""}`}
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{
+        duration: 0.6,
+        delay: 0.9 + delay,
+        ease: [0.16, 1, 0.3, 1],
+      }}
+      className={className}
     >
       <div className="sq-float-emoji">{emoji}</div>
       <div>

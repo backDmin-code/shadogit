@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Unbounded, Fira_Code } from "next/font/google";
+import { Inter, Unbounded, Fira_Code, Manrope, Lora } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
 
@@ -21,6 +21,21 @@ const firaCode = Fira_Code({
   subsets: ["latin"],
   variable: "--font-fira-code",
   weight: ["300", "400", "500", "600"],
+  display: "swap",
+});
+
+const manrope = Manrope({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-display-alt",
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
+});
+
+const lora = Lora({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -49,7 +64,7 @@ export default function RootLayout({
   return (
     <html lang="ru" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${unbounded.variable} ${firaCode.variable} antialiased min-h-screen`}
+        className={`${inter.variable} ${unbounded.variable} ${firaCode.variable} ${manrope.variable} ${lora.variable} antialiased min-h-screen`}
       >
         <Providers>{children}</Providers>
       </body>

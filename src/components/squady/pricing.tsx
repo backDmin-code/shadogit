@@ -65,14 +65,16 @@ const EXTRAS = [
 
 export function PricingSection() {
   return (
-    <section id="pricing" className="sq-section sq-section-pricing">
+    <section id="pricing" className="sq-section sq-pricing">
       <div className="sq-container">
         <SectionHeader
           eyebrow="Тарифы"
           title={
             <>
               30 дней бесплатно.{" "}
-              <span className="sq-grad-text">Без привязки карты.</span>
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                без привязки карты.
+              </span>
             </>
           }
           subtitle="Платите за подписку, расширения подключаются по мере роста. Никаких процентов с каждой записи и оплаты за лиды — только понятная экономика."
@@ -102,14 +104,20 @@ export function PricingSection() {
               <ul className="sq-plan-features">
                 {p.features.map((f) => (
                   <li key={f}>
-                    <Check className="h-3.5 w-3.5" />
+                    <span className="sq-plan-check">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                    </span>
                     {f}
                   </li>
                 ))}
               </ul>
               <Link
                 href="#cta"
-                className={p.highlight ? "sq-btn-primary sq-btn-block" : "sq-btn-secondary sq-btn-block"}
+                className={
+                  p.highlight
+                    ? "sq-btn sq-btn-primary sq-btn-block"
+                    : "sq-btn sq-btn-secondary sq-btn-block"
+                }
               >
                 {p.cta}
               </Link>
@@ -129,7 +137,7 @@ export function PricingSection() {
             {EXTRAS.map((e) => (
               <div key={e.name} className="sq-extra-line">
                 <span>{e.name}</span>
-                <span className="sq-extra-price">{e.price}</span>
+                <span>{e.price}</span>
               </div>
             ))}
           </div>

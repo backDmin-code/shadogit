@@ -59,14 +59,16 @@ const FEATURES = [
 
 export function BotFeaturesSection() {
   return (
-    <section id="bot" className="sq-section sq-section-features">
+    <section id="bot" className="sq-section sq-features">
       <div className="sq-container">
         <SectionHeader
           eyebrow="Bot Layer"
           title={
             <>
               Персональный ассистент записи —{" "}
-              <span className="sq-grad-text">для каждого мастера.</span>
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                для каждого мастера.
+              </span>
             </>
           }
           subtitle="Появляется автоматически после регистрации. Без копирования токенов, без визита в BotFather, без разработки."
@@ -80,13 +82,13 @@ export function BotFeaturesSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.5, delay: (i % 4) * 0.05 }}
-              className="sq-feature-card"
+              className="sq-feat"
             >
-              <div className="sq-feature-icon">
+              <div className="sq-feat-icon">
                 <f.icon className="h-4 w-4" />
               </div>
-              <h3 className="sq-feature-title">{f.title}</h3>
-              <p className="sq-feature-body">{f.body}</p>
+              <h3 className="sq-feat-title">{f.title}</h3>
+              <p className="sq-feat-body">{f.body}</p>
             </motion.div>
           ))}
         </div>

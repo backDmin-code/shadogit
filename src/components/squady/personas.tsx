@@ -21,14 +21,16 @@ const PERSONAS = [
 
 export function PersonasSection() {
   return (
-    <section id="personas" className="sq-section">
+    <section id="personas" className="sq-section sq-personas">
       <div className="sq-container">
         <SectionHeader
           eyebrow="Persona Templates"
           title={
             <>
               Один продукт —{" "}
-              <span className="sq-grad-text">десятки настроенных шаблонов.</span>
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                десятки шаблонов.
+              </span>
             </>
           }
           subtitle="Выбираете нишу при регистрации — платформа подстраивает дашборд, карточку клиента, сценарий бота и формулировки. Шаблон можно сменить в любой момент."
@@ -42,7 +44,7 @@ export function PersonasSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-60px" }}
               transition={{ duration: 0.45, delay: (i % 4) * 0.05 }}
-              className="sq-persona-card"
+              className="sq-persona"
             >
               <div className="sq-persona-emoji">{p.emoji}</div>
               <div className="sq-persona-title">{p.title}</div>

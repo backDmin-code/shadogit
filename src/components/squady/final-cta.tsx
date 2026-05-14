@@ -7,7 +7,7 @@ import { ArrowRight, Rocket } from "lucide-react";
 
 export function FinalCta() {
   return (
-    <section id="cta" className="sq-section sq-section-cta">
+    <section id="cta" className="sq-final">
       <div className="sq-container">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -16,27 +16,27 @@ export function FinalCta() {
           transition={{ duration: 0.7 }}
           className="sq-cta-banner"
         >
-          <div className="sq-cta-glow" />
           <div className="sq-cta-eyebrow">
             <Rocket className="h-3 w-3" />
-            Готовы соединить ваш бизнес в систему?
+            Готовы соединить бизнес в систему?
           </div>
           <h2 className="sq-cta-title">
-            Мы соединяем людей <br className="hidden md:block" />
-            в <span className="sq-grad-text">системы.</span>
+            Мы соединяем людей{" "}
+            <span className="sq-it" style={{ color: "var(--lime)" }}>
+              в&nbsp;системы.
+            </span>
           </h2>
           <p className="sq-cta-sub">
-            Запустите своего Telegram-бота, подключите программу лояльности и
-            присоединитесь к Squad Network — за один вечер. 30 дней бесплатно,
-            без привязки карты.
+            Запустите Telegram-бота, подключите лояльность и присоединитесь к
+            Squad Network — за один вечер. 30 дней бесплатно, без привязки карты.
           </p>
-          <div className="sq-cta-row sq-cta-row-center">
-            <Link href="/login" className="sq-btn-primary sq-btn-lg">
+          <div className="sq-cta-row">
+            <Link href="/login" className="sq-btn sq-btn-primary sq-btn-lg">
               Начать бесплатно
               <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link href="/docs" className="sq-btn-secondary sq-btn-lg">
-              Открыть документацию
+            <Link href="/docs" className="sq-btn sq-btn-secondary sq-btn-lg">
+              Документация
             </Link>
           </div>
         </motion.div>

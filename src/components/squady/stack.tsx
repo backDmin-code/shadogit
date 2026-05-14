@@ -2,48 +2,45 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Bot, Network, Trophy } from "lucide-react";
+import { Bot, Network, Trophy, Check } from "lucide-react";
 import { SectionHeader } from "./principles";
 
 const LAYERS = [
   {
-    n: "Слой 1",
+    n: "Слой 01",
     title: "Bot Layer",
     sub: "Умный бот записи",
     desc:
       "Telegram-бот, который создаётся автоматически для каждого мастера. Голос, текст, кнопки — клиент общается как удобно.",
     icon: Bot,
-    color: "lime",
     points: [
-      "Распознавание имени, услуги и времени из сообщения",
-      "Голос через Whisper и AI-понимание контекста",
-      "Синхронизация с Google Calendar",
-      "Managed Bots: без BotFather, в 1 клик",
+      "Распознаёт имя, услугу и время из сообщения",
+      "Голос через Whisper, AI понимает контекст",
+      "Двусторонняя синхронизация с Google Calendar",
+      "Managed Bots: без BotFather, в один клик",
     ],
   },
   {
-    n: "Слой 2",
+    n: "Слой 02",
     title: "Squad Network",
     sub: "Реферальная сеть",
     desc:
       "Если мастер занят — клиент уходит к коллеге из сквада. Мастер-источник получает процент. Клиенты не теряются.",
     icon: Network,
-    color: "pink",
     points: [
-      "Авто-маршрутизация по нише, рейтингу, ближайшему слоту",
-      "Реферальный процент 5–15%, настраивается создателем",
-      "Защита базы: клиент остаётся за источником",
+      "Авто-маршрутизация по нише, рейтингу, слоту",
+      "Реферальный процент 5–15%",
+      "Защита базы: клиент закреплён за источником",
       "Открытый сквад, по приглашению или по одобрению",
     ],
   },
   {
-    n: "Слой 3",
+    n: "Слой 03",
     title: "Loyalty Engine",
     sub: "Программа лояльности",
     desc:
-      "Бонусы, уровни, акции и QR-карта прямо в Telegram. От штамп-карты в кофейне до курсовой механики у косметолога.",
+      "Бонусы, уровни, акции и QR-карта прямо в Telegram. От штамп-карты в кофейне до курсов у косметолога.",
     icon: Trophy,
-    color: "mint",
     points: [
       "Уровни: Бронза → Серебро → Золото → Платина",
       "N-я покупка в подарок, бонус в день рождения",
@@ -61,11 +58,13 @@ export function SquadyStack() {
           eyebrow="Три слоя продукта"
           title={
             <>
-              Один продукт. <br className="hidden md:block" />
-              <span className="sq-grad-text">Три независимых модуля.</span>
+              Один продукт.{" "}
+              <span className="sq-it" style={{ color: "var(--lime)" }}>
+                три независимых модуля.
+              </span>
             </>
           }
-          subtitle="Подключите всё сразу или начните с одного. Незадействованные разделы не отображаются — интерфейс адаптируется."
+          subtitle="Подключите всё сразу или начните с одного. Незадействованные модули не отображаются — интерфейс адаптируется под ваш стек."
         />
 
         <div className="sq-stack-grid">
@@ -76,9 +75,8 @@ export function SquadyStack() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.7, delay: i * 0.1 }}
-              className={`sq-stack-card sq-accent-${l.color}`}
+              className={`sq-stack-card sq-stack-card-${i + 1}`}
             >
-              <div className="sq-stack-card-glow" />
               <div className="sq-stack-num">{l.n}</div>
               <div className="sq-stack-icon">
                 <l.icon className="h-6 w-6" />
@@ -89,7 +87,9 @@ export function SquadyStack() {
               <ul className="sq-stack-list">
                 {l.points.map((pt) => (
                   <li key={pt}>
-                    <span className="sq-stack-dot" />
+                    <span className="sq-stack-check">
+                      <Check className="h-3 w-3" strokeWidth={3} />
+                    </span>
                     {pt}
                   </li>
                 ))}

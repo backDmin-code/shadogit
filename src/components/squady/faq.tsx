@@ -44,15 +44,19 @@ export function FaqSection() {
   const [open, setOpen] = React.useState<number | null>(0);
 
   return (
-    <section id="faq" className="sq-section">
-      <div className="sq-container sq-faq-container">
+    <section id="faq" className="sq-section sq-faq-section">
+      <div className="sq-container">
         <SectionHeader
           eyebrow="Вопросы"
           title={
             <>
-              Часто задают <span className="sq-grad-text">именно это.</span>
+              Часто задают{" "}
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                именно это.
+              </span>
             </>
           }
+          align="center"
         />
 
         <div className="sq-faq-list">
@@ -74,9 +78,9 @@ export function FaqSection() {
                   aria-expanded={isOpen}
                 >
                   <span>{item.q}</span>
-                  <ChevronDown
-                    className={`sq-faq-chev ${isOpen ? "sq-faq-chev-open" : ""}`}
-                  />
+                  <span className={`sq-faq-chev ${isOpen ? "sq-faq-chev-open" : ""}`}>
+                    <ChevronDown className="h-4 w-4" strokeWidth={3} />
+                  </span>
                 </button>
                 <AnimatePresence initial={false}>
                   {isOpen && (

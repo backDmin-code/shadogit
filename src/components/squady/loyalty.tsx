@@ -21,14 +21,16 @@ const MECHANICS = [
 
 export function LoyaltySection() {
   return (
-    <section id="loyalty" className="sq-section sq-section-loyalty">
+    <section id="loyalty" className="sq-section sq-loyalty">
       <div className="sq-container">
         <SectionHeader
           eyebrow="Loyalty Engine"
           title={
             <>
               Программа лояльности, которой{" "}
-              <span className="sq-grad-text">пользуются на самом деле.</span>
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                пользуются на самом деле.
+              </span>
             </>
           }
           subtitle="Бонусы, уровни и акции прямо в Telegram-боте мастера. От штамп-карты в кофейне до курсовой механики у косметолога."
@@ -40,13 +42,12 @@ export function LoyaltySection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-80px" }}
             transition={{ duration: 0.7 }}
-            className="sq-loyalty-card-wrap"
           >
             <LoyaltyCardVisual />
           </motion.div>
 
           <div className="sq-loyalty-content">
-            <div className="sq-loyalty-levels">
+            <div className="sq-tiers">
               {LEVELS.map((l, i) => (
                 <motion.div
                   key={l.name}
@@ -54,26 +55,19 @@ export function LoyaltySection() {
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.4, delay: i * 0.06 }}
-                  className="sq-level-row"
+                  className="sq-tier"
                 >
-                  <div
-                    className="sq-level-badge"
-                    style={{
-                      background: `linear-gradient(135deg, ${l.color}33, ${l.color}11)`,
-                      color: l.color,
-                      borderColor: `${l.color}55`,
-                    }}
-                  >
+                  <div className={`sq-tier-badge sq-tier-${i + 1}`}>
                     <Star className="h-3 w-3" />
                     {l.name}
                   </div>
-                  <div className="sq-level-perk">{l.perk}</div>
-                  <div className="sq-level-from">от {l.from} визитов</div>
+                  <div className="sq-tier-perk">{l.perk}</div>
+                  <div className="sq-tier-from">от {l.from} визитов</div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="sq-mechanics-grid">
+            <div className="sq-mechanics">
               {MECHANICS.map((m, i) => (
                 <motion.div
                   key={m.title}
@@ -81,7 +75,7 @@ export function LoyaltySection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.5, delay: 0.2 + i * 0.06 }}
-                  className="sq-mech-item"
+                  className="sq-mech"
                 >
                   <div className="sq-mech-icon">
                     <m.icon className="h-4 w-4" />
@@ -102,31 +96,30 @@ export function LoyaltySection() {
 
 function LoyaltyCardVisual() {
   return (
-    <div className="sq-card-3d">
+    <div className="sq-card3d">
       <motion.div
         className="sq-loyalty-card"
         animate={{
-          rotateX: [0, 4, 0, -4, 0],
-          rotateY: [0, -4, 0, 4, 0],
+          rotateX: [0, 3, 0, -3, 0],
+          rotateY: [-4, -2, -4, -6, -4],
         }}
         transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }}
       >
-        <div className="sq-loyalty-card-bg" />
-        <div className="sq-loyalty-card-grain" />
+        <div className="sq-loyalty-bg" />
 
         <div className="sq-loyalty-card-top">
-          <div className="sq-loyalty-card-brand">
-            <span className="sq-loyalty-logo">сq</span>
-            <span className="sq-loyalty-card-name">Squady · Loyalty</span>
+          <div className="sq-loyalty-brand">
+            <span className="sq-loyalty-logo">sq</span>
+            <span className="sq-loyalty-brand-name">Squady · Loyalty</span>
           </div>
-          <div className="sq-loyalty-level-pill">
+          <div className="sq-loyalty-tier">
             <Star className="h-3 w-3" />
             Золото
           </div>
         </div>
 
-        <div className="sq-loyalty-card-mid">
-          <div className="sq-loyalty-balance">
+        <div className="sq-loyalty-mid">
+          <div>
             <span className="sq-loyalty-balance-label">Баланс</span>
             <span className="sq-loyalty-balance-value">1 240 <small>бонусов</small></span>
           </div>
@@ -147,7 +140,7 @@ function LoyaltyCardVisual() {
           </div>
         </div>
 
-        <div className="sq-loyalty-card-bottom">
+        <div className="sq-loyalty-bottom">
           <div className="sq-loyalty-name">Анна К.</div>
           <div className="sq-loyalty-qr" aria-hidden>
             <QrIcon />
@@ -168,9 +161,9 @@ function QrIcon() {
       <rect x="19" y="14" width="3" height="3" />
       <rect x="14" y="19" width="3" height="3" />
       <rect x="19" y="19" width="3" height="3" />
-      <rect x="5" y="5" width="2" height="2" fill="hsl(var(--surface))" />
-      <rect x="17" y="5" width="2" height="2" fill="hsl(var(--surface))" />
-      <rect x="5" y="17" width="2" height="2" fill="hsl(var(--surface))" />
+      <rect x="5" y="5" width="2" height="2" fill="#FFF6E5" />
+      <rect x="17" y="5" width="2" height="2" fill="#FFF6E5" />
+      <rect x="5" y="17" width="2" height="2" fill="#FFF6E5" />
     </svg>
   );
 }

@@ -39,8 +39,10 @@ export function SquadyPrinciples() {
           eyebrow="Философия"
           title={
             <>
-              Три принципа, которые меняют{" "}
-              <span className="sq-grad-text">логику рынка</span>
+              Три принципа, которые{" "}
+              <span className="sq-it" style={{ color: "var(--magenta)" }}>
+                меняют логику рынка
+              </span>
             </>
           }
           subtitle="Сквады — это не инструмент. Это инфраструктура сотрудничества."
@@ -50,11 +52,11 @@ export function SquadyPrinciples() {
           {PRINCIPLES.map((p, i) => (
             <motion.div
               key={p.badge}
-              initial={{ opacity: 0, y: 30 }}
+              initial={{ opacity: 0, y: 30, rotate: 0 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6, delay: i * 0.08 }}
-              className={`sq-principle sq-accent-${p.accent}`}
+              className={`sq-principle sq-principle-${i + 1}`}
             >
               <div className="sq-principle-num">{p.badge}</div>
               <div className="sq-principle-icon">
@@ -97,7 +99,7 @@ export function SectionHeader({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6, delay: 0.05 }}
-        className="sq-h2"
+        className="sq-h2-big"
       >
         {title}
       </motion.h2>

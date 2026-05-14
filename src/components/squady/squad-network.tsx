@@ -7,25 +7,27 @@ import { SectionHeader } from "./principles";
 
 export function SquadNetworkSection() {
   return (
-    <section id="squad-network" className="sq-section sq-section-network">
+    <section id="squad-network" className="sq-section sq-network">
       <div className="sq-container">
         <SectionHeader
           eyebrow="Squad Network"
           title={
             <>
-              Когда мастер занят — <br className="hidden md:block" />
-              <span className="sq-grad-text">клиент не уходит к конкуренту.</span>
+              Когда мастер занят —{" "}
+              <span className="sq-it" style={{ color: "var(--lime)" }}>
+                клиент не уходит.
+              </span>
             </>
           }
           subtitle="Сквад — это группа мастеров, которые доверяют друг другу. Бот автоматически предлагает коллегу из сети, мастер-источник получает реферальный процент."
         />
 
         <div className="sq-network-grid">
-          <div className="sq-network-vis">
+          <div>
             <NetworkVisualization />
           </div>
 
-          <div className="sq-network-steps">
+          <div className="sq-steps">
             {STEPS.map((s, i) => (
               <motion.div
                 key={s.title}
@@ -33,12 +35,12 @@ export function SquadNetworkSection() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: "-80px" }}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="sq-net-step"
+                className="sq-step"
               >
-                <div className="sq-net-step-num">{s.num}</div>
+                <div className="sq-step-num">{s.num}</div>
                 <div>
-                  <div className="sq-net-step-title">{s.title}</div>
-                  <div className="sq-net-step-body">{s.body}</div>
+                  <div className="sq-step-title">{s.title}</div>
+                  <div className="sq-step-body">{s.body}</div>
                 </div>
               </motion.div>
             ))}
@@ -59,7 +61,7 @@ export function SquadNetworkSection() {
           </div>
         </div>
 
-        <div className="sq-network-extras">
+        <div className="sq-net-extras">
           <ExtraCard
             icon={Users}
             title="Создатель задаёт правила"
@@ -119,13 +121,13 @@ function ExtraCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
       transition={{ duration: 0.5 }}
-      className="sq-extra-card"
+      className="sq-net-extra"
     >
-      <div className="sq-extra-icon">
+      <div className="sq-net-extra-icon">
         <Icon className="h-4 w-4" />
       </div>
-      <div className="sq-extra-title">{title}</div>
-      <div className="sq-extra-body">{body}</div>
+      <div className="sq-net-extra-title">{title}</div>
+      <div className="sq-net-extra-body">{body}</div>
     </motion.div>
   );
 }
@@ -136,13 +138,9 @@ function NetworkVisualization() {
     <div className="sq-net-canvas">
       <svg viewBox="0 0 360 360" className="sq-net-svg">
         <defs>
-          <linearGradient id="sqLink" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.7" />
-            <stop offset="100%" stopColor="hsl(var(--accent))" stopOpacity="0.3" />
-          </linearGradient>
           <radialGradient id="sqGlow" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0" />
+            <stop offset="0%" stopColor="#FF3F8E" stopOpacity="0.35" />
+            <stop offset="100%" stopColor="#FF3F8E" stopOpacity="0" />
           </radialGradient>
         </defs>
 
@@ -154,9 +152,9 @@ function NetworkVisualization() {
             y1="180"
             x2={n.x}
             y2={n.y}
-            stroke="url(#sqLink)"
-            strokeWidth="1.5"
-            strokeDasharray="3 6"
+            stroke="#0E0B16"
+            strokeWidth="2"
+            strokeDasharray="4 6"
             initial={{ pathLength: 0, opacity: 0 }}
             whileInView={{ pathLength: 1, opacity: 1 }}
             viewport={{ once: true }}
@@ -166,8 +164,10 @@ function NetworkVisualization() {
 
         {/* animated pulse along one line */}
         <motion.circle
-          r="4"
-          fill="hsl(var(--primary))"
+          r="6"
+          fill="#FF3F8E"
+          stroke="#0E0B16"
+          strokeWidth="2"
           initial={{ opacity: 0 }}
           animate={{
             opacity: [0, 1, 1, 0],
@@ -182,23 +182,24 @@ function NetworkVisualization() {
           }}
         />
 
-        {/* center node (mastery source) */}
-        <circle cx="180" cy="180" r="50" fill="url(#sqGlow)" />
+        {/* center node (master source) */}
+        <circle cx="180" cy="180" r="60" fill="url(#sqGlow)" />
         <circle
           cx="180"
           cy="180"
-          r="28"
-          fill="hsl(var(--surface))"
-          stroke="hsl(var(--primary))"
-          strokeWidth="2"
+          r="32"
+          fill="#FF3F8E"
+          stroke="#0E0B16"
+          strokeWidth="3"
         />
         <text
           x="180"
-          y="186"
+          y="187"
           textAnchor="middle"
-          fontSize="13"
+          fontSize="16"
           fontWeight="700"
-          fill="hsl(var(--primary))"
+          fill="#FFF6E5"
+          fontFamily="var(--font-display-alt)"
         >
           А
         </text>
@@ -209,10 +210,10 @@ function NetworkVisualization() {
             <motion.circle
               cx={n.x}
               cy={n.y}
-              r="20"
-              fill="hsl(var(--surface))"
-              stroke="hsl(var(--border))"
-              strokeWidth="1.5"
+              r="24"
+              fill={["#C8F046", "#5BCEFA", "#FFDD55", "#9BF0CC", "#FF8C42", "#FFFAF0"][i % 6]}
+              stroke="#0E0B16"
+              strokeWidth="2.5"
               initial={{ opacity: 0, scale: 0.6 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -220,11 +221,12 @@ function NetworkVisualization() {
             />
             <motion.text
               x={n.x}
-              y={n.y + 5}
+              y={n.y + 6}
               textAnchor="middle"
-              fontSize="11"
-              fontWeight="600"
-              fill="hsl(var(--text-dim))"
+              fontSize="14"
+              fontWeight="700"
+              fill="#0E0B16"
+              fontFamily="var(--font-display-alt)"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
