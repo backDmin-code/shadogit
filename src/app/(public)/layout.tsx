@@ -16,13 +16,13 @@ export default async function PublicLayout({
     <CommandPaletteProvider>
       <div className="app-shell relative">
         <SiteHeader
-          siteName={settings.siteName ?? "Shadogit Docs"}
-          logoEmoji={settings.logoEmoji ?? "S"}
+          siteName={settings.siteName ?? "Сквады"}
+          logoEmoji={settings.logoEmoji ?? "с"}
           withSidebarBlock
         />
         {children}
         <MobileBottomNav />
-        <SiteFooter siteName={settings.siteName ?? "Shadogit Docs"} />
+        <SiteFooter siteName={settings.siteName ?? "Сквады"} />
       </div>
     </CommandPaletteProvider>
   );

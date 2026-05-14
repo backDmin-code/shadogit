@@ -7,10 +7,12 @@ import { Home, BookOpen, Search, Settings, LogIn } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { cn } from "@/lib/utils";
 
+type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
+
 interface NavItem {
   href: string;
   label: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: IconType;
 }
 
 interface MobileBottomNavProps {
@@ -37,14 +39,27 @@ export function MobileBottomNav({ onSearchClick }: MobileBottomNavProps) {
     return pathname.startsWith(item.href);
   };
 
+  const handleSearch = () => {
+    if (onSearchClick) {
+      onSearchClick();
+      return;
+    }
+    const e = new KeyboardEvent("keydown", {
+      key: "k",
+      ctrlKey: true,
+      bubbles: true,
+    });
+    document.dispatchEvent(e);
+  };
+
   return (
-    <nav aria-label="Bottom navigation" className="mobile-nav md:!hidden">
+    <nav aria-label="Нижнее меню" className="sq-mobnav">
       {items.map((item) => {
         const active = isActive(item);
         const isAction = item.href === "#search";
         const content = (
           <>
-            <item.icon className="h-5 w-5" />
+            <item.icon className="h-5 w-5" strokeWidth={2.5 as unknown as number} />
             <span>{item.label}</span>
           </>
         );
@@ -55,8 +70,8 @@ export function MobileBottomNav({ onSearchClick }: MobileBottomNavProps) {
               key={item.href}
               type="button"
               aria-label={item.label}
-              onClick={onSearchClick}
-              className={cn("mob-btn", active && "active")}
+              onClick={handleSearch}
+              className={cn("sq-mobnav-btn", active && "is-active")}
             >
               {content}
             </button>
@@ -67,7 +82,7 @@ export function MobileBottomNav({ onSearchClick }: MobileBottomNavProps) {
             key={item.href}
             href={item.href}
             aria-label={item.label}
-            className={cn("mob-btn", active && "active")}
+            className={cn("sq-mobnav-btn", active && "is-active")}
           >
             {content}
           </Link>
