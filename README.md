@@ -1,11 +1,13 @@
-# Shadogit Docs
+# Сквады
 
-Современная платформа документации в стиле Cloud.ru / GitBook: тёмная тема, плиточный интерфейс, мгновенный поиск (⌘K), мобильная плавающая нижняя навигация и встроенный WYSIWYG-редактор.
+Платформа для микро-бизнеса в Telegram: бот записи, реферальная сеть мастеров и программа лояльности — в одной подписке. Сайт-витрина продукта с продающим лендингом, встроенной документацией и админкой.
+
+> Репозиторий пока называется `shadogit` — это исторический slug, в коде проект называется **«Сквады»**.
 
 ## Стек
 
 - **Next.js 14** (App Router) + TypeScript
-- **Tailwind CSS** + кастомные дизайн-токены (HSL CSS variables)
+- **Tailwind CSS** + кастомные дизайн-токены (HSL CSS variables) + bold-marketing `.sq-*` слой
 - **Prisma 6** + SQLite (легко свапается на Postgres / Neon)
 - **NextAuth** (credentials provider) + bcryptjs
 - **TipTap** для WYSIWYG-редактора с подсветкой синтаксиса
@@ -29,7 +31,7 @@ npm run db:seed
 npm run dev
 ```
 
-Открой [http://localhost:3000](http://localhost:3000) — публичная документация.
+Открой [http://localhost:3000](http://localhost:3000) — лендинг «Сквады».
 
 Войди в админку через [/login](http://localhost:3000/login). По умолчанию:
 
@@ -56,14 +58,15 @@ npm run dev
 ```
 src/
 ├── app/
-│   ├── (public)/        — публичные страницы (главная, /docs)
+│   ├── (public)/        — публичные страницы: лендинг /, /docs/*
 │   ├── (admin)/         — админ-панель (/admin/*)
 │   ├── api/             — REST API (auth, pages, spaces, search, settings)
 │   └── login/
 ├── components/
+│   ├── squady/          — секции лендинга (hero, marquee, principles, …)
 │   ├── docs/            — sidebar, TOC, плитки, breadcrumbs, content renderer
 │   ├── editor/          — TipTap-редактор + меню
-│   ├── layout/          — header, footer, mobile bottom nav, theme toggle
+│   ├── layout/          — sq-header, sq-footer, mobile bottom nav, theme toggle
 │   ├── search/          — command palette (⌘K)
 │   ├── admin/           — формы и менеджеры админки
 │   └── ui/              — shadcn-style примитивы
@@ -78,11 +81,12 @@ prisma/
 
 ## Дизайн-система
 
-- Дефолт — тёмная тема. Светлая включается переключателем (next-themes).
-- Цвета через HSL-переменные в `src/app/globals.css`. Меняй `--primary`, `--accent`, `--radius` — и весь UI подстроится.
-- Тайлы: `rounded-2xl`, hairline-границы, hover с градиентным glow (`.tile-glow`).
-- Шрифт: Geist (sans + mono) через `next/font/local`.
-- Анимации: framer-motion (плавающая капсула в bottom-nav, hover на плитках).
+- **Лендинг** — bold marketing вайб (Gumroad / Tally / Spline): кремовая бумага `#FFF6E5`, чернильные `#0E0B16` границы, наклонные стикеры, тени `box-shadow: 3-4px solid #0E0B16`.
+  - Палитра: lime `#C8F046`, magenta `#FF3F8E`, sky `#5BCEFA`, orange `#FF8C42`, yellow `#FFDD55`, mint `#9BF0CC`, violet `#4F2BD8`.
+  - Шрифты: **Manrope** (display), **Inter** (body), **Lora italic** (акценты), **Fira Code** (код).
+  - Все `.sq-*` классы — в `src/app/globals.css`, секции — в `src/components/squady/`.
+- **Док-портал** (`/docs/*`) — тот же header, но контентный шрифт Inter + Fira Code, спокойный layout с сайдбаром.
+- **Темы** — dark/light переключаются через `next-themes`. Лендинг всегда light-first.
 
 ## Деплой на Vercel
 

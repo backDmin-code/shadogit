@@ -99,7 +99,7 @@ const seed: SeedSpace[] = [
         contentJson: doc(
           h(2, "Что это"),
           p(
-            "Shadogit — современная платформа документации с тёмной темой, плиточным интерфейсом, мгновенным поиском и адаптивом под мобильные устройства."
+            "Сквады — платформа для микро-бизнеса в Telegram: бот записи, реферальная сеть мастеров и программа лояльности в одной подписке."
           ),
           h(2, "Что внутри"),
           ul([
@@ -132,7 +132,7 @@ const seed: SeedSpace[] = [
           h(3, "Команды"),
           code(
             "bash",
-            "git clone https://github.com/backDmin-code/shadogit.git\ncd shadogit\nnpm install\nnpx prisma migrate dev\nnpm run db:seed\nnpm run dev"
+            "git clone https://github.com/backDmin-code/shadogit.git\ncd shadogit\nnpm install\nnpx prisma migrate dev\nnpm run db:seed\nnpm run dev\n# репо пока называется shadogit — переименование в squady запланировано"
           ),
           p("Открой http://localhost:3000 — и ты на месте."),
           h(2, "Чек-лист первого запуска"),
@@ -218,7 +218,7 @@ const seed: SeedSpace[] = [
         contentJson: doc(
           h(2, "Иерархия"),
           p(
-            "В Shadogit два уровня: разделы (spaces) → страницы. Страницы можно вкладывать друг в друга через parentId — получится дерево."
+            "В Сквадах документация имеет два уровня: разделы (spaces) → страницы. Страницы можно вкладывать друг в друга через parentId — получится дерево."
           ),
           h(2, "Советы"),
           ul([
@@ -278,7 +278,7 @@ const seed: SeedSpace[] = [
         emoji: "🎉",
         contentJson: doc(
           p(
-            "Первая версия Shadogit Docs. Спасибо, что заглянул(а)! Ниже — что внутри."
+            "Первая версия Сквады. Спасибо, что заглянул(а)! Ниже — что внутри."
           ),
           h(2, "Что есть"),
           ul([

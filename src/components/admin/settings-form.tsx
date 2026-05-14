@@ -56,7 +56,7 @@ export function SettingsForm({ initial }: SettingsFormProps) {
           <Input
             value={siteName}
             onChange={(e) => setSiteName(e.target.value)}
-            placeholder="Shadogit Docs"
+            placeholder="Сквады"
           />
         </div>
         <div className="space-y-1.5">

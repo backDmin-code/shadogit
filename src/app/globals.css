@@ -49,7 +49,7 @@
 
     --radius: 0.625rem;
 
-    --header-h: 58px;
+    --header-h: 68px;
     --sidebar-w: 258px;
     --toc-w: 224px;
     --mobile-nav-h: 64px;
@@ -2711,7 +2711,7 @@
 }
 
 .sq-header-burger {
-  display: none;
+  display: none; /* shown via media query below 1100px */
   width: 38px;
   height: 38px;
   border: 2.5px solid #0E0B16;
@@ -2890,7 +2890,7 @@
 }
 
 .sq-header-mobile {
-  display: none;
+  display: none; /* shown via media query below 1100px when open */
   background: #FFF6E5;
   border-top: 2.5px solid #0E0B16;
   padding: 14px 22px 18px;
@@ -2916,45 +2916,26 @@
   box-shadow: 3px 3px 0 #0E0B16;
 }
 
-/* Pull the page content below the new fixed header height */
-.sq-page,
-.app-main {
-  padding-top: 0;
-}
+/* Make .sq-page sit flush below the fixed sq-header */
 .sq-page {
   margin-top: 0 !important;
-}
-main.app-main {
-  margin-top: 68px;
+  padding-top: 0;
 }
 
-/* Hide the old logo block on docs sidebar layout — the new header is full-width */
-.app-header-logo {
-  display: none !important;
-}
-
-/* Make sure the docs sidebar starts below the new header */
-.app-sidebar {
-  top: 68px !important;
-}
-.app-toc {
-  top: 68px !important;
-}
-
-/* Responsive: tablet */
+/* Responsive: tablet — hide nav, show burger */
 @media (max-width: 1100px) {
   .sq-header-nav { display: none; }
   .sq-header-search-text { display: none; }
   .sq-header-search-kbd { display: none; }
   .sq-header-search { padding: 9px; }
+  .sq-header-burger { display: inline-flex; }
+  .sq-header-mobile { display: block; }
 }
 
 /* Responsive: mobile */
 @media (max-width: 720px) {
   .sq-header { height: 64px; }
   .sq-header-inner { padding: 0 14px; gap: 12px; }
-  .sq-header-burger { display: inline-flex; }
-  .sq-header-mobile { display: block; }
   .sq-brand-text { display: none; }
   .sq-brand-mark { width: 36px; height: 36px; font-size: 19px; box-shadow: 2px 2px 0 #FF3F8E; }
   .sq-header-theme { width: 36px; height: 36px; box-shadow: 2px 2px 0 #0E0B16; }

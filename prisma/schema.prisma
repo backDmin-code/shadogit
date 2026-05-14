@@ -1,4 +1,4 @@
-// Prisma schema for Shadogit — a documentation platform.
+// Prisma schema for Сквады — Telegram-first micro-business platform.
 
 generator client {
   provider = "prisma-client-js"
@@ -75,9 +75,9 @@ model Revision {
 
 model SiteSettings {
   id              String   @id @default("singleton")
-  siteName        String   @default("Shadogit Docs")
-  siteDescription String?  @default("Documentation built with care.")
-  logoEmoji       String?  @default("📘")
+  siteName        String   @default("Сквады")
+  siteDescription String?  @default("Платформа для микро-бизнеса в Telegram.")
+  logoEmoji       String?  @default("с")
   primaryColor    String?  @default("#7c5cff")
   accentColor     String?  @default("#22d3ee")
   updatedAt       DateTime @updatedAt

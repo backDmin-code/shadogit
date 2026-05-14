@@ -32,11 +32,11 @@ export default async function AdminLayout({
         <div className="app-header-logo">
           <Link href="/" className="flex items-center gap-2.5">
             <span className="logo-mark" aria-hidden>
-              {settings.logoEmoji?.length === 1 ? settings.logoEmoji : "S"}
+              {settings.logoEmoji?.length === 1 ? settings.logoEmoji : "с"}
             </span>
             <div className="min-w-0">
               <div className="logo-text truncate">
-                {settings.siteName ?? "Shadogit Docs"}
+                {settings.siteName ?? "Сквады"}
               </div>
             </div>
           </Link>
