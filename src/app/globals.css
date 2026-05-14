@@ -2682,3 +2682,463 @@
   line-height: 1.3;
 }
 .sq-pile-text b { font-family: var(--font-display-alt); font-weight: 700; }
+
+/* ================================================================
+   SQUADY HEADER — bold marketing header that replaces .app-header
+   Used on all public pages. Cream ink-bordered sticker style.
+================================================================ */
+
+.sq-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 200;
+  background: #FFF6E5;
+  border-bottom: 3px solid #0E0B16;
+  height: 68px;
+  font-family: var(--font-display-alt), system-ui, sans-serif;
+}
+
+.sq-header-inner {
+  height: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.sq-header-burger {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border: 2.5px solid #0E0B16;
+  border-radius: 10px;
+  background: #FFF6E5;
+  color: #0E0B16;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 3px 3px 0 #0E0B16;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sq-header-burger:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #0E0B16;
+}
+.sq-header-burger:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #0E0B16;
+}
+
+.sq-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-decoration: none;
+  color: #0E0B16;
+  flex-shrink: 0;
+}
+
+.sq-brand-mark {
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: #C8F046;
+  border: 3px solid #0E0B16;
+  border-radius: 12px;
+  font-family: var(--font-display-alt);
+  font-weight: 800;
+  font-size: 22px;
+  color: #0E0B16;
+  box-shadow: 3px 3px 0 #FF3F8E;
+  transform: rotate(-3deg);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  line-height: 1;
+}
+.sq-brand:hover .sq-brand-mark {
+  transform: rotate(0deg) translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #FF3F8E;
+}
+
+.sq-brand-text {
+  font-family: var(--font-display-alt);
+  font-weight: 800;
+  font-size: 19px;
+  letter-spacing: -0.02em;
+  color: #0E0B16;
+}
+
+.sq-header-nav {
+  display: flex;
+  gap: 4px;
+  margin-left: 16px;
+}
+
+.sq-nav-link {
+  font-family: var(--font-display-alt);
+  font-size: 14px;
+  font-weight: 600;
+  color: #0E0B16;
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 2.5px solid transparent;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+.sq-nav-link:hover {
+  background: #C8F046;
+  border-color: #0E0B16;
+  transform: translateY(-1px);
+}
+.sq-nav-link.is-active {
+  background: #0E0B16;
+  color: #FFF6E5;
+  border-color: #0E0B16;
+}
+
+.sq-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sq-header-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  background: #FFFAF0;
+  border: 2.5px solid #0E0B16;
+  border-radius: 999px;
+  font-family: var(--font-display-alt);
+  font-size: 13px;
+  font-weight: 600;
+  color: #0E0B16;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #0E0B16;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.sq-header-search:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #0E0B16;
+}
+.sq-header-search-text {
+  line-height: 1;
+}
+.sq-header-search-kbd {
+  font-family: var(--font-display-alt);
+  font-size: 10.5px;
+  font-weight: 700;
+  background: #0E0B16;
+  color: #FFF6E5;
+  padding: 3px 6px;
+  border-radius: 6px;
+  line-height: 1;
+}
+
+.sq-header-theme {
+  width: 38px;
+  height: 38px;
+  border: 2.5px solid #0E0B16;
+  border-radius: 999px;
+  background: #FFDD55;
+  color: #0E0B16;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #0E0B16;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  flex-shrink: 0;
+}
+.sq-header-theme:hover {
+  transform: translate(-1px, -1px) rotate(-6deg);
+  box-shadow: 4px 4px 0 #0E0B16;
+}
+
+.sq-header-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  background: #FF3F8E;
+  color: #FFF6E5;
+  font-family: var(--font-display-alt);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  border: 2.5px solid #0E0B16;
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 #0E0B16;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+}
+.sq-header-cta:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #0E0B16;
+}
+.sq-header-cta:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #0E0B16;
+}
+
+.sq-header-mobile {
+  display: none;
+  background: #FFF6E5;
+  border-top: 2.5px solid #0E0B16;
+  padding: 14px 22px 18px;
+}
+.sq-header-mobile-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.sq-mobile-link {
+  font-family: var(--font-display-alt);
+  font-size: 16px;
+  font-weight: 600;
+  color: #0E0B16;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 2.5px solid #0E0B16;
+  background: #FFFAF0;
+}
+.sq-mobile-link.is-active {
+  background: #C8F046;
+  box-shadow: 3px 3px 0 #0E0B16;
+}
+
+/* Pull the page content below the new fixed header height */
+.sq-page,
+.app-main {
+  padding-top: 0;
+}
+.sq-page {
+  margin-top: 0 !important;
+}
+main.app-main {
+  margin-top: 68px;
+}
+
+/* Hide the old logo block on docs sidebar layout — the new header is full-width */
+.app-header-logo {
+  display: none !important;
+}
+
+/* Make sure the docs sidebar starts below the new header */
+.app-sidebar {
+  top: 68px !important;
+}
+.app-toc {
+  top: 68px !important;
+}
+
+/* Responsive: tablet */
+@media (max-width: 1100px) {
+  .sq-header-nav { display: none; }
+  .sq-header-search-text { display: none; }
+  .sq-header-search-kbd { display: none; }
+  .sq-header-search { padding: 9px; }
+}
+
+/* Responsive: mobile */
+@media (max-width: 720px) {
+  .sq-header { height: 64px; }
+  .sq-header-inner { padding: 0 14px; gap: 12px; }
+  .sq-header-burger { display: inline-flex; }
+  .sq-header-mobile { display: block; }
+  .sq-brand-text { display: none; }
+  .sq-brand-mark { width: 36px; height: 36px; font-size: 19px; box-shadow: 2px 2px 0 #FF3F8E; }
+  .sq-header-theme { width: 36px; height: 36px; box-shadow: 2px 2px 0 #0E0B16; }
+  .sq-header-search { padding: 8px; box-shadow: 2px 2px 0 #0E0B16; }
+  .sq-header-cta { padding: 8px 14px; font-size: 13px; box-shadow: 2px 2px 0 #0E0B16; }
+  .sq-header-cta span { display: none; }
+  main.app-main { margin-top: 64px; }
+  .app-sidebar { top: 64px !important; }
+  .app-toc { top: 64px !important; }
+}
+
+@media (max-width: 480px) {
+  .sq-header-search { display: none; }
+}
+
+/* ================================================================
+   SQUADY FOOTER (over .sq-page) — sticker-style footer
+================================================================ */
+
+.sq-footer {
+  background: #0E0B16;
+  color: #FFF6E5;
+  padding: 60px 22px 40px;
+  margin-top: 0;
+  border-top: 4px solid #0E0B16;
+  position: relative;
+  z-index: 10;
+  font-family: var(--font-display-alt);
+}
+.sq-footer-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1fr;
+  gap: 40px;
+}
+.sq-footer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.sq-footer-brand-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.sq-footer-mark {
+  width: 44px;
+  height: 44px;
+  background: #C8F046;
+  border: 3px solid #FFF6E5;
+  border-radius: 13px;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 22px;
+  color: #0E0B16;
+  transform: rotate(-3deg);
+  box-shadow: 3px 3px 0 #FF3F8E;
+}
+.sq-footer-name {
+  font-family: var(--font-display-alt);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.sq-footer-tagline {
+  color: rgba(255, 246, 229, 0.7);
+  font-size: 14px;
+  line-height: 1.5;
+  max-width: 360px;
+}
+.sq-footer-col-title {
+  font-family: var(--font-display-alt);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #C8F046;
+  margin-bottom: 14px;
+}
+.sq-footer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sq-footer-list a {
+  color: #FFF6E5;
+  text-decoration: none;
+  font-size: 14.5px;
+  font-weight: 500;
+  opacity: 0.85;
+  transition: color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+}
+.sq-footer-list a:hover {
+  color: #FF3F8E;
+  opacity: 1;
+  transform: translateX(2px);
+}
+.sq-footer-bottom {
+  max-width: 1320px;
+  margin: 36px auto 0;
+  padding-top: 24px;
+  border-top: 1.5px solid rgba(255, 246, 229, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 13px;
+  color: rgba(255, 246, 229, 0.55);
+}
+.sq-footer-bottom-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sq-footer-bottom-tag {
+  background: #FFDD55;
+  color: #0E0B16;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+@media (max-width: 880px) {
+  .sq-footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+@media (max-width: 520px) {
+  .sq-footer { padding: 44px 18px 28px; }
+  .sq-footer-inner { grid-template-columns: 1fr; gap: 28px; }
+  .sq-footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* ================================================================
+   SQUADY MOBILE BOTTOM NAV — sticker style
+================================================================ */
+
+.sq-mobnav {
+  display: none;
+}
+@media (max-width: 720px) {
+  .sq-mobnav {
+    position: fixed;
+    bottom: 14px;
+    left: 14px;
+    right: 14px;
+    z-index: 150;
+    display: flex;
+    background: #FFF6E5;
+    border: 2.5px solid #0E0B16;
+    border-radius: 18px;
+    padding: 7px;
+    gap: 6px;
+    box-shadow: 4px 4px 0 #0E0B16;
+  }
+  .sq-mobnav-btn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 9px 4px;
+    border: none;
+    background: transparent;
+    border-radius: 12px;
+    font-family: var(--font-display-alt);
+    font-weight: 600;
+    font-size: 10.5px;
+    color: #0E0B16;
+    text-decoration: none;
+    cursor: pointer;
+    line-height: 1;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+  .sq-mobnav-btn:active { transform: scale(0.95); }
+  .sq-mobnav-btn.is-active {
+    background: #C8F046;
+    border: 2px solid #0E0B16;
+  }
+  .sq-page,
+  main.app-main {
+    padding-bottom: 86px !important;
+  }
+}
